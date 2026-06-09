@@ -518,17 +518,15 @@
 <body>
 
     <div class="container">
-        <header>
+        <header id="app-header" class="hidden">
             <div>
                 <h1>💪 PowerLog</h1>
                 <p class="sub-header">Registro Pro</p>
             </div>
-            <select id="sel-user" onchange="seleccionarUsuario()">
-                <option value="">👤 Cambiar...</option>
-                <option value="Nico V">Nico V</option>
-                <option value="Nico">Nico</option>
-                <option value="Samuel">Samuel</option>
-            </select>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span id="user-display" style="font-weight: 900; font-size: 13px; color: var(--primary);"></span>
+                <button onclick="cerrarSesion()" class="form-cerrar">Cerrar sesión</button>
+            </div>
         </header>
 
         <div id="card-login" class="card-login">
@@ -630,5 +628,4 @@
             "Gemelos": ["Elevación de Talones Parado", "Elevación de Talones Sentado", "Gemelos en Prensa"]
         };
         
-        let user = "";
       
