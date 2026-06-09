@@ -3,88 +3,138 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gym Tracker</title>
+<title>Gym Tracker Pro</title>
 
 <style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
 body{
-    font-family: Arial, sans-serif;
-    max-width: 900px;
-    margin: auto;
-    padding: 20px;
-    background: #f5f5f5;
+background:#121212;
+color:white;
+padding:20px;
 }
 
-h1,h2{
-    text-align:center;
+h1{
+text-align:center;
+margin-bottom:20px;
 }
 
-.card{
-    background:white;
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:10px;
-}
-
-input,select{
-    width:100%;
-    padding:10px;
-    margin-top:5px;
-    margin-bottom:10px;
+.menu{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:10px;
+margin-bottom:20px;
 }
 
 button{
-    width:100%;
-    padding:12px;
-    cursor:pointer;
+background:#1f1f1f;
+color:white;
+border:none;
+padding:15px;
+border-radius:12px;
+font-size:16px;
+cursor:pointer;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
+button:hover{
+background:#333;
 }
 
-th,td{
-    border:1px solid #ddd;
-    padding:8px;
-    text-align:center;
+.card{
+background:#1e1e1e;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
 }
 
-th{
-    background:#eee;
+input,select{
+width:100%;
+padding:10px;
+margin-top:8px;
+margin-bottom:12px;
+border-radius:8px;
+border:none;
+}
+
+.hidden{
+display:none;
+}
+
+.item{
+background:#2a2a2a;
+padding:10px;
+border-radius:8px;
+margin-top:10px;
+}
+
+.stat{
+padding:8px;
+border-bottom:1px solid #333;
 }
 </style>
 </head>
-
 <body>
 
-<h1>🏋️ Gym Tracker</h1>
+<h1>🏋️ Gym Tracker Pro</h1>
+
+<div class="menu">
+<button onclick="abrirDia('Dia 1')">Día 1</button>
+<button onclick="abrirDia('Dia 2')">Día 2</button>
+<button onclick="abrirDia('Dia 3')">Día 3</button>
+<button onclick="abrirDia('Dia 4')">Día 4</button>
+<button onclick="abrirDia('Dia 5')">Día 5</button>
+<button onclick="mostrarStats()">📊 Estadísticas</button>
+</div>
+
+<div id="contenido"></div>
+
+<script>
+
+const ejerciciosBase = {
+"Press banca":"Pecho",
+"Press inclinado":"Pecho",
+"Aperturas":"Pecho",
+"Remo":"Espalda",
+"Jalon":"Espalda",
+"Curl barra":"Biceps",
+"Curl martillo":"Biceps",
+"Press frances":"Triceps",
+"Extensiones":"Triceps",
+"Press militar":"Hombros",
+"Elevaciones laterales":"Hombros",
+"Sentadilla":"Cuadriceps",
+"Prensa":"Cuadriceps",
+"Peso muerto":"Isquios",
+"Gemelos":"Gemelos"
+};
+
+let datos = JSON.parse(localStorage.getItem("gymtracker")) || [];
+
+function guardar(){
+localStorage.setItem("gymtracker",JSON.stringify(datos));
+}
+
+function abrirDia(dia){
+
+let opciones="";
+
+for(let ejercicio in ejerciciosBase){
+opciones+=`<option>${ejercicio}</option>`;
+}
+
+document.getElementById("contenido").innerHTML=`
 
 <div class="card">
+<h2>${dia}</h2>
 
-<h2>Agregar ejercicio</h2>
-
-<select id="dia">
-<option>Día 1</option>
-<option>Día 2</option>
-<option>Día 3</option>
-<option>Día 4</option>
-<option>Día 5</option>
+<select id="ejercicio">
+${opciones}
 </select>
-
-<select id="musculo">
-<option>Pecho</option>
-<option>Espalda</option>
-<option>Hombros</option>
-<option>Bíceps</option>
-<option>Tríceps</option>
-<option>Cuádriceps</option>
-<option>Isquios</option>
-<option>Glúteos</option>
-<option>Gemelos</option>
-<option>Abdomen</option>
-</select>
-
-<input type="text" id="ejercicio" placeholder="Ejercicio">
 
 <input type="number" id="peso" placeholder="Peso (kg)">
 
@@ -92,128 +142,103 @@ th{
 
 <input type="number" id="reps" placeholder="Repeticiones">
 
-<button onclick="agregarEjercicio()">Guardar</button>
+<button onclick="agregar('${dia}')">
+Guardar ejercicio
+</button>
 
 </div>
 
+<div id="lista"></div>
+`;
+
+mostrarEjercicios(dia);
+}
+
+function agregar(dia){
+
+const ejercicio =
+document.getElementById("ejercicio").value;
+
+const item = {
+fecha:new Date().toLocaleDateString(),
+dia,
+ejercicio,
+musculo:ejerciciosBase[ejercicio],
+peso:Number(document.getElementById("peso").value),
+series:Number(document.getElementById("series").value),
+reps:Number(document.getElementById("reps").value)
+};
+
+datos.push(item);
+
+guardar();
+
+abrirDia(dia);
+}
+
+function mostrarEjercicios(dia){
+
+const lista =
+document.getElementById("lista");
+
+const filtrados =
+datos.filter(x=>x.dia===dia);
+
+let html="<div class='card'><h3>Ejercicios guardados</h3>";
+
+filtrados.forEach(e=>{
+
+html+=`
+<div class="item">
+<strong>${e.ejercicio}</strong><br>
+${e.peso} kg |
+${e.series} series |
+${e.reps} reps
+</div>
+`;
+
+});
+
+html+="</div>";
+
+lista.innerHTML=html;
+}
+
+function mostrarStats(){
+
+let seriesMusculo={};
+
+datos.forEach(e=>{
+
+if(!seriesMusculo[e.musculo]){
+seriesMusculo[e.musculo]=0;
+}
+
+seriesMusculo[e.musculo]+=e.series;
+
+});
+
+let html=`
 <div class="card">
+<h2>📊 Estadísticas</h2>
+`;
 
-<h2>Entrenamientos</h2>
+for(let musculo in seriesMusculo){
 
-<table>
-<thead>
-<tr>
-<th>Día</th>
-<th>Músculo</th>
-<th>Ejercicio</th>
-<th>Peso</th>
-<th>Series</th>
-<th>Reps</th>
-</tr>
-</thead>
-
-<tbody id="tablaEjercicios"></tbody>
-
-</table>
-
+html+=`
+<div class="stat">
+<strong>${musculo}</strong> :
+${seriesMusculo[musculo]} series
 </div>
+`;
 
-<div class="card">
-
-<h2>Series Semanales</h2>
-
-<div id="resumen"></div>
-
-</div>
-
-<script>
-
-let ejercicios =
-JSON.parse(localStorage.getItem("ejercicios")) || [];
-
-function guardarDatos(){
-    localStorage.setItem(
-        "ejercicios",
-        JSON.stringify(ejercicios)
-    );
 }
 
-function agregarEjercicio(){
+html+="</div>";
 
-    const nuevo = {
-        dia: document.getElementById("dia").value,
-        musculo: document.getElementById("musculo").value,
-        ejercicio: document.getElementById("ejercicio").value,
-        peso: document.getElementById("peso").value,
-        series: Number(document.getElementById("series").value),
-        reps: document.getElementById("reps").value
-    };
-
-    ejercicios.push(nuevo);
-
-    guardarDatos();
-    mostrarDatos();
-
-    document.getElementById("ejercicio").value="";
-    document.getElementById("peso").value="";
-    document.getElementById("series").value="";
-    document.getElementById("reps").value="";
+document.getElementById("contenido").innerHTML=
+html;
 }
-
-function mostrarDatos(){
-
-    const tabla =
-    document.getElementById("tablaEjercicios");
-
-    tabla.innerHTML="";
-
-    ejercicios.forEach(e => {
-
-        tabla.innerHTML += `
-        <tr>
-            <td>${e.dia}</td>
-            <td>${e.musculo}</td>
-            <td>${e.ejercicio}</td>
-            <td>${e.peso} kg</td>
-            <td>${e.series}</td>
-            <td>${e.reps}</td>
-        </tr>
-        `;
-    });
-
-    actualizarResumen();
-}
-
-function actualizarResumen(){
-
-    const totales = {};
-
-    ejercicios.forEach(e => {
-
-        if(!totales[e.musculo]){
-            totales[e.musculo] = 0;
-        }
-
-        totales[e.musculo] += e.series;
-    });
-
-    let html = "";
-
-    for(let musculo in totales){
-
-        html += `
-        <p>
-        <strong>${musculo}</strong>:
-        ${totales[musculo]} series
-        </p>
-        `;
-    }
-
-    document.getElementById("resumen").innerHTML =
-    html;
-}
-
-mostrarDatos();
 
 </script>
 
