@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PowerLog - Pro</title>
+    <title>Entrenamiento</title>
     <style>
         :root {
             --bg-color: #f1f5f9;
@@ -40,12 +40,10 @@
             gap: 20px;
         }
 
-        /* Botón/Efecto active */
         .active-scale:active { 
             transform: scale(0.97); 
         }
 
-        /* Cabecera */
         header {
             background: var(--card-bg);
             padding: 20px;
@@ -89,7 +87,6 @@
             border-color: var(--primary);
         }
 
-        /* Login inicial */
         .card-login {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -119,10 +116,8 @@
             margin-top: 6px;
         }
 
-        /* Utilidades de visibilidad */
         .hidden { display: none !important; }
 
-        /* Seccion de dias */
         .section-box {
             background: var(--card-bg);
             border: 1px solid var(--border);
@@ -182,7 +177,6 @@
             color: #c7d2fe;
         }
 
-        /* Panel Ejercicios */
         .flex-between {
             display: flex;
             justify-content: space-between;
@@ -259,19 +253,6 @@
             cursor: pointer;
         }
 
-        .grid-series-header {
-            display: grid;
-            grid-template-columns: 1fr 4fr 4fr;
-            gap: 8px;
-            font-size: 8px;
-            font-weight: 900;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            text-align: center;
-            padding-top: 8px;
-            border-top: 1px solid rgba(0,0,0,0.05);
-        }
-
         .grid-series {
             display: grid;
             grid-template-columns: 1fr 4fr 4fr;
@@ -345,7 +326,6 @@
             margin-top: 8px;
         }
 
-        /* Formulario nuevo ejercicio */
         .form-ej-card {
             background: #ffffff;
             border: 2px solid #c7d2fe;
@@ -396,22 +376,6 @@
             letter-spacing: 0.5px;
         }
 
-        .form-control select, .form-control input {
-            width: 100%;
-        }
-
-        .btn-guardar-ej {
-            background: var(--success);
-            color: #ffffff;
-            font-weight: 900;
-            padding: 12px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            margin-top: 6px;
-        }
-
-        /* Barras volumen */
         .barra-item {
             font-size: 12px;
             display: flex;
@@ -440,7 +404,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Calendario */
         .mes-titulo {
             text-align: center;
             font-weight: 900;
@@ -493,10 +456,6 @@
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
-        .cal-dia:hover:not(.registrado) {
-            background: #f1f5f9;
-        }
-
         .detalle-tarjeta {
             background: #f8fafc;
             border: 1px solid rgba(226, 232, 240, 0.8);
@@ -543,7 +502,6 @@
             color: #0f172a;
         }
 
-        /* Boton Reset */
         .btn-reset {
             width: 100%;
             background: var(--danger-bg);
@@ -659,4 +617,418 @@
                 </div>
                 <div class="cal-grid" id="celdas-calendario"></div>
                 
-                <div sty
+                <div style="padding-top: 12px; border-top: 1px solid #f1f5f9;">
+                    <h4 style="font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;" id="titulo-detalle">Toca un día marcado en azul</h4>
+                    <div id="lista-detalles-dia" style="display: flex; flex-direction: column; gap: 8px; max-height: 192px; overflow-y: auto; padding-right: 4px;"></div>
+                </div>
+            </section>
+        </div>
+
+        <button onclick="limpiarTodo()" class="btn-reset active-scale">⚠️ Borrar datos y reiniciar app</button>
+    </div>
+
+    <script>
+        const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
+        
+        const CATALOGO = {
+            "Pecho": ["Press de Banca Plano", "Press Inclinado con Mancuernas", "Aperturas en Polea", "Fondos en Paralelas", "Pecho Declinado"],
+            "Espalda": ["Dominadas", "Jalón al Pecho", "Remo con Barra", "Remo con Mancuerna", "Remo en Polea Baja", "Pullover"],
+            "Hombros": ["Press Militar", "Elevaciones Laterales", "Vuelos Posteriores", "Vuelos Frontales", "Encogimientos Trapecio"],
+            "Bíceps": ["Curl con Barra", "Curl con Mancuernas", "Curl Martillo", "Curl Scott", "Curl en Polea"],
+            "Tríceps": ["Extensión en Polea", "Press Francés", "Copa con Mancuerna", "Patada de Tríceps", "Fondos en Banco"],
+            "Cuádriceps": ["Sentadilla Libre", "Prensa 45°", "Extensión de Cuádriceps", "Zancadas", "Sentadilla Búlgara"],
+            "Femorales": ["Curl Femoral", "Peso Muerto Rumano", "Buenos Días", "Máquina Femoral Parado"],
+            "Gemelos": ["Elevación de Talones Parado", "Elevación de Talones Sentado", "Gemelos en Prensa"]
+        };
+        
+        let user = "";
+        let dia = null;
+        let db = {};
+        let history = [];
+
+        try {
+            user = localStorage.getItem('pl_user') || "";
+            dia = parseInt(localStorage.getItem('pl_dia')) || null;
+            db = JSON.parse(localStorage.getItem('pl_db')) || {};
+            history = JSON.parse(localStorage.getItem('pl_history')) || [];
+        } catch(e) {
+            localStorage.clear();
+            db = {};
+            history = [];
+        }
+
+        // Si hay usuario guardado, inicializa base de datos y muestra app completa al toque
+        if (user) {
+            if (!db[user]) {
+                db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+                localStorage.setItem('pl_db', JSON.stringify(db));
+            }
+            document.getElementById('sel-user').value = user;
+            document.getElementById('card-login').classList.add('hidden');
+            document.getElementById('app-content').classList.remove('hidden');
+            
+            renderDias();
+            if(dia && db[user][dia]) {
+                document.getElementById('seccion-ejercicios').classList.remove('hidden');
+                renderEjercicios();
+            }
+            actualizarBarras();
+            renderizarCalendario();
+        } else {
+            document.getElementById('card-login').classList.remove('hidden');
+            document.getElementById('app-content').classList.add('hidden');
+        }
+
+        function iniciarConUsuario(nombre) {
+            if(!nombre) return;
+            localStorage.setItem('pl_user', nombre);
+            
+            if(!db[nombre]) {
+                let tempDb = JSON.parse(localStorage.getItem('pl_db')) || {};
+                tempDb[nombre] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+                localStorage.setItem('pl_db', JSON.stringify(tempDb));
+            }
+            
+            location.reload(); // Recarga la interfaz de forma definitiva
+        }
+
+        function seleccionarUsuario() {
+            const nuevoUser = document.getElementById('sel-user').value;
+            
+            if (!nuevoUser) {
+                localStorage.clear();
+                location.reload();
+                return;
+            }
+
+            localStorage.setItem('pl_user', nuevoUser);
+            localStorage.removeItem('pl_dia');
+            
+            if(!db[nuevoUser]) {
+                db[nuevoUser] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+                localStorage.setItem('pl_db', JSON.stringify(db));
+            }
+            
+            location.reload();
+        }
+
+        function renderDias() {
+            const container = document.getElementById('dias-lista');
+            container.innerHTML = '';
+            
+            if (!db[user]) return;
+
+            for(let i=1; i<=6; i++) {
+                const cant = db[user][i]?.length || 0;
+                const esActivo = (i === dia);
+                
+                const btn = document.createElement('button');
+                btn.className = `btn-dia ${esActivo ? 'activo' : ''} active-scale`;
+                btn.innerHTML = `<span>Día ${i}</span> <span class="dia-cant">${cant} ejercicios</span>`;
+                
+                btn.onclick = () => {
+                    dia = i;
+                    localStorage.setItem('pl_dia', i);
+                    location.reload();
+                };
+                container.appendChild(btn);
+            }
+        }
+
+        function renderEjercicios() {
+            document.getElementById('titulo-dia-ejercicios').innerText = `Ejercicios - Día ${dia}`;
+
+            const container = document.getElementById('ejercicios-lista');
+            container.innerHTML = '';
+
+            const lista = db[user][dia] || [];
+            if(lista.length === 0) {
+                container.innerHTML = `<p style="font-size: 12px; font-weight: bold; text-align: center; padding: 32px 16px; background: #f8fafc; border-radius: 16px; border: 2px dashed #cbd5e1; color: #94a3b8;">No hay ejercicios cargados hoy.</p>`;
+                return;
+            }
+
+            lista.forEach((ej, idxEj) => {
+                const div = document.createElement('div');
+                div.className = "ejercicio-item";
+                
+                let seriesHtml = '';
+                [0,1,2,3].forEach(sIdx => {
+                    const s = ej.series[sIdx] || {peso:'', ps:''};
+                    
+                    let avisoIntensidad = '';
+                    if (s.ps !== '') {
+                        const repsNum = parseInt(s.ps) || 0;
+                        if (repsNum <= 6) {
+                            avisoIntensidad = `<span class="tag-peso">🪨 Pesado</span>`;
+                        } else if (repsNum >= 12) {
+                            avisoIntensidad = `<span class="tag-reps">🪶 Liviano</span>`;
+                        }
+                    }
+
+                    seriesHtml += `
+                    <div class="grid-series">
+                        <span class="serie-num">#${sIdx+1}</span>
+                        <input type="number" placeholder="Peso (kg)" value="${s.peso || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'peso', this.value)" class="input-estilizado">
+                        <div class="input-flex-wrap">
+                            <input type="number" placeholder="Reps" value="${s.ps || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'ps', this.value)" class="input-estilizado">
+                            ${avisoIntensidad}
+                        </div>
+                    </div>`;
+                });
+
+                div.innerHTML = `
+                <div class="ej-header">
+                    <div>
+                        <span class="ej-titulo">${ej.nombre}</span>
+                        <br>
+                        <span class="ej-tag">${ej.musculo} • Zona: ${ej.parteMusculo}</span>
+                    </div>
+                    <button onclick="eliminarEj(${idxEj})" class="btn-eliminar active-scale">Eliminar</button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 4fr 4fr; gap: 8px; text-align: center; padding-top: 6px; border-top: 1px solid #e2e8f0; font-size: 9px; font-weight: bold; text-transform: uppercase; color: var(--text-muted);">
+                    <span></span><span>Peso (kg)</span><span>Reps</span>
+                </div>
+                ${seriesHtml}`;
+                container.appendChild(div);
+            });
+        }
+
+        function mostrarFormulario() {
+            document.getElementById('seccion-form-ejercicio').classList.remove('hidden');
+            document.getElementById('seccion-ejercicios').classList.add('hidden');
+            actualizarSelectEjercicios();
+            window.scrollTo({ top: document.getElementById('seccion-form-ejercicio').offsetTop, behavior: 'smooth' });
+        }
+
+        function ocultarFormulario() {
+            document.getElementById('seccion-form-ejercicio').classList.add('hidden');
+            document.getElementById('seccion-ejercicios').classList.remove('hidden');
+        }
+
+        function actualizarSelectEjercicios() {
+            const musculoSel = document.getElementById('form-musculo').value;
+            const selectEj = document.getElementById('form-ejercicio');
+            selectEj.innerHTML = '';
+
+            const listaEj = CATALOGO[musculoSel] || [];
+            listaEj.forEach(ej => {
+                const opt = document.createElement('option');
+                opt.value = ej;
+                opt.innerText = ej;
+                selectEj.appendChild(opt);
+            });
+
+            const optOtro = document.createElement('option');
+            optOtro.value = "Otro";
+            optOtro.innerText = "➕ Otro (Escribir nombre)";
+            selectEj.appendChild(optOtro);
+
+            verificarCustomEj();
+        }
+
+        function verificarCustomEj() {
+            const val = document.getElementById('form-ejercicio').value;
+            const inputCustom = document.getElementById('form-ejercicio-custom');
+            if(val === "Otro") {
+                inputCustom.classList.remove('hidden');
+            } else {
+                inputCustom.classList.add('hidden');
+            }
+        }
+
+        function guardarNuevoEjercicio() {
+            const musculo = document.getElementById('form-musculo').value;
+            const selectEj = document.getElementById('form-ejercicio').value;
+            let nombreFinal = selectEj;
+
+            if(selectEj === "Otro") {
+                nombreFinal = document.getElementById('form-ejercicio-custom').value.trim();
+                if(!nombreFinal) {
+                    alert("Escribe el nombre del ejercicio.");
+                    return;
+                }
+            }
+
+            const parte = document.getElementById('form-parte').value;
+
+            if(!db[user][dia]) db[user][dia] = [];
+            db[user][dia].push({
+                nombre: nombreFinal,
+                musculo: musculo,
+                parteMusculo: parte,
+                series: [{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''}]
+            });
+            localStorage.setItem('pl_db', JSON.stringify(db));
+            
+            location.reload();
+        }
+
+        function guardarSerie(idxEj, sIdx, campo, val) {
+            if(!db[user][dia][idxEj].series[sIdx]) db[user][dia][idxEj].series[sIdx] = {peso:'', ps:''};
+            db[user][dia][idxEj].series[sIdx][campo] = val;
+            localStorage.setItem('pl_db', JSON.stringify(db));
+            
+            if(campo === 'ps') {
+                renderEjercicios();
+            }
+            actualizarBarras();
+        }
+
+        function eliminarEj(idx) {
+            db[user][dia].splice(idx, 1);
+            localStorage.setItem('pl_db', JSON.stringify(db));
+            location.reload();
+        }
+
+        function finalizarDia() {
+            const hoy = new Date();
+            const fechaString = hoy.toISOString().split('T')[0];
+
+            const lista = db[user][dia] || [];
+            lista.forEach(ej => {
+                ej.series.forEach((s, idxS) => {
+                    if(s.peso || s.ps) {
+                        history.push({
+                            usuario: user, fecha: fechaString, dia: dia, 
+                            ejercicio: ej.nombre, musculo: ej.musculo, parte: ej.parteMusculo,
+                            serie: idxS+1, peso: s.peso, reps: s.ps
+                        });
+                    }
+                });
+            });
+            
+            localStorage.setItem('pl_history', JSON.stringify(history));
+            alert(`¡Entrenamiento guardado en el historial del día de hoy!`);
+            location.reload();
+        }
+
+        function actualizarBarras() {
+            const panel = document.getElementById('panel-barras');
+            panel.innerHTML = '';
+            
+            let hechos = {};
+            Object.keys(METAS).forEach(m => hechos[m] = 0);
+
+            if(user && db[user]) {
+                for(let d=1; d<=6; d++) {
+                    if(db[user][d]) {
+                        db[user][d].forEach(ej => {
+                            ej.series.forEach(s => {
+                                if(s.peso || s.ps) {
+                                    if(hechos[ej.musculo] !== undefined) hechos[ej.musculo]++;
+                                }
+                            });
+                        });
+                    }
+                }
+            }
+
+            Object.keys(METAS).forEach(m => {
+                const hechas = hechos[m] || 0;
+                const meta = METAS[m];
+                const porc = Math.min(100, (hechas / meta) * 100);
+                
+                panel.innerHTML += `
+                <div class="barra-item">
+                    <div class="barra-info">
+                        <span>${m}</span>
+                        <span>${hechas}/${meta} series</span>
+                    </div>
+                    <div class="barra-contenedor">
+                        <div class="barra-progreso" style="width: ${porc}%"></div>
+                    </div>
+                </div>`;
+            });
+        }
+
+        // ================= CALENDARIO =================
+        function renderizarCalendario() {
+            const fechaActual = new Date();
+            const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('mes-titulo').innerText = `${nombresMeses[fechaActual.getMonth()]} ${fechaActual.getFullYear()}`;
+
+            const contenedorCeldas = document.getElementById('celdas-calendario');
+            contenedorCeldas.innerHTML = '';
+
+            const año = fechaActual.getFullYear();
+            const mes = fechaActual.getMonth();
+            const indexPrimerDia = new Date(año, mes, 1).getDay();
+            const totalDiasMes = new Date(año, mes + 1, 0).getDate();
+
+            for (let i = 0; i < indexPrimerDia; i++) {
+                contenedorCeldas.appendChild(document.createElement('div'));
+            }
+
+            for (let diaCal = 1; diaCal <= totalDiasMes; diaCal++) {
+                const botonCelda = document.createElement('button');
+                botonCelda.type = "button";
+                
+                const diaPadded = String(diaCal).padStart(2, '0');
+                const mesPadded = String(mes + 1).padStart(2, '0');
+                const llaveFecha = `${año}-${mesPadded}-${diaPadded}`;
+
+                const registroExistente = history.some(log => log.fecha === llaveFecha && log.usuario === user);
+
+                botonCelda.className = `cal-dia ${registroExistente ? 'registrado' : ''} active-scale`;
+                botonCelda.innerText = diaCal;
+
+                botonCelda.onclick = function() { desplegarResumenDia(llaveFecha, diaCal); };
+                contenedorCeldas.appendChild(botonCelda);
+            }
+        }
+
+        function desplegarResumenDia(llaveFecha, nroDia) {
+            document.getElementById('titulo-detalle').innerText = `Entrenamientos del día ${nroDia}:`;
+            const listaDetalles = document.getElementById('lista-detalles-dia');
+            listaDetalles.innerHTML = '';
+
+            const filtrados = history.filter(log => log.fecha === llaveFecha && log.usuario === user);
+
+            if (filtrados.length === 0) {
+                listaDetalles.innerHTML = `<div style="padding: 12px; text-align: center; background: #f8fafc; border-radius: 12px; font-size: 12px; font-weight: 800; color: #94a3b8; border: 1px solid #f1f5f9;">Sin registros en esta fecha.</div>`;
+                return;
+            }
+
+            let agrupado = {};
+            filtrados.forEach(log => {
+                if (!agrupado[log.ejercicio]) {
+                    agrupado[log.ejercicio] = { musculo: log.musculo, parte: log.parte, series: [] };
+                }
+                agrupado[log.ejercicio].series.push(log);
+            });
+
+            Object.keys(agrupado).forEach(nombre => {
+                const item = agrupado[nombre];
+                const tarj = document.createElement('div');
+                tarj.className = "detalle-tarjeta";
+                
+                let lineasSeries = '';
+                item.series.forEach(s => {
+                    let tipoIntensidad = '';
+                    const reps = parseInt(s.reps) || 0;
+                    if(reps <= 6) tipoIntensidad = 'Pesado';
+                    else if(reps >= 12) tipoIntensidad = 'Liviano';
+                    else tipoIntensidad = 'Medio/Normal';
+
+                    lineasSeries += `<div class="detalle-serie-linea">Serie #${s.serie}: <b>${s.peso}kg</b> x <b>${s.reps} reps</b> (${tipoIntensidad})</div>`;
+                });
+
+                tarj.innerHTML = `
+                    <div class="detalle-header">
+                        <span class="detalle-ej-nombre">${nombre}</span>
+                        <span class="detalle-tag">${item.musculo} • ${item.parte}</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 2px;">${lineasSeries}</div>`;
+                listaDetalles.appendChild(tarj);
+            });
+        }
+
+        function limpiarTodo() {
+            if(confirm("¿Seguro querés borrar todos los datos?")) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
