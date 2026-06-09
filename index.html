@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PowerLog - Pro</title>
+    <title>PowerLog - Simple</title>
     <style>
         :root {
-            --bg-color: #f1f5f9;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
             --text-main: #0f172a;
-            --text-muted: #94a3b8;
+            --text-muted: #64748b;
             --primary: #4f46e5;
             --primary-hover: #4338ca;
-            --success: #059669;
             --danger: #e11d48;
-            --danger-bg: #fff1f2;
             --border: #e2e8f0;
         }
 
@@ -22,12 +20,12 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
-            color: #334155;
+            color: var(--text-main);
             padding: 16px;
             min-height: 100vh;
             max-width: 420px;
@@ -37,600 +35,263 @@
         .container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
-        }
-
-        .active-scale:active { 
-            transform: scale(0.97); 
-        }
-
-        header {
+            gap: 16px;
             background: var(--card-bg);
             padding: 20px;
             border-radius: 24px;
             border: 1px solid var(--border);
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
         }
 
         h1 {
+            font-size: 22px;
             font-weight: 900;
-            font-size: 24px;
+            text-align: center;
             color: var(--text-main);
-            line-height: 1;
+            margin-bottom: 4px;
         }
 
-        .sub-header {
-            font-size: 9px;
-            font-weight: 800;
+        .sub {
+            font-size: 10px;
+            text-transform: uppercase;
             letter-spacing: 1px;
+            text-align: center;
+            color: var(--text-muted);
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 900;
             text-transform: uppercase;
             color: var(--text-muted);
-            margin-top: 4px;
         }
 
-        select {
-            background-color: #f8fafc;
-            border: 2px solid var(--border);
-            font-weight: 900;
+        input {
+            width: 100%;
             padding: 12px;
+            border: 2px solid var(--border);
             border-radius: 16px;
             font-size: 13px;
+            font-weight: 800;
             outline: none;
-            cursor: pointer;
             transition: border-color 0.2s;
+            background: #f8fafc;
         }
 
-        select:focus {
+        input:focus {
             border-color: var(--primary);
+            background: #ffffff;
         }
 
-        .card-login {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .emoji-icon {
-            font-size: 36px;
-        }
-
-        .login-title {
-            font-weight: 900;
-            color: var(--text-main);
-            font-size: 16px;
-        }
-
-        .login-subtitle {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-top: 6px;
-        }
-
-        .hidden { display: none !important; }
-
-        .section-box {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .section-title {
-            font-weight: 900;
-            font-size: 13px;
-            color: #334155;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .grid-dias {
+        .row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
         }
 
-        .btn-dia {
-            padding: 16px 10px;
+        button {
+            border: none;
             border-radius: 16px;
             font-weight: 900;
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            border: 1px solid var(--border);
-            background: #ffffff;
-            color: #1e293b;
             cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
+            padding: 14px;
+            font-size: 13px;
+            transition: transform 0.1s, background-color 0.2s;
         }
 
-        .btn-dia.activo {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary-hover);
-            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
-        }
-
-        .btn-dia .dia-cant {
-            color: var(--text-muted);
-            font-size: 10px;
-            font-weight: 700;
-        }
-
-        .btn-dia.activo .dia-cant {
-            color: #c7d2fe;
-        }
-
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 12px;
+        button:active {
+            transform: scale(0.97);
         }
 
         .btn-add {
             background: var(--primary);
             color: #ffffff;
-            font-size: 11px;
-            font-weight: 900;
-            padding: 10px 16px;
-            border-radius: 16px;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .ejercicios-lista {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .ejercicio-item {
-            background: #f8fafc;
-            padding: 16px;
-            border-radius: 16px;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .ej-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .ej-titulo {
-            font-weight: 800;
-            font-size: 14px;
-            color: var(--text-main);
-            line-height: 1.2;
-        }
-
-        .ej-tag {
-            font-size: 9px;
-            background: #e2e8f0;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             margin-top: 4px;
-            display: inline-block;
         }
 
-        .btn-eliminar {
-            background: var(--danger-bg);
-            color: var(--danger);
-            font-weight: 900;
-            font-size: 11px;
-            padding: 8px 12px;
-            border-radius: 12px;
-            border: 1px solid #fecdd3;
-            cursor: pointer;
+        .btn-add:hover {
+            background: var(--primary-hover);
         }
 
-        .grid-series {
-            display: grid;
-            grid-template-columns: 1fr 4fr 4fr;
-            gap: 8px;
-            align-items: center;
-            font-size: 12px;
-            margin-top: 6px;
-        }
-
-        .serie-num {
-            font-weight: 900;
-            color: var(--text-muted);
-            padding-left: 4px;
-        }
-
-        .input-estilizado {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            padding: 10px;
-            border-radius: 12px;
-            text-align: center;
-            font-weight: 800;
-            font-size: 12px;
-            outline: none;
-            width: 100%;
-        }
-
-        .input-estilizado:focus {
-            border-color: var(--primary);
-        }
-
-        .input-flex-wrap {
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-
-        .tag-peso {
-            font-size: 8px;
-            font-weight: 900;
-            background: #fecdd3;
-            color: #9f1239;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            margin-left: 6px;
-        }
-
-        .tag-reps {
-            font-size: 8px;
-            font-weight: 900;
-            background: #a7f3d0;
-            color: #065f46;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            margin-left: 6px;
-        }
-
-        .btn-guardar-dia {
-            background: var(--success);
-            color: #ffffff;
+        .lista-titulo {
             font-size: 13px;
             font-weight: 900;
-            padding: 16px;
-            border-radius: 16px;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.1);
+            text-transform: uppercase;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 8px;
             margin-top: 8px;
         }
 
-        .form-ej-card {
-            background: #ffffff;
-            border: 2px solid #c7d2fe;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        .ej-lista {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 10px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 2px;
         }
 
-        .form-header {
+        .ej-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #f1f5f9;
-            padding-bottom: 8px;
-        }
-
-        .form-title {
-            font-weight: 900;
-            font-size: 13px;
-            color: #312e81;
-        }
-
-        .form-cerrar {
-            color: var(--text-muted);
-            font-weight: 800;
-            font-size: 11px;
             background: #f1f5f9;
-            padding: 6px 10px;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .form-control {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            font-size: 12px;
-        }
-
-        .form-control label {
-            font-weight: 900;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .barra-item {
-            font-size: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .barra-info {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 900;
-            color: #334155;
-        }
-
-        .barra-contenedor {
-            width: 100%;
-            background: #f1f5f9;
-            height: 10px;
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-
-        .barra-progreso {
-            background: var(--primary);
-            height: 100%;
-            transition: width 0.3s ease;
-        }
-
-        .mes-titulo {
-            text-align: center;
-            font-weight: 900;
-            font-size: 13px;
-            color: var(--primary);
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            padding: 6px 0;
-            background: #eef2ff;
-            border-radius: 12px;
-        }
-
-        .cal-semana {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            text-align: center;
-            font-size: 10px;
-            font-weight: 900;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            padding: 8px 0 4px 0;
-        }
-
-        .cal-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
-        }
-
-        .cal-dia {
-            width: 100%;
-            aspect-ratio: 1 / 1;
-            font-size: 12px;
-            font-weight: 900;
+            padding: 12px 16px;
             border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             border: 1px solid var(--border);
-            cursor: pointer;
-            transition: all 0.2s;
-            background: #f8fafc;
-            color: #64748b;
         }
 
-        .cal-dia.registrado {
-            background: var(--primary);
-            color: #ffffff;
-            border-color: var(--primary-hover);
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        }
-
-        .detalle-tarjeta {
-            background: #f8fafc;
-            border: 1px solid rgba(226, 232, 240, 0.8);
-            border-radius: 16px;
-            padding: 12px;
+        .ej-info {
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 2px;
         }
 
-        .detalle-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            padding-bottom: 6px;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
-
-        .detalle-ej-nombre {
+        .ej-nombre {
+            font-size: 13px;
             font-weight: 900;
-            font-size: 12px;
-            color: #1e293b;
         }
 
-        .detalle-tag {
-            font-size: 8px;
-            background: #e2e8f0;
-            padding: 2px 6px;
-            border-radius: 6px;
-            font-weight: 900;
-            text-transform: uppercase;
-        }
-
-        .detalle-serie-linea {
+        .ej-detalles {
             font-size: 11px;
-            color: #475569;
-            padding-left: 4px;
-            font-weight: 500;
+            font-weight: 700;
+            color: var(--text-muted);
         }
 
-        .detalle-serie-linea b {
-            color: #0f172a;
+        .btn-eliminar {
+            background: #fee2e2;
+            color: var(--danger);
+            padding: 8px 12px;
+            font-size: 10px;
+            border-radius: 12px;
+            border: 1px solid #fecdd3;
         }
 
-        .btn-reset {
-            width: 100%;
-            background: var(--danger-bg);
-            border: 1px solid #ffe4e6;
-            color: #be123c;
+        .btn-limpiar {
+            background: #fecdd3;
+            color: #9f1239;
             font-size: 11px;
-            font-weight: 800;
-            padding: 16px;
-            border-radius: 16px;
-            cursor: pointer;
-            margin-top: 20px;
+            margin-top: 4px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header>
-            <div>
-                <h1>💪 PowerLog</h1>
-                <p class="sub-header">Registro Pro</p>
-            </div>
-            <select id="sel-user" onchange="seleccionarUsuario()">
-                <option value="">👤 Cambiar...</option>
-                <option value="Nico V">Nico V</option>
-                <option value="Nico">Nico</option>
-                <option value="Samuel">Samuel</option>
-            </select>
-        </header>
+        <h1>💪 PowerLog</h1>
+        <p class="sub">Registro Directo</p>
 
-        <div id="card-login" class="card-login">
-            <span class="emoji-icon">👋</span>
-            <div>
-                <h2 class="login-title">¡Hola! Ingresa tu usuario</h2>
-                <p class="login-subtitle">Selecciona tu perfil en el menú de abajo para continuar</p>
+        <div class="form-group">
+            <label>Nombre del Ejercicio</label>
+            <input type="text" id="nombre" placeholder="Ej: Press de banca, Dominadas...">
+        </div>
+        
+        <div class="row">
+            <div class="form-group">
+                <label>Peso (kg)</label>
+                <input type="number" id="peso" placeholder="0">
             </div>
-            <select id="sel-login" onchange="iniciarConUsuario(this.value)">
-                <option value="">👉 Toca para elegir tu perfil 👈</option>
-                <option value="Nico V">Nico V</option>
-                <option value="Nico">Nico</option>
-                <option value="Samuel">Samuel</option>
-            </select>
+            <div class="form-group">
+                <label>Repeticiones</label>
+                <input type="number" id="reps" placeholder="0">
+            </div>
         </div>
 
-        <div id="app-content" class="container hidden" style="gap: 20px;">
-            <section class="section-box">
-                <h2 class="section-title">📅 Mis Rutinas (Selecciona un día)</h2>
-                <div class="grid-dias" id="dias-lista"></div>
-            </section>
+        <button onclick="agregarEjercicio()" class="btn-add">➕ Guardar Ejercicio</button>
 
-            <section id="seccion-ejercicios" class="section-box hidden">
-                <div class="flex-between">
-                    <div>
-                        <h3 id="titulo-dia-ejercicios" style="font-weight: 900; font-size: 15px; color: var(--text-main);">Ejercicios</h3>
-                        <p style="font-size: 9px; font-weight: 700; color: var(--text-muted); margin-top: 2px;">Tus levantamientos del día</p>
-                    </div>
-                    <button onclick="mostrarFormulario()" class="btn-add">➕ Añadir</button>
-                </div>
-                
-                <div id="ejercicios-lista" class="ejercicios-lista"></div>
-                
-                <button onclick="finalizarDia()" class="btn-guardar-dia">✅ Finalizar y guardar Día</button>
-            </section>
+        <div class="lista-titulo">📋 Mis ejercicios guardados hoy</div>
+        <div id="lista" class="ej-lista"></div>
 
-            <div id="seccion-form-ejercicio" class="form-ej-card hidden">
-                <div class="form-header">
-                    <h3 class="form-title">➕ Nuevo Ejercicio</h3>
-                    <button onclick="ocultarFormulario()" class="form-cerrar">✕</button>
-                </div>
-                <div style="display: flex; flex-direction: column; gap: 14px; font-size: 12px;">
-                    <div class="form-control">
-                        <label>1. Grupo Muscular</label>
-                        <select id="form-musculo" onchange="actualizarSelectEjercicios()" class="input-estilizado">
-                            <option value="Pecho">Pecho</option>
-                            <option value="Espalda">Espalda</option>
-                            <option value="Hombros">Hombros</option>
-                            <option value="Bíceps">Bíceps</option>
-                            <option value="Tríceps">Tríceps</option>
-                            <option value="Cuádriceps">Cuádriceps</option>
-                            <option value="Femorales">Femorales</option>
-                            <option value="Gemelos">Gemelos</option>
-                        </select>
-                    </div>
-                    <div class="form-control">
-                        <label>2. Ejercicio</label>
-                        <select id="form-ejercicio" onchange="verificarCustomEj()" class="input-estilizado"></select>
-                        <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="input-estilizado hidden" style="margin-top: 6px;">
-                    </div>
-                    <div class="form-control">
-                        <label>3. Parte del músculo</label>
-                        <select id="form-parte" class="input-estilizado">
-                            <option value="Medio">Medio / General</option>
-                            <option value="Superior">Superior / Inclinado</option>
-                            <option value="Inferior">Inferior / Declinado</option>
-                            <option value="Interno">Interno</option>
-                            <option value="Externo">Externo</option>
-                            <option value="Otro">Otra zona</option>
-                        </select>
-                    </div>
-                    <button onclick="guardarNuevoEjercicio()" class="btn-guardar-ej" style="background: var(--primary); color: white; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">Guardar Ejercicio</button>
-                </div>
-            </div>
-
-            <section class="section-box">
-                <h4 style="font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted);">📊 Volumen Semanal (Series acumuladas)</h4>
-                <div id="panel-barras" style="display: flex; flex-direction: column; gap: 10px;"></div>
-            </section>
-
-            <section class="section-box">
-                <h3 class="section-title">📅 Registro por Calendario</h3>
-                <div class="mes-titulo" id="mes-titulo">Mes</div>
-                <div class="cal-semana">
-                    <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
-                </div>
-                <div class="cal-grid" id="celdas-calendario"></div>
-                
-                <div style="padding-top: 12px; border-top: 1px solid #f1f5f9;">
-                    <h4 style="font-size: 9px; font-weight: 900; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px;" id="titulo-detalle">Toca un día marcado en azul</h4>
-                    <div id="lista-detalles-dia" style="display: flex; flex-direction: column; gap: 8px; max-height: 192px; overflow-y: auto; padding-right: 4px;"></div>
-                </div>
-            </section>
-        </div>
-
-        <button onclick="limpiarTodo()" class="btn-reset active-scale">⚠️ Borrar datos y reiniciar app</button>
+        <button onclick="vaciarListaRutinaria()" class="btn-limpiar">🗑️ Borrar lista completa</button>
     </div>
 
     <script>
-        const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
-        
-        const CATALOGO = {
-            "Pecho": ["Press de Banca Plano", "Press Inclinado con Mancuernas", "Aperturas en Polea", "Fondos en Paralelas", "Pecho Declinado"],
-            "Espalda": ["Dominadas"
+        let ejerciciosGuardados = [];
+
+        // Carga automática al iniciar
+        try {
+            ejerciciosGuardados = JSON.parse(localStorage.getItem('pl_simples')) || [];
+        } catch(e) {
+            ejerciciosGuardados = [];
+        }
+
+        refrescarLista();
+
+        function agregarEjercicio() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const peso = document.getElementById('peso').value.trim();
+            const reps = document.getElementById('reps').value.trim();
+
+            if (!nombre) {
+                alert("Por favor, ingresa el nombre del ejercicio.");
+                return;
+            }
+
+            const nuevo = {
+                id: Date.now(),
+                nombre: nombre,
+                peso: peso || "0",
+                reps: reps || "0"
+            };
+
+            ejerciciosGuardados.push(nuevo);
+            guardarYRefrescar();
+            
+            // Limpiar campos para el siguiente
+            document.getElementById('nombre').value = '';
+            document.getElementById('peso').value = '';
+            document.getElementById('reps').value = '';
+            document.getElementById('nombre').focus();
+        }
+
+        function eliminarEjercicio(id) {
+            ejerciciosGuardados = ejerciciosGuardados.filter(item => item.id !== id);
+            guardarYRefrescar();
+        }
+
+        function guardarYRefrescar() {
+            localStorage.setItem('pl_simples', JSON.stringify(ejerciciosGuardados));
+            refrescarLista();
+        }
+
+        function refrescarLista() {
+            const contenedor = document.getElementById('lista');
+            contenedor.innerHTML = '';
+
+            if (ejerciciosGuardados.length === 0) {
+                contenedor.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 16px 0; font-weight: bold;">Sin ejercicios guardados aún.</div>`;
+                return;
+            }
+
+            ejerciciosGuardados.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "ej-item";
+                div.innerHTML = `
+                    <div class="ej-info">
+                        <span class="ej-nombre">${item.nombre}</span>
+                        <span class="ej-detalles">Peso: <b>${item.peso} kg</b> | Reps: <b>${item.reps}</b></span>
+                    </div>
+                    <button onclick="eliminarEjercicio(${item.id})" class="btn-eliminar">✕</button>
+                `;
+                contenedor.appendChild(div);
+            });
+        }
+
+        function vaciarListaRutinaria() {
+            if(confirm("¿Seguro que querés vaciar la lista de hoy?")) {
+                ejerciciosGuardados = [];
+                guardarYRefrescar();
+            }
+        }
+    </script>
+</body>
+</html>
