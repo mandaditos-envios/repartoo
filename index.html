@@ -30,9 +30,9 @@
                 </div>
             </div>
 
-            <button type="button" onclick="ingresarNativo()" class="w-full bg-blue-600 text-white font-black py-6 px-6 rounded-2xl text-xl shadow-lg text-center block mt-4 active:bg-blue-800 transition-all">
+            <a href="perfil.html" onclick="guardarUsuario()" class="w-full bg-blue-600 text-white font-black py-6 px-6 rounded-2xl text-xl shadow-lg text-center block mt-4 active:bg-blue-800 transition-all">
                 Ingresar a mi Perfil
-            </button>
+            </a>
         </div>
     </div>
 
@@ -45,18 +45,17 @@
             return `${copiaFecha.getFullYear()}-W${Math.ceil((((copiaFecha - inicioAño) / 86400000) + 1) / 7)}`;
         }
 
-        function ingresarNativo() {
+        function guardarUsuario() {
             const usuario = document.getElementById('selector-usuario-principal').value;
             localStorage.setItem('powerlog_usuario_actual', usuario);
             
-            let db = JSON.parse(localStorage.getItem('powerlog_db_v9')) || {};
+            let db = JSON.parse(localStorage.getItem('powerlog_db_v11')) || {};
             if (!db[usuario]) {
                 db[usuario] = {
                     rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
                     checksSemanales: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false },
                     identificadorSemana: calcularSemanaAño()
                 };
-                localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
             }
 
             const semanaActual = calcularSemanaAño();
@@ -65,11 +64,8 @@
             if (db[usuario].identificadorSemana !== semanaActual || completóTodo) {
                 db[usuario].checksSemanales = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
                 db[usuario].identificadorSemana = semanaActual;
-                localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
             }
-
-            // CAMBIO AQUÍ: Ruta relativa explícita para evitar errores en GitHub Pages
-            window.location.href = './perfil.html';
+            localStorage.setItem('powerlog_db_v11', JSON.stringify(db));
         }
         document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
     </script>
