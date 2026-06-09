@@ -20,7 +20,7 @@
                 }
             }
         }
-    </style>
+    </script>
     <style>
         .active-scale:active { transform: scale(0.97); }
     </style>
@@ -33,95 +33,105 @@
             <p class="text-[10px] font-extrabold tracking-widest uppercase text-slate-400 mt-0.5">Registro Pro</p>
         </div>
         <select id="sel-user" onchange="seleccionarUsuario()" class="bg-slate-50 border-2 border-slate-200 font-black p-3 rounded-2xl text-sm focus:outline-none focus:border-indigo-500 transition-all cursor-pointer">
-            <option value="">👤 Seleccionar perfil...</option>
+            <option value="">👤 Cambiar...</option>
             <option value="Nico V">Nico V</option>
             <option value="Nico">Nico</option>
             <option value="Samuel">Samuel</option>
         </select>
     </header>
 
-    <div id="mensaje-inicio" class="bg-indigo-50 border border-indigo-100 p-6 rounded-3xl text-center space-y-2">
-        <span class="text-3xl">👋</span>
-        <h2 class="font-black text-indigo-950 text-base">¡Hola! Seleccioná tu perfil arriba</h2>
-        <p class="text-xs text-indigo-600/80 font-bold">Elige tu nombre en el menú superior para ver tus rutinas y empezar a registrar.</p>
+    <div id="card-login" class="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm space-y-4 text-center">
+        <span class="text-4xl">👋</span>
+        <div>
+            <h2 class="font-black text-slate-900 text-base">¡Hola! Ingresa tu usuario</h2>
+            <p class="text-[11px] font-bold text-slate-400 mt-1">Selecciona tu perfil en el menú de arriba para continuar</p>
+        </div>
+        <select id="sel-login" onchange="iniciarConUsuario(this.value)" class="w-full bg-slate-50 border-2 border-slate-200 font-black p-4 rounded-2xl text-sm focus:outline-none focus:border-indigo-500 transition-all cursor-pointer text-center">
+            <option value="">👉 Toca para elegir tu perfil 👈</option>
+            <option value="Nico V">Nico V</option>
+            <option value="Nico">Nico</option>
+            <option value="Samuel">Samuel</option>
+        </select>
     </div>
 
-    <section id="seccion-dias" class="space-y-3 hidden">
-        <h2 class="font-black text-sm text-slate-700 uppercase tracking-wider">📅 Mis Rutinas (Selecciona un día)</h2>
-        <div class="grid grid-cols-3 gap-2.5" id="dias-lista"></div>
-    </section>
+    <div id="app-content" class="space-y-5 hidden">
+        <section id="seccion-dias" class="space-y-3">
+            <h2 class="font-black text-sm text-slate-700 uppercase tracking-wider">📅 Mis Rutinas (Selecciona un día)</h2>
+            <div class="grid grid-cols-3 gap-2.5" id="dias-lista"></div>
+        </section>
 
-    <section id="seccion-ejercicios" class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-4 hidden">
-        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-            <div>
-                <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-900">Ejercicios</h3>
-                <p class="text-[10px] font-bold text-slate-400">Tus levantamientos del día</p>
+        <section id="seccion-ejercicios" class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-4 hidden">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <div>
+                    <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-900">Ejercicios</h3>
+                    <p class="text-[10px] font-bold text-slate-400">Tus levantamientos del día</p>
+                </div>
+                <button onclick="mostrarFormulario()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black px-4 py-2.5 rounded-2xl shadow-sm active-scale transition-all flex items-center gap-1.5">➕ Añadir</button>
             </div>
-            <button onclick="mostrarFormulario()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black px-4 py-2.5 rounded-2xl shadow-sm active-scale transition-all flex items-center gap-1.5">➕ Añadir</button>
-        </div>
-        
-        <div id="ejercicios-lista" class="space-y-4"></div>
-        
-        <button onclick="finalizarDia()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black py-3.5 rounded-2xl shadow-md shadow-emerald-600/10 active-scale transition-all">✅ Finalizar y guardar Día</button>
-    </section>
+            
+            <div id="ejercicios-lista" class="space-y-4"></div>
+            
+            <button onclick="finalizarDia()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black py-3.5 rounded-2xl shadow-md shadow-emerald-600/10 active-scale transition-all">✅ Finalizar y guardar Día</button>
+        </section>
 
-    <div id="seccion-form-ejercicio" class="bg-white border-2 border-indigo-100 rounded-3xl p-5 shadow-md space-y-4 hidden">
-        <div class="flex justify-between items-center border-b pb-2">
-            <h3 class="font-black text-sm text-indigo-950">➕ Nuevo Ejercicio</h3>
-            <button onclick="ocultarFormulario()" class="text-slate-400 font-bold text-xs bg-slate-100 px-2.5 py-1 rounded-xl">✕</button>
+        <div id="seccion-form-ejercicio" class="bg-white border-2 border-indigo-100 rounded-3xl p-5 shadow-md space-y-4 hidden">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h3 class="font-black text-sm text-indigo-950">➕ Nuevo Ejercicio</h3>
+                <button onclick="ocultarFormulario()" class="text-slate-400 font-bold text-xs bg-slate-100 px-2.5 py-1 rounded-xl">✕</button>
+            </div>
+            <div class="space-y-3.5 text-xs">
+                <div>
+                    <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">1. Grupo Muscular</label>
+                    <select id="form-musculo" onchange="actualizarSelectEjercicios()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all">
+                        <option value="Pecho">Pecho</option>
+                        <option value="Espalda">Espalda</option>
+                        <option value="Hombros">Hombros</option>
+                        <option value="Bíceps">Bíceps</option>
+                        <option value="Tríceps">Tríceps</option>
+                        <option value="Cuádriceps">Cuádriceps</option>
+                        <option value="Femorales">Femorales</option>
+                        <option value="Gemelos">Gemelos</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">2. Ejercicio</label>
+                    <select id="form-ejercicio" onchange="verificarCustomEj()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all"></select>
+                    <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all mt-1.5 hidden">
+                </div>
+                <div>
+                    <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">3. Parte del músculo</label>
+                    <select id="form-parte" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all">
+                        <option value="Medio">Medio / General</option>
+                        <option value="Superior">Superior / Inclinado</option>
+                        <option value="Inferior">Inferior / Declinado</option>
+                        <option value="Interno">Interno</option>
+                        <option value="Externo">Externo</option>
+                        <option value="Otro">Otra zona</option>
+                    </select>
+                </div>
+                <button onclick="guardarNuevoEjercicio()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl shadow-sm active-scale transition-all mt-2">Guardar Ejercicio</button>
+            </div>
         </div>
-        <div class="space-y-3.5 text-xs">
-            <div>
-                <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">1. Grupo Muscular</label>
-                <select id="form-musculo" onchange="actualizarSelectEjercicios()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="Pecho">Pecho</option>
-                    <option value="Espalda">Espalda</option>
-                    <option value="Hombros">Hombros</option>
-                    <option value="Bíceps">Bíceps</option>
-                    <option value="Tríceps">Tríceps</option>
-                    <option value="Cuádriceps">Cuádriceps</option>
-                    <option value="Femorales">Femorales</option>
-                    <option value="Gemelos">Gemelos</option>
-                </select>
+
+        <section class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
+            <h4 class="text-xs font-black uppercase tracking-wider text-slate-400">📊 Volumen Semanal (Series acumuladas)</h4>
+            <div id="panel-barras" class="space-y-2.5"></div>
+        </section>
+
+        <section class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
+            <h3 class="font-black text-sm text-slate-700 uppercase tracking-wider">📅 Registro por Calendario</h3>
+            <div class="text-center font-black text-sm text-indigo-600 tracking-wide uppercase py-1 bg-indigo-50 rounded-xl" id="mes-titulo">Mes</div>
+            <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase pt-2">
+                <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
             </div>
-            <div>
-                <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">2. Ejercicio</label>
-                <select id="form-ejercicio" onchange="verificarCustomEj()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all"></select>
-                <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all mt-1.5 hidden">
+            <div class="grid grid-cols-7 gap-1.5" id="celdas-calendario"></div>
+            
+            <div class="pt-3 border-t border-slate-100">
+                <h4 class="text-[10px] font-black text-slate-400 uppercase mb-2" id="titulo-detalle">Toca un día marcado en azul</h4>
+                <div id="lista-detalles-dia" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
             </div>
-            <div>
-                <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">3. Parte del músculo</label>
-                <select id="form-parte" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all">
-                    <option value="Medio">Medio / General</option>
-                    <option value="Superior">Superior / Inclinado</option>
-                    <option value="Inferior">Inferior / Declinado</option>
-                    <option value="Interno">Interno</option>
-                    <option value="Externo">Externo</option>
-                    <option value="Otro">Otra zona</option>
-                </select>
-            </div>
-            <button onclick="guardarNuevoEjercicio()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl shadow-sm active-scale transition-all mt-2">Guardar Ejercicio</button>
-        </div>
+        </section>
     </div>
-
-    <section class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
-        <h4 class="text-xs font-black uppercase tracking-wider text-slate-400">📊 Volumen Semanal (Series acumuladas)</h4>
-        <div id="panel-barras" class="space-y-2.5"></div>
-    </section>
-
-    <section class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
-        <h3 class="font-black text-sm text-slate-700 uppercase tracking-wider">📅 Registro por Calendario</h3>
-        <div class="text-center font-black text-sm text-indigo-600 tracking-wide uppercase py-1 bg-indigo-50 rounded-xl" id="mes-titulo">Mes</div>
-        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase pt-2">
-            <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
-        </div>
-        <div class="grid grid-cols-7 gap-1.5" id="celdas-calendario"></div>
-        
-        <div class="pt-3 border-t border-slate-100">
-            <h4 class="text-[10px] font-black text-slate-400 uppercase mb-2" id="titulo-detalle">Toca un día marcado en azul</h4>
-            <div id="lista-detalles-dia" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
-        </div>
-    </section>
 
     <button onclick="limpiarTodo()" class="w-full bg-rose-50 border border-rose-100 text-rose-600 text-xs font-extrabold py-3.5 rounded-2xl active-scale transition-all">⚠️ Borrar datos y reiniciar app</button>
 
@@ -155,20 +165,32 @@
             history = [];
         }
 
-        // SINCRONIZACIÓN INICIAL DIRECTA
         if (user && !db[user]) {
             db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
             localStorage.setItem('pl_db', JSON.stringify(db));
         }
 
-        // Asignamos el valor al select de manera síncrona y luego comprobamos vistas
         document.getElementById('sel-user').value = user;
         comprobarVistas();
 
+        function iniciarConUsuario(nombre) {
+            if(!nombre) return;
+            user = nombre;
+            localStorage.setItem('pl_user', user);
+            
+            if(!db[user]) {
+                db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+                localStorage.setItem('pl_db', JSON.stringify(db));
+            }
+            
+            document.getElementById('sel-user').value = user;
+            comprobarVistas();
+        }
+
         function comprobarVistas() {
             if(user && db[user]) {
-                document.getElementById('mensaje-inicio').classList.add('hidden');
-                document.getElementById('seccion-dias').classList.remove('hidden');
+                document.getElementById('card-login').classList.add('hidden');
+                document.getElementById('app-content').classList.remove('hidden');
                 renderDias();
                 
                 if(dia && db[user][dia]) {
@@ -180,24 +202,24 @@
                     document.getElementById('seccion-form-ejercicio').classList.add('hidden');
                 }
             } else {
-                document.getElementById('mensaje-inicio').classList.remove('hidden');
-                document.getElementById('seccion-dias').classList.add('hidden');
-                document.getElementById('seccion-ejercicios').classList.add('hidden');
-                document.getElementById('seccion-form-ejercicio').classList.add('hidden');
+                document.getElementById('card-login').classList.remove('hidden');
+                document.getElementById('app-content').classList.add('hidden');
+                document.getElementById('sel-login').value = "";
             }
             actualizarBarras();
             renderizarCalendario();
         }
 
         function seleccionarUsuario() {
-            user = document.getElementById('sel-user').value;
+            const nuevoUser = document.getElementById('sel-user').value;
             
-            if (!user) {
+            if (!nuevoUser) {
                 localStorage.clear();
                 location.reload();
                 return;
             }
 
+            user = nuevoUser;
             localStorage.setItem('pl_user', user);
             dia = null;
             localStorage.removeItem('pl_dia');
@@ -347,32 +369,4 @@
             const parte = document.getElementById('form-parte').value;
 
             if(!db[user][dia]) db[user][dia] = [];
-            db[user][dia].push({
-                nombre: nombreFinal,
-                musculo: musculo,
-                parteMusculo: parte,
-                series: [{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''}]
-            });
-            localStorage.setItem('pl_db', JSON.stringify(db));
-            
-            document.getElementById('seccion-form-ejercicio').classList.add('hidden');
-            document.getElementById('form-ejercicio-custom').value = '';
-
-            document.getElementById('seccion-ejercicios').classList.remove('hidden');
-            renderEjercicios();
-            renderDias();
-            actualizarBarras();
-        }
-
-        function guardarSerie(idxEj, sIdx, campo, val) {
-            if(!db[user][dia][idxEj].series[sIdx]) db[user][dia][idxEj].series[sIdx] = {peso:'', ps:''};
-            db[user][dia][idxEj].series[sIdx][campo] = val;
-            localStorage.setItem('pl_db', JSON.stringify(db));
-            
-            if(campo === 'ps') {
-                renderEjercicios();
-            }
-            actualizarBarras();
-        }
-
-   
+     
