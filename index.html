@@ -26,12 +26,48 @@
         <div class="grid grid-cols-3 gap-2" id="dias-lista"></div>
     </div>
 
+    <div id="seccion-form-ejercicio" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3 hidden">
+        <h3 class="font-black text-sm text-slate-800 border-b pb-1">➕ Añadir Ejercicio</h3>
+        <div class="space-y-2.5 text-xs">
+            <div>
+                <label class="font-black text-slate-400 uppercase block mb-0.5">1. Grupo Muscular</label>
+                <select id="form-musculo" onchange="actualizarSelectEjercicios()" class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none">
+                    <option value="Pecho">Pecho</option>
+                    <option value="Espalda">Espalda</option>
+                    <option value="Hombros">Hombros</option>
+                    <option value="Bíceps">Bíceps</option>
+                    <option value="Tríceps">Tríceps</option>
+                    <option value="Cuádriceps">Cuádriceps</option>
+                    <option value="Femorales">Femorales</option>
+                    <option value="Gemelos">Gemelos</option>
+                </select>
+            </div>
+            <div>
+                <label class="font-black text-slate-400 uppercase block mb-0.5">2. Ejercicio</label>
+                <select id="form-ejercicio" onchange="verificarCustomEj()" class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none"></select>
+                <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none mt-1 hidden">
+            </div>
+            <div>
+                <label class="font-black text-slate-400 uppercase block mb-0.5">3. Parte del músculo</label>
+                <select id="form-parte" class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none">
+                    <option value="Medio">Medio / General</option>
+                    <option value="Superior">Superior / Inclinado</option>
+                    <option value="Inferior">Inferior / Declinado</option>
+                    <option value="Interno">Interno</option>
+                    <option value="Externo">Externo</option>
+                    <option value="Otro">Otra zona</option>
+                </select>
+            </div>
+            <button onclick="guardarNuevoEjercicio()" class="w-full bg-emerald-600 text-white font-black py-2.5 rounded-xl shadow-sm active:scale-98 mt-2">Guardar Ejercicio</button>
+        </div>
+    </div>
+
     <div id="seccion-ejercicios" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-4 hidden">
         <div class="flex justify-between items-center border-b pb-2">
             <div>
                 <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-800">Ejercicios</h3>
             </div>
-            <button onclick="agregarEjercicio()" class="bg-emerald-600 text-white text-xs font-black px-3 py-2 rounded-xl shadow-sm active:scale-95">➕ Agregar</button>
+            <button onclick="mostrarFormulario()" class="bg-emerald-600 text-white text-xs font-black px-3 py-2 rounded-xl shadow-sm active:scale-95">➕ Nuevo</button>
         </div>
         
         <div id="ejercicios-lista" class="space-y-4"></div>
@@ -63,6 +99,17 @@
     <script>
         const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
         
+        const CATALOGO = {
+            "Pecho": ["Press de Banca Plano", "Press Inclinado con Mancuernas", "Aperturas en Polea", "Fondos en Paralelas", "Pecho Declinado"],
+            "Espalda": ["Dominadas", "Jalón al Pecho", "Remo con Barra", "Remo con Mancuerna", "Remo en Polea Baja", "Pullover"],
+            "Hombros": ["Press Militar", "Elevaciones Laterales", "Vuelos Posteriores", "Vuelos Frontales", "Encogimientos Trapecio"],
+            "Bíceps": ["Curl con Barra", "Curl con Mancuernas", "Curl Martillo", "Curl Scott", "Curl en Polea"],
+            "Tríceps": ["Extensión en Polea", "Press Francés", "Copa con Mancuerna", "Patada de Tríceps", "Fondos en Banco"],
+            "Cuádriceps": ["Sentadilla Libre", "Prensa 45°", "Extensión de Cuádriceps", "Zancadas", "Sentadilla Búlgara"],
+            "Femorales": ["Curl Femoral", "Peso Muerto Rumano", "Buenos Días", "Máquina Femoral Parado"],
+            "Gemelos": ["Elevación de Talones Parado", "Elevación de Talones Sentado", "Gemelos en Prensa"]
+        };
+        
         let user = localStorage.getItem('pl_user') || "";
         let dia = parseInt(localStorage.getItem('pl_dia')) || null;
         let db = JSON.parse(localStorage.getItem('pl_db')) || {};
@@ -84,6 +131,7 @@
             } else {
                 document.getElementById('seccion-dias').classList.add('hidden');
                 document.getElementById('seccion-ejercicios').classList.add('hidden');
+                document.getElementById('seccion-form-ejercicio').classList.add('hidden');
             }
             actualizarBarras();
             renderizarCalendario();
@@ -141,11 +189,10 @@
                 
                 let seriesHtml = '';
                 [0,1,2,3].forEach(sIdx => {
-                    const s = ej.series[sIdx] || {peso:'', reps:''};
+                    const s = ej.series[sIdx] || {peso:'', ps:''};
                     
-                    // Comprobador visual automático de intensidad
                     let avisoIntensidad = '';
-                    if (s.reps !== '') {
+                    if (s.ps !== '') {
                         const repsNum = parseInt(s.ps) || 0;
                         if (repsNum <= 6) {
                             avisoIntensidad = `<span class="text-[8px] font-black bg-rose-200 text-rose-800 px-1.5 py-0.5 rounded-md uppercase ml-1">🪨 Pesado (≤6)</span>`;
@@ -168,7 +215,7 @@
                 div.innerHTML = `
                 <div class="flex justify-between items-center">
                     <span class="font-black text-sm text-slate-800 leading-tight">${ej.nombre} 
-                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black tracking-wider block mt-0.5">Músculo: ${ej.musculo} / Parte: ${ej.parteMusculo}</span>
+                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black tracking-wider block mt-0.5">Grupo: ${ej.musculo} • Zona: ${ej.parteMusculo}</span>
                     </span>
                     <button onclick="eliminarEj(${idxEj})" class="text-rose-500 font-bold text-xs bg-rose-50 px-2 py-1 rounded-lg self-start">X</button>
                 </div>
@@ -180,22 +227,74 @@
             });
         }
 
-        function agregarEjercicio() {
-            const name = prompt("Nombre del ejercicio:");
-            if(!name) return;
-            const musculo = prompt("Músculo principal (Pecho, Espalda, Hombros, Bíceps, Tríceps, Cuádriceps, Femorales, Gemelos):", "Pecho");
-            const parte = prompt("¿Qué parte o zona del músculo es? (Ej: Superior, Inferior, Medio, Dorsal, etc.):", "Medio");
-            
+        function mostrarFormulario() {
+            document.getElementById('seccion-form-ejercicio').classList.remove('hidden');
+            actualizarSelectEjercicios();
+            window.scrollTo({ top: document.getElementById('seccion-form-ejercicio').offsetTop, behavior: 'smooth' });
+        }
+
+        function actualizarSelectEjercicios() {
+            const musculoSel = document.getElementById('form-musculo').value;
+            const selectEj = document.getElementById('form-ejercicio');
+            selectEj.innerHTML = '';
+
+            const listaEj = CATALOGO[musculoSel] || [];
+            listaEj.forEach(ej => {
+                const opt = document.createElement('option');
+                opt.value = ej;
+                opt.innerText = ej;
+                selectEj.appendChild(opt);
+            });
+
+            const optOtro = document.createElement('option');
+            optOtro.value = "Otro";
+            optOtro.innerText = "➕ Otro (Escribir nombre)";
+            selectEj.appendChild(optOtro);
+
+            verificarCustomEj();
+        }
+
+        function verificarCustomEj() {
+            const val = document.getElementById('form-ejercicio').value;
+            const inputCustom = document.getElementById('form-ejercicio-custom');
+            if(val === "Otro") {
+                inputCustom.classList.remove('hidden');
+            } else {
+                inputCustom.classList.add('hidden');
+            }
+        }
+
+        function guardarNuevoEjercicio() {
+            const musculo = document.getElementById('form-musculo').value;
+            const selectEj = document.getElementById('form-ejercicio').value;
+            let nombreFinal = selectEj;
+
+            if(selectEj === "Otro") {
+                nombreFinal = document.getElementById('form-ejercicio-custom').value.trim();
+                if(!nombreFinal) {
+                    alert("Escribe el nombre del ejercicio.");
+                    return;
+                }
+            }
+
+            const parte = document.getElementById('form-parte').value;
+
             if(!db[user][dia]) db[user][dia] = [];
             db[user][dia].push({
-                nombre: name,
-                musculo: musculo || "Pecho",
-                parteMusculo: parte || "Medio",
+                nombre: nombreFinal,
+                musculo: musculo,
+                parteMusculo: parte,
                 series: [{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''}]
             });
             localStorage.setItem('pl_db', JSON.stringify(db));
+            
+            // Ocultar formulario y limpiar
+            document.getElementById('seccion-form-ejercicio').classList.add('hidden');
+            document.getElementById('form-ejercicio-custom').value = '';
+
             renderEjercicios();
             renderDias();
+            actualizarBarras();
         }
 
         function guardarSerie(idxEj, sIdx, campo, val) {
@@ -203,7 +302,6 @@
             db[user][dia][idxEj].series[sIdx][campo] = val;
             localStorage.setItem('pl_db', JSON.stringify(db));
             
-            // Si modificamos repeticiones, refrescamos la interfaz para actualizar la etiqueta de pesado/liviano instantáneamente
             if(campo === 'ps') {
                 renderEjercicios();
             }
@@ -297,76 +395,4 @@
                 contenedorCeldas.appendChild(document.createElement('div'));
             }
 
-            for (let diaCal = 1; diaCal <= totalDiasMes; diaCal++) {
-                const botonCelda = document.createElement('button');
-                botonCelda.type = "button";
-                
-                const diaPadded = String(diaCal).padStart(2, '0');
-                const mesPadded = String(mes + 1).padStart(2, '0');
-                const llaveFecha = `${año}-${mesPadded}-${diaPadded}`;
-
-                const registroExistente = history.some(log => log.fecha === llaveFecha && log.usuario === user);
-
-                botonCelda.className = `w-full aspect-square text-xs font-black rounded-xl flex items-center justify-center active:scale-90 transition-all ${registroExistente ? 'bg-blue-600 text-white shadow-md shadow-blue-600/10' : 'bg-slate-100 text-slate-500 border'}`;
-                botonCelda.innerText = diaCal;
-
-                botonCelda.onclick = function() { desplegarResumenDia(llaveFecha, diaCal); };
-                contenedorCeldas.appendChild(botonCelda);
-            }
-        }
-
-        function desplegarResumenDia(llaveFecha, nroDia) {
-            document.getElementById('titulo-detalle').innerText = `Entrenamientos guardados del día ${nroDia}:`;
-            const listaDetalles = document.getElementById('lista-detalles-dia');
-            listaDetalles.innerHTML = '';
-
-            const filtrados = history.filter(log => log.fecha === llaveFecha && log.usuario === user);
-
-            if (filtrados.length === 0) {
-                listaDetalles.innerHTML = `<div class="p-3 text-center bg-slate-50 rounded-xl text-xs text-slate-400 font-bold border">Sin registros en esta fecha.</div>`;
-                return;
-            }
-
-            let agrupado = {};
-            filtrados.forEach(log => {
-                if (!agrupado[log.ejercicio]) {
-                    agrupado[log.ejercicio] = { musculo: log.musculo, parte: log.parte, series: [] };
-                }
-                agrupado[log.ejercicio].series.push(log);
-            });
-
-            Object.keys(agrupado).forEach(nombre => {
-                const item = agrupado[nombre];
-                const tarj = document.createElement('div');
-                tarj.className = "bg-slate-50 border rounded-xl p-3 space-y-1";
-                
-                let lineasSeries = '';
-                item.series.forEach(s => {
-                    let tipoIntensidad = '';
-                    const reps = parseInt(s.reps) || 0;
-                    if(reps <= 6) tipoIntensidad = 'Pesado';
-                    else if(reps >= 12) tipoIntensidad = 'Liviano';
-                    else tipoIntensidad = 'Medio/Normal';
-
-                    lineasSeries += `<div class="text-[11px] text-slate-600">Serie #${s.serie}: <span class="font-black text-slate-800">${s.peso}kg</span> x <span class="font-black">${s.reps} reps</span> (${tipoIntensidad})</div>`;
-                });
-
-                tarj.innerHTML = `
-                    <div class="flex justify-between items-center border-b pb-1 mb-1 flex-wrap gap-1">
-                        <span class="font-black text-xs text-slate-800">${nombre}</span>
-                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded font-black uppercase">${item.musculo} - ${item.parte}</span>
-                    </div>
-                    <div class="space-y-0.5">${lineasSeries}</div>`;
-                listaDetalles.appendChild(tarj);
-            });
-        }
-
-        function limpiarTodo() {
-            if(confirm("¿Seguro querés borrar todos los datos?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-    </script>
-</body>
-</html>
+  
