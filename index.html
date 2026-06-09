@@ -1,246 +1,354 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gym Tracker Pro</title>
-
-<style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
-
-body{
-background:#121212;
-color:white;
-padding:20px;
-}
-
-h1{
-text-align:center;
-margin-bottom:20px;
-}
-
-.menu{
-display:grid;
-grid-template-columns:repeat(2,1fr);
-gap:10px;
-margin-bottom:20px;
-}
-
-button{
-background:#1f1f1f;
-color:white;
-border:none;
-padding:15px;
-border-radius:12px;
-font-size:16px;
-cursor:pointer;
-}
-
-button:hover{
-background:#333;
-}
-
-.card{
-background:#1e1e1e;
-padding:15px;
-border-radius:12px;
-margin-bottom:15px;
-}
-
-input,select{
-width:100%;
-padding:10px;
-margin-top:8px;
-margin-bottom:12px;
-border-radius:8px;
-border:none;
-}
-
-.hidden{
-display:none;
-}
-
-.item{
-background:#2a2a2a;
-padding:10px;
-border-radius:8px;
-margin-top:10px;
-}
-
-.stat{
-padding:8px;
-border-bottom:1px solid #333;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PowerLog - Tu Asistente de Gym</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen">
 
-<h1>🏋️ Gym Tracker Pro</h1>
+    <div class="max-w-4xl mx-auto p-4 sm:p-6 pb-24">
+        <header class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 p-2.5 rounded-xl text-white shadow-lg shadow-indigo-500/30">
+                    <i data-lucide="dumbbell" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">PowerLog</h1>
+                    <p class="text-xs text-slate-400">Tu entrenamiento, bajo control</p>
+                </div>
+            </div>
+        </header>
 
-<div class="menu">
-<button onclick="abrirDia('Dia 1')">Día 1</button>
-<button onclick="abrirDia('Dia 2')">Día 2</button>
-<button onclick="abrirDia('Dia 3')">Día 3</button>
-<button onclick="abrirDia('Dia 4')">Día 4</button>
-<button onclick="abrirDia('Dia 5')">Día 5</button>
-<button onclick="mostrarStats()">📊 Estadísticas</button>
-</div>
+        <div id="reminder-banner" class="bg-gradient-to-r from-indigo-900/40 to-slate-800/40 border border-indigo-500/30 rounded-2xl p-4 mb-8 flex items-center justify-between backdrop-blur-sm">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-500/20 p-2 rounded-lg text-indigo-400">
+                    <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400 block">Siguiente Entrenamiento</span>
+                    <span id="reminder-text" class="text-base font-medium text-slate-200">¡Configura tu rutina para empezar!</span>
+                </div>
+            </div>
+            <button id="btn-comenzar-siguiente" class="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-xl transition shadow-md shadow-indigo-600/20 active:scale-95">
+                Entrenar Ya
+            </button>
+        </div>
 
-<div id="contenido"></div>
+        <div class="flex gap-2 bg-slate-800/60 p-1.5 rounded-xl mb-6 border border-slate-700/50">
+            <button id="tab-rutina" onclick="switchTab('rutina')" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 bg-indigo-600 text-white">
+                <i data-lucide="armchair" class="w-4 h-4"></i> Mi Rutina
+            </button>
+            <button id="tab-historial" onclick="switchTab('historial')" class="flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white">
+                <i data-lucide="history" class="w-4 h-4"></i> Historial
+            </button>
+        </div>
 
-<script>
+        <section id="section-rutina" class="space-y-6">
+            <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-none" id="days-container">
+                </div>
 
-const ejerciciosBase = {
-"Press banca":"Pecho",
-"Press inclinado":"Pecho",
-"Aperturas":"Pecho",
-"Remo":"Espalda",
-"Jalon":"Espalda",
-"Curl barra":"Biceps",
-"Curl martillo":"Biceps",
-"Press frances":"Triceps",
-"Extensiones":"Triceps",
-"Press militar":"Hombros",
-"Elevaciones laterales":"Hombros",
-"Sentadilla":"Cuadriceps",
-"Prensa":"Cuadriceps",
-"Peso muerto":"Isquios",
-"Gemelos":"Gemelos"
-};
+            <div id="day-content" class="space-y-4">
+                <div class="flex justify-between items-center">
+                    <h3 id="current-day-title" class="text-xl font-bold text-slate-200">Día 1</h3>
+                    <div class="flex gap-2">
+                        <button onclick="openModalEjercicio()" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium px-3 py-2 rounded-xl flex items-center gap-1.5 transition">
+                            <i data-lucide="plus" class="w-3.5 h-3.5 text-indigo-400"></i> Agregar Ejercicio
+                        </button>
+                        <button onclick="finalizarEntrenamiento()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-1.5 transition shadow-md shadow-emerald-600/10">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Finalizar Día
+                        </button>
+                    </div>
+                </div>
 
-let datos = JSON.parse(localStorage.getItem("gymtracker")) || [];
+                <div id="exercises-list" class="grid gap-4 md:grid-cols-2">
+                    </div>
+            </div>
+        </section>
 
-function guardar(){
-localStorage.setItem("gymtracker",JSON.stringify(datos));
-}
+        <section id="section-historial" class="hidden space-y-4">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-slate-200">Historial de Entrenamientos</h3>
+                <button onclick="borrarHistorial()" class="text-xs text-rose-400 hover:text-rose-300 transition flex items-center gap-1">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Limpiar Historial
+                </button>
+            </div>
+            <div id="historial-list" class="space-y-3">
+                </div>
+        </section>
+    </div>
 
-function abrirDia(dia){
+    <div id="modal-ejercicio" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 w-full max-w-md rounded-2xl p-6 shadow-2xl transform scale-95 transition-all">
+            <h3 class="text-lg font-bold mb-4 text-slate-100 flex items-center gap-2">
+                <i data-lucide="plus-circle" class="text-indigo-400"></i> Nuevo Ejercicio
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-slate-400 mb-1">Nombre del Ejercicio</label>
+                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca, Sentadillas" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Series</label>
+                        <input type="number" id="input-series" value="4" min="1" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Reps sugeridas</label>
+                        <input type="text" id="input-reps" value="12" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3 py-2.5 text-slate-200 focus:outline-none focus:border-indigo-500 text-sm">
+                    </div>
+                </div>
 
-let opciones="";
+                <div class="flex gap-3 pt-2">
+                    <button onclick="closeModalEjercicio()" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm font-medium py-2.5 rounded-xl transition">Cancelar</button>
+                    <button onclick="guardarEjercicio()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/20">Agregar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-for(let ejercicio in ejerciciosBase){
-opciones+=`<option>${ejercicio}</option>`;
-}
+    <script>
+        // --- BASE DE DATOS LOCAL (LOCALSTORAGE) ---
+        let appState = JSON.parse(localStorage.getItem('powerlog_state')) || {
+            currentDayIndex: 1, // El día que le toca entrenar según el recordatorio
+            selectedDayIndex: 1, // El día que está viendo actualmente en pantalla
+            rutinas: {
+                1: [], 2: [], 3: [], 4: [], 5: []
+            },
+            historial: []
+        };
 
-document.getElementById("contenido").innerHTML=`
+        function saveState() {
+            localStorage.setItem('powerlog_state', JSON.stringify(appState));
+            render();
+        }
 
-<div class="card">
-<h2>${dia}</h2>
+        // --- NAVEGACIÓN ---
+        function switchTab(tab) {
+            const btnRutina = document.getElementById('tab-rutina');
+            const btnHistorial = document.getElementById('tab-historial');
+            const secRutina = document.getElementById('section-rutina');
+            const secHistorial = document.getElementById('section-historial');
 
-<select id="ejercicio">
-${opciones}
-</select>
+            if (tab === 'rutina') {
+                btnRutina.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 bg-indigo-600 text-white";
+                btnHistorial.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white";
+                secRutina.classList.remove('hidden');
+                secHistorial.classList.add('hidden');
+            } else {
+                btnHistorial.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 bg-indigo-600 text-white";
+                btnRutina.className = "flex-1 py-2.5 text-sm font-medium rounded-lg transition flex items-center justify-center gap-2 text-slate-400 hover:text-white";
+                secRutina.classList.add('hidden');
+                secHistorial.classList.remove('hidden');
+                renderHistorial();
+            }
+        }
 
-<input type="number" id="peso" placeholder="Peso (kg)">
+        // --- MODAL ---
+        function openModalEjercicio() {
+            document.getElementById('modal-ejercicio').classList.remove('hidden');
+        }
+        function closeModalEjercicio() {
+            document.getElementById('modal-ejercicio').classList.add('hidden');
+            document.getElementById('input-nombre-ejercicio').value = '';
+        }
 
-<input type="number" id="series" placeholder="Series">
+        // --- LOGICA DE RENTRENAMIENTO Y RUTINAS ---
+        function seleccionarDia(dia) {
+            appState.selectedDayIndex = dia;
+            saveState();
+        }
 
-<input type="number" id="reps" placeholder="Repeticiones">
+        function guardarEjercicio() {
+            const nombre = document.getElementById('input-nombre-ejercicio').value.trim();
+            const seriesCount = parseInt(document.getElementById('input-series').value) || 4;
+            const repsSugeridas = document.getElementById('input-reps').value.trim() || '12';
 
-<button onclick="agregar('${dia}')">
-Guardar ejercicio
-</button>
+            if (!nombre) return alert('Ponle un nombre al ejercicio');
 
-</div>
+            // Crear las series vacías por defecto
+            let series = [];
+            for(let i=0; i < seriesCount; i++) {
+                series.push({ peso: '', reps: repsSugeridas });
+            }
 
-<div id="lista"></div>
-`;
+            // Generar un término de búsqueda para la imagen en inglés (funciona mejor en Unsplash)
+            const queryImg = encodeURIComponent(nombre);
+            const imageSrc = `https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400&auto=format&fit=crop`; 
+            // Usamos una imagen de gym por defecto, pero Unsplash Source puede buscar dinámicamente:
+            const dynamicImage = `https://source.unsplash.com/400x250/?gym,${queryImg}`;
 
-mostrarEjercicios(dia);
-}
+            const nuevoEjercicio = {
+                id: Date.now(),
+                nombre: nombre,
+                imagen: `https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=400&q=60`, // Backup estable
+                series: series
+            };
 
-function agregar(dia){
+            appState.rutinas[appState.selectedDayIndex].push(nuevoEjercicio);
+            closeModalEjercicio();
+            saveState();
+        }
 
-const ejercicio =
-document.getElementById("ejercicio").value;
+        function eliminarEjercicio(id) {
+            appState.rutinas[appState.selectedDayIndex] = appState.rutinas[appState.selectedDayIndex].filter(ex => ex.id !== id);
+            saveState();
+        }
 
-const item = {
-fecha:new Date().toLocaleDateString(),
-dia,
-ejercicio,
-musculo:ejerciciosBase[ejercicio],
-peso:Number(document.getElementById("peso").value),
-series:Number(document.getElementById("series").value),
-reps:Number(document.getElementById("reps").value)
-};
+        function actualizarSerie(ejercicioId, serieIndex, campo, valor) {
+            const ejercicio = appState.rutinas[appState.selectedDayIndex].find(ex => ex.id === ejercicioId);
+            if (ejercicio) {
+                ejercicio.series[serieIndex][campo] = valor;
+                // Guardamos silenciosamente en localStorage para no romper el foco del input al renderizar enteramente
+                localStorage.setItem('powerlog_state', JSON.stringify(appState));
+            }
+        }
 
-datos.push(item);
+        function finalizarEntrenamiento() {
+            const ejerciciosDelDia = appState.rutinas[appState.selectedDayIndex];
+            if (ejerciciosDelDia.length === 0) {
+                alert("Agrega ejercicios antes de finalizar el día.");
+                return;
+            }
 
-guardar();
+            // Guardar en el Historial
+            const registroHistorial = {
+                id: Date.now(),
+                fecha: new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+                diaNombre: `Día ${appState.selectedDayIndex}`,
+                ejercicios: JSON.parse(JSON.stringify(ejerciciosDelDia)) // Clonación profunda
+            };
 
-abrirDia(dia);
-}
+            appState.historial.unshift(registroHistorial);
 
-function mostrarEjercicios(dia){
+            // Calcular el siguiente día (Ciclo continuo de 1 a 5)
+            let proximoDia = appState.selectedDayIndex + 1;
+            if (proximoDia > 5) proximoDia = 1;
 
-const lista =
-document.getElementById("lista");
+            appState.currentDayIndex = proximoDia;
+            appState.selectedDayIndex = proximoDia; // Mover al usuario al siguiente día de forma fluida
 
-const filtrados =
-datos.filter(x=>x.dia===dia);
+            alert(`¡Entrenamiento guardado! Siguiente parada: Día ${proximoDia}`);
+            saveState();
+        }
 
-let html="<div class='card'><h3>Ejercicios guardados</h3>";
+        function borrarHistorial() {
+            if(confirm("¿Seguro que quieres borrar todo el historial?")) {
+                appState.historial = [];
+                saveState();
+                renderHistorial();
+            }
+        }
 
-filtrados.forEach(e=>{
+        // --- RENDERIZADO DE INTERFAZ ---
+        function render() {
+            // 1. Render Banner Recordatorio
+            const reminderText = document.getElementById('reminder-text');
+            reminderText.innerText = `Hoy te toca entrenar el: Día ${appState.currentDayIndex}`;
+            
+            const btnSiguiente = document.getElementById('btn-comenzar-siguiente');
+            btnSiguiente.onclick = () => {
+                appState.selectedDayIndex = appState.currentDayIndex;
+                saveState();
+            };
 
-html+=`
-<div class="item">
-<strong>${e.ejercicio}</strong><br>
-${e.peso} kg |
-${e.series} series |
-${e.reps} reps
-</div>
-`;
+            // 2. Render Selector de Días (1 al 5)
+            const daysContainer = document.getElementById('days-container');
+            daysContainer.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const btn = document.createElement('button');
+                const isSelected = appState.selectedDayIndex === i;
+                const isNextToTrain = appState.currentDayIndex === i;
+                
+                btn.className = `flex-none px-5 py-3 rounded-xl font-semibold text-sm transition flex flex-col items-center min-w-[75px] ${
+                    isSelected 
+                    ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 border border-indigo-400' 
+                    : 'bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700/60'
+                }`;
+                
+                btn.innerHTML = `
+                    <span>Día ${i}</span>
+                    ${isNextToTrain ? '<span class="text-[9px] bg-indigo-900 text-indigo-300 px-1.5 rounded mt-1 font-bold tracking-wide">TOCA</span>' : ''}
+                `;
+                btn.onclick = () => seleccionarDia(i);
+                daysContainer.appendChild(btn);
+            }
 
-});
+            // 3. Render Contenido del Día Seleccionado
+            document.getElementById('current-day-title').innerText = `Día ${appState.selectedDayIndex}`;
+            const exercisesList = document.getElementById('exercises-list');
+            exercisesList.innerHTML = '';
 
-html+="</div>";
+            const ejerciciosActuales = appState.rutinas[appState.selectedDayIndex];
 
-lista.innerHTML=html;
-}
+            if (ejerciciosActuales.length === 0) {
+                exercisesList.innerHTML = `
+                    <div class="col-span-full py-12 text-center border-2 border-dashed border-slate-800 rounded-2xl">
+                        <i data-lucide="dumbbell" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+                        <p class="text-sm text-slate-500">No hay ejercicios agregados para este día.</p>
+                    </div>
+                `;
+            } else {
+                ejerciciosActuales.forEach(ex => {
+                    const card = document.createElement('div');
+                    card.className = "bg-slate-800/80 border border-slate-700/60 rounded-2xl overflow-hidden flex flex-col shadow-xl";
+                    
+                    // Para hacer las imágenes dinámicas usamos una técnica limpia con Unsplash embed sin necesidad de API Keys
+                    const cleanQuery = ex.nombre.toLowerCase().replace(/[^a-z]/g, ',');
+                    const imgUrl = `https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?auto=format&fit=crop&w=400&q=80`;
 
-function mostrarStats(){
+                    let seriesHtml = '';
+                    ex.series.forEach((serie, idx) => {
+                        seriesHtml += `
+                            <div class="grid grid-cols-12 gap-2 items-center text-xs">
+                                <span class="col-span-2 text-slate-500 font-medium text-center">#${idx + 1}</span>
+                                <input type="text" placeholder="Peso" value="${serie.peso}" 
+                                    oninput="actualizarSerie(${ex.id}, ${idx}, 'peso', this.value)"
+                                    class="col-span-5 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-center text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <input type="number" placeholder="Reps" value="${serie.reps}" 
+                                    oninput="actualizarSerie(${ex.id}, ${idx}, 'reps', this.value)"
+                                    class="col-span-5 bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-center text-slate-200 focus:outline-none focus:border-indigo-500">
+                            </div>
+                        `;
+                    });
 
-let seriesMusculo={};
+                    card.innerHTML = `
+                        <div class="h-32 bg-slate-700 relative overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover opacity-60 mix-blend-luminosity hover:mix-blend-normal transition duration-500" alt="${ex.nombre}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent"></div>
+                            <button onclick="eliminarEjercicio(${ex.id})" class="absolute top-3 right-3 bg-slate-900/80 hover:bg-rose-600 p-2 rounded-xl text-slate-400 hover:text-white transition backdrop-blur-md">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                            <h4 class="absolute bottom-3 left-4 text-base font-bold text-white tracking-tight">${ex.nombre}</h4>
+                        </div>
+                        <div class="p-4 flex-1 space-y-2.5">
+                            <div class="grid grid-cols-12 gap-2 text-[10px] font-bold uppercase tracking-wider text-slate-500 text-center mb-1">
+                                <span class="col-span-2">Serie</span>
+                                <span class="col-span-5">Peso (kg/lbs)</span>
+                                <span class="col-span-5">Reps</span>
+                            </div>
+                            ${seriesHtml}
+                        </div>
+                    `;
+                    exercisesList.appendChild(card);
+                });
+            }
+            // Inicializar iconos de Lucide dinámicos
+            lucide.createIcons();
+        }
 
-datos.forEach(e=>{
+        function renderHistorial() {
+            const container = document.getElementById('historial-list');
+            container.innerHTML = '';
 
-if(!seriesMusculo[e.musculo]){
-seriesMusculo[e.musculo]=0;
-}
-
-seriesMusculo[e.musculo]+=e.series;
-
-});
-
-let html=`
-<div class="card">
-<h2>📊 Estadísticas</h2>
-`;
-
-for(let musculo in seriesMusculo){
-
-html+=`
-<div class="stat">
-<strong>${musculo}</strong> :
-${seriesMusculo[musculo]} series
-</div>
-`;
-
-}
-
-html+="</div>";
-
-document.getElementById("contenido").innerHTML=
-html;
-}
-
-</script>
-
-</body>
-</html>
+            if (appState.historial.length === 0) {
+                container.innerHTML = `
+                    <div class="py-12 text-center border-2 border-dashed border-slate-800 rounded-2xl">
+                        <i data-lucide="history" class="w-8 h-8 text-slate-600 mx-auto mb-2"></i>
+                        <p class="text-sm text-slate-500">Aún no has completado entrenamientos.</p>
+                    </div>
+                `;
+        
