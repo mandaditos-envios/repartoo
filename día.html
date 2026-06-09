@@ -11,7 +11,7 @@
 
     <div class="space-y-6 w-full">
         <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-            <button type="button" onclick="window.location.href='perfil.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+            <button type="button" onclick="window.location.href='./perfil.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i> Volver a días
             </button>
             <div class="text-right">
@@ -71,29 +71,30 @@
         document.getElementById('txt-perfil-en-dia').innerText = usuario;
         document.getElementById('txt-dia-activo').innerText = `Día ${dia}`;
 
-        let db = JSON.parse(localStorage.getItem('powerlog_db_v8')) || {};
-        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v8')) || [];
+        let db = JSON.parse(localStorage.getItem('powerlog_db_v9')) || {};
+        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v9')) || [];
 
         function abrirModal() { document.getElementById('modal-ejercicio').style.display = 'flex'; }
         function cerrarModal() { document.getElementById('modal-ejercicio').style.display = 'none'; document.getElementById('input-nombre-ejercicio').value = ''; }
 
         function crearEjercicio() {
-            const nombre = document.getElementById('input-nombre-ejercicio').value.trim();
+            const textName = document.getElementById('input-nombre-ejercicio').value.trim();
             const musculo = document.getElementById('select-grupo-muscular').value;
-            if(!nombre) return;
+            if(!textName) return;
 
+            if(!db[usuario].rutinas[dia]) db[usuario].rutinas[dia] = [];
             db[usuario].rutinas[dia].push({
-                id: Date.now(), nombre: nombre, musculo: musculo,
+                id: Date.now(), nombre: textName, musculo: musculo,
                 series: [{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''}]
             });
-            localStorage.setItem('powerlog_db_v8', JSON.stringify(db));
+            localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
             cerrarModal();
             render();
         }
 
         function eliminarEjercicio(id) {
             db[usuario].rutinas[dia] = db[usuario].rutinas[dia].filter(e => e.id !== id);
-            localStorage.setItem('powerlog_db_v8', JSON.stringify(db));
+            localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
             render();
         }
 
@@ -101,17 +102,17 @@
             const ej = db[usuario].rutinas[dia].find(e => e.id === idEj);
             if (ej) {
                 ej.series[idx][campo] = valor;
-                localStorage.setItem('powerlog_db_v8', JSON.stringify(db));
+                localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
                 actualizarBarrasMusculos();
             }
         }
 
         function finalizarEntrenamientoDia() {
             db[usuario].checksSemanales[dia] = true;
-            localStorage.setItem('powerlog_db_v8', JSON.stringify(db));
+            localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
 
             const hoy = new Date();
-            const fechaString = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            const fechaString = hoy.toISOString().split('T')[0];
 
             const listaEjercicios = db[usuario].rutinas[dia] || [];
             
@@ -132,9 +133,9 @@
                 });
             });
 
-            localStorage.setItem('powerlog_history_v8', JSON.stringify(logsHistorial));
+            localStorage.setItem('powerlog_history_v9', JSON.stringify(logsHistorial));
             alert(`¡Entrenamiento del Día ${dia} Finalizado!`);
-            window.location.href = 'perfil.html';
+            window.location.href = './perfil.html';
         }
 
         function render() {
