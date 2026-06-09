@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PowerLog - Control de Entrenamiento</title>
-    <!-- Tailwind CSS para diseño limpio y moderno -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Tailwind CSS Versión 3 (Ultra estable para cualquier celular) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@3.4.15"></script>
     <!-- Iconos limpios -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -24,15 +24,15 @@
             </div>
 
             <div class="space-y-3 pt-4">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
                     <span class="group-hover:text-blue-600">Nico V</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
                     <span class="group-hover:text-blue-600">Nico</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
                     <span class="group-hover:text-blue-600">Samuel</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
@@ -42,7 +42,7 @@
         <!-- ================= PANTALLA 2: SELECCIÓN DE DÍAS ================= -->
         <div id="view-usuario" class="hidden space-y-5">
             <!-- Botón Volver e Info de Perfil -->
-            <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <button onclick="mostrarVista('view-inicio')" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
                 </button>
@@ -59,14 +59,14 @@
 
             <!-- Lista de 6 días uno abajo del otro -->
             <div class="space-y-2.5" id="lista-dias-container">
-                <!-- Se rellena con JS -->
+                <!-- Se rellena dinámicamente con JS -->
             </div>
         </div>
 
         <!-- ================= PANTALLA 3: EL DÍA Y SUS EJERCICIOS ================= -->
         <div id="view-dia" class="hidden space-y-5">
             <!-- Menú superior -->
-            <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
                 <button onclick="regresarAPantallaUsuario()" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a días
                 </button>
@@ -76,7 +76,7 @@
                 </div>
             </div>
 
-            <!-- CONTENEDOR RECOMENDACIONES DE VOLUMEN (ZONA INFERIOR/PLANA RECTA) -->
+            <!-- RECOMENDACIONES DE VOLUMEN (ZONA INFERIOR/PLANA RECTA) -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
                 <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                     <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-500"></i> Balance de series esta semana
@@ -164,7 +164,7 @@
             "Samuel": inicializarDatosUsuario()
         };
 
-        // Estado temporal de navegación
+        // Estado de navegación activo
         let usuarioSeleccionado = "";
         let diaSeleccionado = 1;
 
@@ -179,24 +179,30 @@
             document.getElementById('view-dia').classList.add('hidden');
 
             document.getElementById(idVista).classList.remove('hidden');
-            lucide.createIcons();
+            if (window.lucide) {
+                lucide.createIcons();
+            }
         }
 
-        // --- ACCIONES PANTALLA 1 ---
+        // --- ACCIONES PANTALLA 1: SELECCIONAR USUARIO ---
         function seleccionarUsuario(nombre) {
             usuarioSeleccionado = nombre;
             document.getElementById('nombre-perfil-activo').innerText = nombre;
             
-            // Renderizar los 6 días uno abajo del otro para este usuario
+            // Renderizar los 6 días
             const containerDias = document.getElementById('lista-dias-container');
             containerDias.innerHTML = '';
 
             for (let i = 1; i <= 6; i++) {
                 const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200/80 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700 cursor-pointer";
+                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700 cursor-pointer mb-2.5";
                 
-                // Contar cuántos ejercicios tiene guardados ese día
-                const cantEjercicios = db[usuarioSeleccionado].rutinas[i] ? db[usuarioSeleccionado].rutinas[i].length : 0;
+                // Asegurar que exista la estructura del día
+                if (!db[usuarioSeleccionado].rutinas[i]) {
+                    db[usuarioSeleccionado].rutinas[i] = [];
+                }
+
+                const cantEjercicios = db[usuarioSeleccionado].rutinas[i].length;
                 const textoContador = cantEjercicios === 1 ? '1 ejercicio' : `${cantEjercicios} ejercicios`;
 
                 btnDia.innerHTML = `
@@ -206,14 +212,21 @@
                     </div>
                     <span class="text-xs text-slate-400 font-normal">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
                 `;
-                btnDia.onclick = () => abrirDia(i);
+                
+                // Asignar el clic de forma segura
+                btnDia.onclick = (function(diaActual) {
+                    return function() {
+                        abrirDia(diaActual);
+                    };
+                })(i);
+
                 containerDias.appendChild(btnDia);
             }
 
             mostrarVista('view-usuario');
         }
 
-        // --- ACCIONES PANTALLA 2 ---
+        // --- ACCIONES PANTALLA 2: ABRIR DÍA ---
         function abrirDia(numeroDia) {
             diaSeleccionado = numeroDia;
             document.getElementById('txt-perfil-en-dia').innerText = usuarioSeleccionado;
@@ -227,13 +240,16 @@
             seleccionarUsuario(usuarioSeleccionado);
         }
 
-        // --- ACCIONES PANTALLA 3 (EJERCICIOS) ---
+        // --- ACCIONES PANTALLA 3: MANEJO DE EJERCICIOS ---
         function crearEjercicio() {
             const inputNombre = document.getElementById('input-nombre-ejercicio');
             const nombre = inputNombre.value.trim();
             const musculo = document.getElementById('select-grupo-muscular').value;
 
-            if (!nombre) return alert("Por favor escribe el nombre del ejercicio.");
+            if (!nombre) {
+                alert("Por favor escribe el nombre del ejercicio.");
+                return;
+            }
 
             const seriesFijas = [
                 { peso: '', reps: '' },
@@ -291,7 +307,7 @@
 
             listaEjercicios.forEach(ej => {
                 const tarjeta = document.createElement('div');
-                tarjeta.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm";
+                tarjeta.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm mb-3";
 
                 let htmlSeries = '';
                 ej.series.forEach((serie, index) => {
@@ -332,10 +348,10 @@
             });
 
             calcularYActualizarSeriesRestantes();
-            lucide.createIcons();
+            if (window.lucide) lucide.createIcons();
         }
 
-        // --- RECOMENDACIÓN Y CONTEO DE SERIES (CÁLCULO DINÁMICO) ---
+        // --- CÁLCULO DE SERIES RESTANTES ---
         function calcularYActualizarSeriesRestantes() {
             if (!usuarioSeleccionado) return;
 
@@ -367,10 +383,4 @@
                         textoConteo.innerText = "¡Meta cumplida! 🎉";
                         textoConteo.className = "text-emerald-600 font-black text-xs";
                         barraProgreso.className = "bg-emerald-500 h-full transition-all duration-300";
-                    } else {
-                        textoConteo.innerText = `Quedan ${quedan} series`;
-                        textoConteo.className = "text-slate-500 font-semibold text-xs";
-                        barraProgreso.className = "bg-blue-600 h-full transition-all duration-300";
-                    }
-                    const porcentaje = Math.min(100, (completadas / metaDelMusculo) * 100);
-         
+  
