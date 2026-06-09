@@ -11,7 +11,7 @@
 
     <div class="space-y-6 w-full">
         <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-            <button type="button" onclick="window.location.href='index.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+            <button type="button" onclick="window.location.href='./index.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i> Salir
             </button>
             <div class="text-right">
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <button type="button" onclick="window.location.href='registro.html'" class="w-full bg-slate-800 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-3 shadow-md active:bg-slate-900 transition-all">
+        <button type="button" onclick="window.location.href='./registro.html'" class="w-full bg-slate-800 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-3 shadow-md active:bg-slate-900 transition-all">
             <i data-lucide="calendar" class="w-6 h-6 text-blue-400"></i> Ver Mi Registro Histórico
         </button>
 
@@ -36,8 +36,8 @@
         const usuario = localStorage.getItem('powerlog_usuario_actual') || "Nico V";
         document.getElementById('nombre-perfil-activo').innerText = usuario;
 
-        let db = JSON.parse(localStorage.getItem('powerlog_db_v8')) || {};
-        if (!db[usuario]) window.location.href = 'index.html';
+        let db = JSON.parse(localStorage.getItem('powerlog_db_v9')) || {};
+        if (!db[usuario]) window.location.href = './index.html';
 
         const container = document.getElementById('lista-dias-container');
         const checks = db[usuario].checksSemanales || { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
@@ -60,7 +60,7 @@
             
             btn.onclick = function() {
                 localStorage.setItem('powerlog_dia_actual', i);
-                window.location.href = 'dia.html';
+                window.location.href = './dia.html';
             };
             container.appendChild(btn);
         }
