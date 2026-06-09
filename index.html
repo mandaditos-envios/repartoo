@@ -33,7 +33,7 @@
             <p class="text-[10px] font-extrabold tracking-widest uppercase text-slate-400 mt-0.5">Registro Pro</p>
         </div>
         <select id="sel-user" onchange="seleccionarUsuario()" class="bg-slate-50 border-2 border-slate-200 font-black p-3 rounded-2xl text-sm focus:outline-none focus:border-indigo-500 transition-all cursor-pointer">
-            <option value="">👤 Cambiar perfil...</option>
+            <option value="">👤 Seleccionar perfil...</option>
             <option value="Nico V">Nico V</option>
             <option value="Nico">Nico</option>
             <option value="Samuel">Samuel</option>
@@ -155,12 +155,18 @@
             history = [];
         }
 
-        if(user && !db[user]) {
-            db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-            localStorage.setItem('pl_db', JSON.stringify(db));
+        // SINCRONIZACIÓN INICIAL FORZADA
+        if(user) {
+            if(!db[user]) {
+                db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+                localStorage.setItem('pl_db', JSON.stringify(db));
+            }
+            // Aseguramos que el select tenga el valor cargado en memoria
+            setTimeout(() => {
+                document.getElementById('sel-user').value = user;
+            }, 100);
         }
 
-        document.getElementById('sel-user').value = user;
         comprobarVistas();
 
         function comprobarVistas() {
@@ -368,11 +374,4 @@
             localStorage.setItem('pl_db', JSON.stringify(db));
             
             if(campo === 'ps') {
-                renderEjercicios();
-            }
-            actualizarBarras();
-        }
-
-        function eliminarEj(idx) {
-            db[user][dia].splice(idx, 1);
-            localStorage.setItem('pl_db', JSON.stringify(d
+           
