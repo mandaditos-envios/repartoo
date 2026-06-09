@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PowerLog - Simple</title>
+    <title>PowerLog - Directo</title>
     <style>
         :root {
-            --bg-color: #f8fafc;
+            --bg-color: #f1f5f9;
             --card-bg: #ffffff;
             --text-main: #0f172a;
             --text-muted: #64748b;
@@ -40,7 +40,7 @@
             padding: 20px;
             border-radius: 24px;
             border: 1px solid var(--border);
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
         }
 
         h1 {
@@ -48,7 +48,7 @@
             font-weight: 900;
             text-align: center;
             color: var(--text-main);
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .sub {
@@ -58,13 +58,13 @@
             text-align: center;
             color: var(--text-muted);
             font-weight: 800;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
         label {
@@ -74,7 +74,7 @@
             color: var(--text-muted);
         }
 
-        input {
+        select, input {
             width: 100%;
             padding: 12px;
             border: 2px solid var(--border);
@@ -86,7 +86,7 @@
             background: #f8fafc;
         }
 
-        input:focus {
+        select:focus, input:focus {
             border-color: var(--primary);
             background: #ffffff;
         }
@@ -114,7 +114,7 @@
         .btn-add {
             background: var(--primary);
             color: #ffffff;
-            margin-top: 4px;
+            margin-top: 2px;
         }
 
         .btn-add:hover {
@@ -128,14 +128,14 @@
             color: var(--text-muted);
             border-bottom: 1px solid var(--border);
             padding-bottom: 8px;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
         .ej-lista {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-height: 280px;
+            max-height: 240px;
             overflow-y: auto;
             padding-right: 2px;
         }
@@ -144,7 +144,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #f1f5f9;
+            background: #f8fafc;
             padding: 12px 16px;
             border-radius: 16px;
             border: 1px solid var(--border);
@@ -153,18 +153,19 @@
         .ej-info {
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
         .ej-nombre {
             font-size: 13px;
             font-weight: 900;
+            color: var(--primary);
         }
 
         .ej-detalles {
             font-size: 11px;
-            font-weight: 700;
-            color: var(--text-muted);
+            font-weight: 800;
+            color: #334155;
         }
 
         .btn-eliminar {
@@ -188,78 +189,119 @@
 
     <div class="container">
         <h1>💪 PowerLog</h1>
-        <p class="sub">Registro Directo</p>
+        <p class="sub">Selecciona y registra</p>
 
         <div class="form-group">
-            <label>Nombre del Ejercicio</label>
-            <input type="text" id="nombre" placeholder="Ej: Press de banca, Dominadas...">
+            <label>1. Grupo Muscular</label>
+            <select id="sel-musculo" onchange="actualizarEjercicios()">
+                <option value="Pecho">Pecho</option>
+                <option value="Espalda">Espalda</option>
+                <option value="Hombros">Hombros</option>
+                <option value="Bíceps">Bíceps</option>
+                <option value="Tríceps">Tríceps</option>
+                <option value="Cuádriceps">Cuádriceps</option>
+                <option value="Femorales">Femorales</option>
+                <option value="Gemelos">Gemelos</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>2. Ejercicio</label>
+            <select id="sel-ejercicio"></select>
         </div>
         
         <div class="row">
             <div class="form-group">
-                <label>Peso (kg)</label>
+                <label>3. Peso (kg)</label>
                 <input type="number" id="peso" placeholder="0">
             </div>
             <div class="form-group">
-                <label>Repeticiones</label>
+                <label>4. Repeticiones</label>
                 <input type="number" id="reps" placeholder="0">
             </div>
         </div>
 
-        <button onclick="agregarEjercicio()" class="btn-add">➕ Guardar Ejercicio</button>
+        <button onclick="agregarRegistro()" class="btn-add">➕ Guardar Serie / Ejercicio</button>
 
-        <div class="lista-titulo">📋 Mis ejercicios guardados hoy</div>
+        <div class="lista-titulo">📋 Registros de hoy</div>
         <div id="lista" class="ej-lista"></div>
 
-        <button onclick="vaciarListaRutinaria()" class="btn-limpiar">🗑️ Borrar lista completa</button>
+        <button onclick="vaciarLista()" class="btn-limpiar">🗑️ Borrar todos los registros</button>
     </div>
 
     <script>
-        let ejerciciosGuardados = [];
+        const CATALOGO = {
+            "Pecho": ["Press de Banca Plano", "Press Inclinado Mancuernas", "Aperturas Polea", "Fondos Paralelas"],
+            "Espalda": ["Dominadas", "Jalón al Pecho", "Remo con Barra", "Remo Mancuerna", "Remo Polea Baja"],
+            "Hombros": ["Press Militar", "Elevaciones Laterales", "Vuelos Posteriores"],
+            "Bíceps": ["Curl con Barra", "Curl Mancuernas", "Curl Martillo", "Curl en Polea"],
+            "Tríceps": ["Extensión en Polea", "Press Francés", "Copa Mancuerna"],
+            "Cuádriceps": ["Sentadilla Libre", "Prensa 45°", "Extensión Cuádriceps", "Sentadilla Búlgara"],
+            "Femorales": ["Curl Femoral", "Peso Muerto Rumano"],
+            "Gemelos": ["Elevación Talones Parado", "Gemelos en Prensa"]
+        };
+
+        let registros = [];
 
         // Carga automática al iniciar
         try {
-            ejerciciosGuardados = JSON.parse(localStorage.getItem('pl_simples')) || [];
+            registros = JSON.parse(localStorage.getItem('pl_directo')) || [];
         } catch(e) {
-            ejerciciosGuardados = [];
+            registros = [];
         }
 
+        actualizarEjercicios();
         refrescarLista();
 
-        function agregarEjercicio() {
-            const nombre = document.getElementById('nombre').value.trim();
+        function actualizarEjercicios() {
+            const musculoSel = document.getElementById('sel-musculo').value;
+            const selectEj = document.getElementById('sel-ejercicio');
+            selectEj.innerHTML = '';
+
+            const lista = CATALOGO[musculoSel] || [];
+            lista.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.innerText = item;
+                selectEj.appendChild(opt);
+            });
+        }
+
+        function agregarRegistro() {
+            const musculo = document.getElementById('sel-musculo').value;
+            const ejercicio = document.getElementById('sel-ejercicio').value;
             const peso = document.getElementById('peso').value.trim();
             const reps = document.getElementById('reps').value.trim();
 
-            if (!nombre) {
-                alert("Por favor, ingresa el nombre del ejercicio.");
+            if (!ejercicio) {
+                alert("Selecciona un ejercicio primero.");
                 return;
             }
 
             const nuevo = {
                 id: Date.now(),
-                nombre: nombre,
+                musculo: musculo,
+                ejercicio: ejercicio,
                 peso: peso || "0",
                 reps: reps || "0"
             };
 
-            ejerciciosGuardados.push(nuevo);
+            registros.push(nuevo);
             guardarYRefrescar();
             
-            // Limpiar campos para el siguiente
-            document.getElementById('nombre').value = '';
+            // Resetear valores de peso y reps para la siguiente serie
             document.getElementById('peso').value = '';
             document.getElementById('reps').value = '';
-            document.getElementById('nombre').focus();
+            document.getElementById('peso').focus();
         }
 
-        function eliminarEjercicio(id) {
-            ejerciciosGuardados = ejerciciosGuardados.filter(item => item.id !== id);
+        function eliminarRegistro(id) {
+            registros = registros.filter(item => item.id !== id);
             guardarYRefrescar();
         }
 
         function guardarYRefrescar() {
-            localStorage.setItem('pl_simples', JSON.stringify(ejerciciosGuardados));
+            localStorage.setItem('pl_directo', JSON.stringify(registros));
             refrescarLista();
         }
 
@@ -267,28 +309,29 @@
             const contenedor = document.getElementById('lista');
             contenedor.innerHTML = '';
 
-            if (ejerciciosGuardados.length === 0) {
-                contenedor.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 16px 0; font-weight: bold;">Sin ejercicios guardados aún.</div>`;
+            if (registros.length === 0) {
+                contenedor.innerHTML = `<div style="text-align: center; color: var(--text-muted); font-size: 11px; padding: 16px 0; font-weight: bold;">No hay registros guardados hoy.</div>`;
                 return;
             }
 
-            ejerciciosGuardados.forEach(item => {
+            // Mostrar los registros en orden inverso (lo último que se anota queda arriba)
+            [...registros].reverse().forEach(item => {
                 const div = document.createElement('div');
                 div.className = "ej-item";
                 div.innerHTML = `
                     <div class="ej-info">
-                        <span class="ej-nombre">${item.nombre}</span>
-                        <span class="ej-detalles">Peso: <b>${item.peso} kg</b> | Reps: <b>${item.reps}</b></span>
+                        <span class="ej-nombre">${item.ejercicio}</span>
+                        <span class="ej-detalles">Músculo: <b>${item.musculo}</b> | Peso: <b>${item.peso} kg</b> — Reps: <b>${item.reps}</b></span>
                     </div>
-                    <button onclick="eliminarEjercicio(${item.id})" class="btn-eliminar">✕</button>
+                    <button onclick="eliminarRegistro(${item.id})" class="btn-eliminar">✕</button>
                 `;
                 contenedor.appendChild(div);
             });
         }
 
-        function vaciarListaRutinaria() {
-            if(confirm("¿Seguro que querés vaciar la lista de hoy?")) {
-                ejerciciosGuardados = [];
+        function vaciarLista() {
+            if(confirm("¿Seguro querés borrar todos los registros de hoy?")) {
+                registros = [];
                 guardarYRefrescar();
             }
         }
