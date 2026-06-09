@@ -2,152 +2,148 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PowerLog - Control de Entrenamiento</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased">
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased selection:bg-blue-500 selection:text-white">
 
-    <div class="max-w-md mx-auto p-4 pb-12">
+    <div class="w-full min-h-screen p-4 flex flex-col justify-start">
 
-        <div id="view-inicio" class="space-y-6 pt-10">
-            <div class="text-center space-y-2">
-                <div class="bg-blue-600 w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-white shadow-md shadow-blue-600/20">
-                    <i data-lucide="dumbbell" class="w-7 h-7"></i>
+        <div id="view-inicio" class="space-y-6 pt-10 w-full">
+            <div class="text-center space-y-3">
+                <div class="bg-blue-600 w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+                    <i data-lucide="dumbbell" class="w-8 h-8"></i>
                 </div>
-                <h1 class="text-2xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
-                <p class="text-xs text-slate-400 font-medium">Selecciona tu perfil para ingresar</p>
+                <h1 class="text-3xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
+                <p class="text-sm text-slate-400 font-medium">Selecciona tu perfil para ingresar</p>
             </div>
 
-            <div class="space-y-3 pt-4">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition hover:border-blue-500 hover:shadow-sm group cursor-pointer">
-                    <span class="group-hover:text-blue-600">Nico V</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
+            <div class="space-y-4 pt-6 w-full">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 border-slate-200 text-slate-700 shadow-sm">
+                    <span class="text-lg">Nico V</span>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition hover:border-blue-500 hover:shadow-sm group cursor-pointer">
-                    <span class="group-hover:text-blue-600">Nico</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 border-slate-200 text-slate-700 shadow-sm">
+                    <span class="text-lg">Nico</span>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition hover:border-blue-500 hover:shadow-sm group cursor-pointer">
-                    <span class="group-hover:text-blue-600">Samuel</span>
-                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 border-slate-200 text-slate-700 shadow-sm">
+                    <span class="text-lg">Samuel</span>
+                    <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
             </div>
         </div>
 
-        <div id="view-usuario" class="hidden space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
-                <button onclick="mostrarVista('view-inicio')" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
+        <div id="view-usuario" class="hidden space-y-6 w-full">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <button onclick="mostrarVista('view-inicio')" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Volver
                 </button>
                 <div class="text-right">
                     <span class="text-[10px] font-black text-blue-600 uppercase tracking-wider block">Perfil activo</span>
-                    <h2 id="nombre-perfil-activo" class="text-base font-black text-slate-800">Nombre</h2>
+                    <h2 id="nombre-perfil-activo" class="text-lg font-black text-slate-800">Nombre</h2>
                 </div>
             </div>
 
             <div class="space-y-1">
-                <h3 class="text-sm font-bold text-slate-700">Mis Rutinas</h3>
+                <h3 class="text-base font-bold text-slate-700">Mis Rutinas</h3>
                 <p class="text-xs text-slate-400 font-medium">Elige el día que vas a organizar o entrenar</p>
             </div>
 
-            <div class="space-y-2.5" id="lista-dias-container">
+            <div class="space-y-3 w-full" id="lista-dias-container">
                 </div>
         </div>
 
-        <div id="view-dia" class="hidden space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
-                <button onclick="regresarAPantallaUsuario()" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a días
+        <div id="view-dia" class="hidden space-y-6 w-full">
+            <div class="flex items-center justify-between border-b border-slate-200 pb-4">
+                <button onclick="regresarAPantallaUsuario()" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2">
+                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Volver a días
                 </button>
                 <div class="text-right">
-                    <span id="txt-perfil-en-dia" class="text-[10px] text-slate-400 font-bold block">Nico</span>
-                    <h2 id="txt-dia-activo" class="text-base font-black text-slate-800">Día X</h2>
+                    <span id="txt-perfil-en-dia" class="text-[10px] text-slate-400 font-bold block">Usuario</span>
+                    <h2 id="txt-dia-activo" class="text-lg font-black text-slate-800">Día X</h2>
                 </div>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                    <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-500"></i> Balance de series esta semana
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <i data-lucide="activity" class="w-4 h-4 text-blue-500"></i> Balance de series esta semana
                 </h4>
                 
-                <div class="space-y-1">
-                    <div class="flex justify-between text-[11px] font-medium">
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-xs font-medium">
                         <span class="text-slate-700 font-bold">Pecho</span>
                         <span id="conteo-pecho" class="text-slate-500 font-semibold">Quedan 12 series</span>
                     </div>
-                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                         <div id="bar-pecho" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <div class="space-y-1">
-                    <div class="flex justify-between text-[11px] font-medium">
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-xs font-medium">
                         <span class="text-slate-700 font-bold">Espalda</span>
                         <span id="conteo-espalda" class="text-slate-500 font-semibold">Quedan 12 series</span>
                     </div>
-                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                         <div id="bar-espalda" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <div class="space-y-1">
-                    <div class="flex justify-between text-[11px] font-medium">
+                <div class="space-y-1.5">
+                    <div class="flex justify-between text-xs font-medium">
                         <span class="text-slate-700 font-bold">Piernas</span>
                         <span id="conteo-piernas" class="text-slate-500 font-semibold">Quedan 12 series</span>
                     </div>
-                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                         <div id="bar-piernas" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <p class="text-[10px] text-slate-400 leading-normal pt-1 border-t border-slate-100">
+                <p class="text-[11px] text-slate-400 leading-normal pt-2 border-t border-slate-100">
                     * Se recomienda realizar de 10 a 12 series semanales por grupo muscular principal para hipertrofia. Las series se descuentan automáticamente al registrar pesos o repeticiones.
                 </p>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Agregar Ejercicio</span>
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Agregar Ejercicio</span>
                 <div class="grid grid-cols-12 gap-2">
-                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca" class="col-span-7 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca" class="col-span-7 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500">
                     
-                    <select id="select-grupo-muscular" class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs font-bold text-slate-600 focus:outline-none focus:border-blue-500">
+                    <select id="select-grupo-muscular" class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm font-bold text-slate-600 focus:outline-none focus:border-blue-500">
                         <option value="Pecho">Pecho</option>
                         <option value="Espalda">Espalda</option>
                         <option value="Piernas">Piernas</option>
                     </select>
                 </div>
-                <button onclick="crearEjercicio()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition cursor-pointer">
+                <button onclick="crearEjercicio()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
                     <i data-lucide="plus" class="w-4 h-4"></i> Guardar Ejercicio
                 </button>
             </div>
 
-            <div class="space-y-3" id="bloque-ejercicios-lista">
+            <div class="space-y-4 w-full" id="bloque-ejercicios-lista">
                 </div>
         </div>
 
     </div>
 
     <script>
-        // Metas recomendadas semanales
         const METAS = { "Pecho": 12, "Espalda": 12, "Piernas": 12 };
 
-        // Estructura limpia para un usuario nuevo
         function inicializarDatosUsuario() {
             return {
                 rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
             };
         }
 
-        // Base de datos que se guarda en el teléfono
         let db = JSON.parse(localStorage.getItem('gym_step_by_step_db')) || {
             "Nico V": inicializarDatosUsuario(),
             "Nico": inicializarDatosUsuario(),
             "Samuel": inicializarDatosUsuario()
         };
 
-        // Estado de navegación activo
         let usuarioSeleccionado = "";
         let diaSeleccionado = 1;
 
@@ -169,7 +165,7 @@
 
         // --- ACCIONES PANTALLA 1: SELECCIONAR USUARIO ---
         function seleccionarUsuario(nombre) {
-            usuarioSeleccionado = ...nombre || nombre; // Asegurar paso de string limpio
+            usuarioSeleccionado = nombre;
             document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
             
             const containerDias = document.getElementById('lista-dias-container');
@@ -177,7 +173,7 @@
 
             for (let i = 1; i <= 6; i++) {
                 const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700 cursor-pointer mb-2.5 shadow-sm";
+                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-base text-slate-700 mb-2 shadow-sm active:bg-slate-50";
                 
                 if (!db[usuarioSeleccionado].rutinas[i]) {
                     db[usuarioSeleccionado].rutinas[i] = [];
@@ -187,8 +183,8 @@
                 const textoContador = cantEjercicios === 1 ? '1 ejercicio' : `${cantEjercicios} ejercicios`;
 
                 btnDia.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
                         <span>Día ${i}</span>
                     </div>
                     <span class="text-xs text-slate-400 font-normal">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
@@ -277,8 +273,8 @@
 
             if (listaEjercicios.length === 0) {
                 container.innerHTML = `
-                    <div class="py-10 text-center border border-dashed border-slate-200 rounded-2xl bg-white shadow-sm">
-                        <p class="text-xs text-slate-400 font-medium">No hay ejercicios agregados en este día aún.</p>
+                    <div class="py-12 text-center border border-dashed border-slate-200 rounded-2xl bg-white shadow-sm w-full">
+                        <p class="text-sm text-slate-400 font-medium">No hay ejercicios agregados en este día aún.</p>
                     </div>
                 `;
                 calcularYActualizarSeriesRestantes();
@@ -287,7 +283,7 @@
 
             listaEjercicios.forEach(ej => {
                 const tarjeta = document.createElement('div');
-                tarjeta.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm mb-3";
+                tarjeta.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm mb-3 w-full";
 
                 let htmlSeries = '';
                 ej.series.forEach((serie, index) => {
@@ -296,26 +292,26 @@
                             <span class="col-span-2 text-xs font-bold text-slate-400 text-center">#${index + 1}</span>
                             <input type="text" placeholder="Peso" value="${serie.peso}"
                                 oninput="actualizarDatoSerie(${ej.id}, ${index}, 'peso', this.value)"
-                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-center text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
+                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center text-sm text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
                             <input type="number" placeholder="Reps" value="${serie.reps}"
                                 oninput="actualizarDatoSerie(${ej.id}, ${index}, 'reps', this.value)"
-                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-center text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
+                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center text-sm text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
                         </div>
                     `;
                 });
 
                 tarjeta.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
                         <div>
-                            <h4 class="font-bold text-xs text-slate-800 tracking-tight">${ej.nombre}</h4>
-                            <span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">${ej.musculo}</span>
+                            <h4 class="font-bold text-sm text-slate-800 tracking-tight">${ej.nombre}</h4>
+                            <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider">${ej.musculo}</span>
                         </div>
-                        <button onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 transition p-1 cursor-pointer">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        <button onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 transition p-1.5">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                     </div>
                     <div class="space-y-2">
-                        <div class="grid grid-cols-12 gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider text-center">
+                        <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
                             <span class="col-span-2 text-left text-slate-300">Serie</span>
                             <span class="col-span-5">Peso</span>
                             <span class="col-span-5">Reps</span>
@@ -364,7 +360,6 @@
                         textoConteo.className = "text-emerald-600 font-black text-xs";
                         barraProgreso.className = "bg-emerald-500 h-full transition-all duration-300";
                     } else {
-                        textoConteo.innerText = `Quedan ${quan} series`;
                         textoConteo.innerText = `Quedan ${quedan} series`;
                         textoConteo.className = "text-slate-500 font-semibold text-xs";
                         barraProgreso.className = "bg-blue-600 h-full transition-all duration-300";
