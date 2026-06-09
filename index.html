@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym Tracker</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+    background: #f5f5f5;
+}
+
+h1,h2{
+    text-align:center;
+}
+
+.card{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-radius:10px;
+}
+
+input,select{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    cursor:pointer;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th,td{
+    border:1px solid #ddd;
+    padding:8px;
+    text-align:center;
+}
+
+th{
+    background:#eee;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🏋️ Gym Tracker</h1>
+
+<div class="card">
+
+<h2>Agregar ejercicio</h2>
+
+<select id="dia">
+<option>Día 1</option>
+<option>Día 2</option>
+<option>Día 3</option>
+<option>Día 4</option>
+<option>Día 5</option>
+</select>
+
+<select id="musculo">
+<option>Pecho</option>
+<option>Espalda</option>
+<option>Hombros</option>
+<option>Bíceps</option>
+<option>Tríceps</option>
+<option>Cuádriceps</option>
+<option>Isquios</option>
+<option>Glúteos</option>
+<option>Gemelos</option>
+<option>Abdomen</option>
+</select>
+
+<input type="text" id="ejercicio" placeholder="Ejercicio">
+
+<input type="number" id="peso" placeholder="Peso (kg)">
+
+<input type="number" id="series" placeholder="Series">
+
+<input type="number" id="reps" placeholder="Repeticiones">
+
+<button onclick="agregarEjercicio()">Guardar</button>
+
+</div>
+
+<div class="card">
+
+<h2>Entrenamientos</h2>
+
+<table>
+<thead>
+<tr>
+<th>Día</th>
+<th>Músculo</th>
+<th>Ejercicio</th>
+<th>Peso</th>
+<th>Series</th>
+<th>Reps</th>
+</tr>
+</thead>
+
+<tbody id="tablaEjercicios"></tbody>
+
+</table>
+
+</div>
+
+<div class="card">
+
+<h2>Series Semanales</h2>
+
+<div id="resumen"></div>
+
+</div>
+
+<script>
+
+let ejercicios =
+JSON.parse(localStorage.getItem("ejercicios")) || [];
+
+function guardarDatos(){
+    localStorage.setItem(
+        "ejercicios",
+        JSON.stringify(ejercicios)
+    );
+}
+
+function agregarEjercicio(){
+
+    const nuevo = {
+        dia: document.getElementById("dia").value,
+        musculo: document.getElementById("musculo").value,
+        ejercicio: document.getElementById("ejercicio").value,
+        peso: document.getElementById("peso").value,
+        series: Number(document.getElementById("series").value),
+        reps: document.getElementById("reps").value
+    };
+
+    ejercicios.push(nuevo);
+
+    guardarDatos();
+    mostrarDatos();
+
+    document.getElementById("ejercicio").value="";
+    document.getElementById("peso").value="";
+    document.getElementById("series").value="";
+    document.getElementById("reps").value="";
+}
+
+function mostrarDatos(){
+
+    const tabla =
+    document.getElementById("tablaEjercicios");
+
+    tabla.innerHTML="";
+
+    ejercicios.forEach(e => {
+
+        tabla.innerHTML += `
+        <tr>
+            <td>${e.dia}</td>
+            <td>${e.musculo}</td>
+            <td>${e.ejercicio}</td>
+            <td>${e.peso} kg</td>
+            <td>${e.series}</td>
+            <td>${e.reps}</td>
+        </tr>
+        `;
+    });
+
+    actualizarResumen();
+}
+
+function actualizarResumen(){
+
+    const totales = {};
+
+    ejercicios.forEach(e => {
+
+        if(!totales[e.musculo]){
+            totales[e.musculo] = 0;
+        }
+
+        totales[e.musculo] += e.series;
+    });
+
+    let html = "";
+
+    for(let musculo in totales){
+
+        html += `
+        <p>
+        <strong>${musculo}</strong>:
+        ${totales[musculo]} series
+        </p>
+        `;
+    }
+
+    document.getElementById("resumen").innerHTML =
+    html;
+}
+
+mostrarDatos();
+
+</script>
+
+</body>
+</html>
