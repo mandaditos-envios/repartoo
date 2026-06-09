@@ -6,68 +6,101 @@
     <title>PowerLog</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased p-4 max-w-md mx-auto">
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased p-4 max-w-md mx-auto space-y-6">
 
-    <div class="flex justify-between items-center bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm mb-4">
+    <div class="flex justify-between items-center bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm">
         <div>
             <h1 class="font-black text-2xl tracking-tight text-slate-800">💪 PowerLog</h1>
             <p class="text-[10px] font-black uppercase text-slate-400">Registro de Entrenamiento</p>
         </div>
         <select id="sel-user" onchange="seleccionarUsuario()" class="bg-slate-50 border-2 border-slate-300 font-black p-3 rounded-xl text-sm focus:outline-none">
+            <option value="">Seleccionar perfil...</option>
             <option value="Nico V">Nico V</option>
             <option value="Nico">Nico</option>
             <option value="Samuel">Samuel</option>
         </select>
     </div>
 
-    <div class="space-y-4">
-        <h2 class="font-black text-lg text-slate-700">Mis Rutinas (Selecciona un día)</h2>
-        <div id="dias-lista" class="space-y-2"></div>
+    <div id="seccion-dias" class="space-y-3 hidden">
+        <h2 class="font-black text-base text-slate-700">📅 Mis Rutinas (Selecciona un día)</h2>
+        <div class="grid grid-cols-3 gap-2" id="dias-lista"></div>
     </div>
 
-    <div class="mt-6 bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-4">
+    <div id="seccion-ejercicios" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-4 hidden">
         <div class="flex justify-between items-center border-b pb-2">
-            <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-800">Día 1 - Ejercicios</h3>
-            <button onclick="agregarEjercicio()" class="bg-emerald-600 text-white text-xs font-black px-3 py-2 rounded-xl shadow-sm">➕ Agregar</button>
+            <div>
+                <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-800">Ejercicios</h3>
+                <span id="txt-modo-dia" class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-black uppercase tracking-wider">Carga: ---</span>
+            </div>
+            <button onclick="agregarEjercicio()" class="bg-emerald-600 text-white text-xs font-black px-3 py-2 rounded-xl shadow-sm active:scale-95">➕ Agregar</button>
         </div>
         
-        <div id="ejercicios-lista" class="space-y-3">
-            <p class="text-xs text-slate-400 font-bold text-center py-6">Selecciona un día arriba para ver o agregar ejercicios.</p>
-        </div>
+        <div id="ejercicios-lista" class="space-y-3"></div>
+        
+        <button onclick="finalizarDia()" class="w-full bg-blue-600 text-white text-sm font-black py-3 rounded-xl shadow-md active:scale-98">✅ Finalizar y guardar Día</button>
     </div>
 
-    <div class="mt-6 bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
-        <h4 class="text-xs font-black uppercase text-slate-400">📊 Volumen Semanal</h4>
+    <div class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
+        <h4 class="text-xs font-black uppercase text-slate-400">📊 Volumen Semanal (Series acumuladas)</h4>
         <div id="panel-barras" class="space-y-2"></div>
     </div>
 
-    <button onclick="limpiarTodo()" class="w-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-black py-3 rounded-xl mt-6">⚠️ Borrar datos y reiniciar app</button>
+    <div class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
+        <h3 class="font-black text-base text-slate-700">📅 Registro por Calendario</h3>
+        <div class="text-center font-black text-sm text-slate-500 uppercase py-1" id="mes-titulo">Mes</div>
+        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase">
+            <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1.5" id="celdas-calendario"></div>
+        
+        <div class="pt-2 border-t">
+            <h4 class="text-[10px] font-black text-slate-400 uppercase mb-2" id="titulo-detalle">Toca un día marcado en azul</h4>
+            <div id="lista-detalles-dia" class="space-y-2 max-h-48 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <button onclick="limpiarTodo()" class="w-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-black py-3 rounded-xl">⚠️ Borrar datos y reiniciar app</button>
 
     <script>
         const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
         
-        let user = localStorage.getItem('pl_user') || "Nico V";
-        let dia = parseInt(localStorage.getItem('pl_dia')) || 1;
+        let user = localStorage.getItem('pl_user') || "";
+        let dia = parseInt(localStorage.getItem('pl_dia')) || null;
         let db = JSON.parse(localStorage.getItem('pl_db')) || {};
+        let history = JSON.parse(localStorage.getItem('pl_history')) || [];
 
         document.getElementById('sel-user').value = user;
+        comprobarVistas();
 
-        // Inicializar estructura base si no existe
-        if (!db[user]) {
-            db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+        function comprobarVistas() {
+            if(user && db[user]) {
+                document.getElementById('seccion-dias').classList.remove('hidden');
+                renderDias();
+                if(dia) {
+                    document.getElementById('seccion-ejercicios').classList.remove('hidden');
+                    renderEjercicios();
+                } else {
+                    document.getElementById('seccion-ejercicios').classList.add('hidden');
+                }
+            } else {
+                document.getElementById('seccion-dias').classList.add('hidden');
+                document.getElementById('seccion-ejercicios').classList.add('hidden');
+            }
+            actualizarBarras();
+            renderizarCalendario();
         }
-
-        renderDias();
-        renderEjercicios();
 
         function seleccionarUsuario() {
             user = document.getElementById('sel-user').value;
             localStorage.setItem('pl_user', user);
-            if (!db[user]) {
+            dia = null;
+            localStorage.removeItem('pl_dia');
+            
+            if(user && !db[user]) {
                 db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+                localStorage.setItem('pl_db', JSON.stringify(db));
             }
-            renderDias();
-            renderEjercicios();
+            comprobarVistas();
         }
 
         function renderDias() {
@@ -79,28 +112,38 @@
                 const esActivo = (i === dia);
                 
                 const btn = document.createElement('button');
-                btn.className = `w-full p-4 rounded-2xl font-black text-sm flex justify-between items-center border-2 transition-all ${esActivo ? 'bg-blue-600 text-white border-blue-700 shadow-md' : 'bg-white border-slate-200 text-slate-800'}`;
-                btn.innerHTML = `<span>📅 Día ${i}</span> <span class="${esActivo ? 'text-blue-100' : 'text-slate-400'} text-xs">${cant} ejercicios</span>`;
+                btn.className = `p-3 rounded-xl font-black text-xs flex flex-col items-center gap-1 border-2 transition-all ${esActivo ? 'bg-blue-600 text-white border-blue-700 shadow-md' : 'bg-white border-slate-200 text-slate-800'}`;
+                btn.innerHTML = `<span>Día ${i}</span> <span class="${esActivo ? 'text-blue-200' : 'text-slate-400'} text-[10px] font-bold">${cant} ej.</span>`;
                 
                 btn.onclick = () => {
                     dia = i;
                     localStorage.setItem('pl_dia', i);
-                    renderDias();
-                    renderEjercicios();
+                    comprobarVistas();
                 };
                 container.appendChild(btn);
             }
         }
 
         function renderEjercicios() {
-            document.getElementById('titulo-dia-ejercicios').innerText = `Ejercicios del Día ${dia}`;
+            document.getElementById('titulo-dia-ejercicios').innerText = `Ejercicios - Día ${dia}`;
+            
+            // Asignar o verificar modo de carga del día actual (Pesado / Liviano) guardado en la estructura
+            if(!db[user]["modo_"+dia]) db[user]["modo_"+dia] = "Pesado";
+            
+            const modoActual = db[user]["modo_"+dia];
+            document.getElementById('txt-modo-dia').innerHTML = `
+                Carga: <select class="bg-transparent font-black underline cursor-pointer focus:outline-none" onchange="cambiarModoDia(this.value)">
+                    <option value="Pesado" ${modoActual==='Pesado'?'selected':''}>Pesado</option>
+                    <option value="Liviano" ${modoActual==='Liviano'?'selected':''}>Liviano</option>
+                </select>
+            `;
+
             const container = document.getElementById('ejercicios-lista');
             container.innerHTML = '';
 
             const lista = db[user][dia] || [];
             if(lista.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6">No hay ejercicios en el Día ${dia}. ¡Agrega uno!</p>`;
-                actualizarBarras();
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6">No hay ejercicios cargados hoy.</p>`;
                 return;
             }
 
@@ -121,7 +164,9 @@
 
                 div.innerHTML = `
                 <div class="flex justify-between items-center">
-                    <span class="font-black text-sm text-slate-800">${ej.nombre} <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black">${ej.musculo}</span></span>
+                    <span class="font-black text-sm text-slate-800">${ej.nombre} 
+                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black tracking-wider">${ej.musculo}</span>
+                    </span>
                     <button onclick="eliminarEj(${idxEj})" class="text-rose-500 font-bold text-xs bg-rose-50 px-2 py-1 rounded-lg">X</button>
                 </div>
                 <div class="grid grid-cols-9 gap-1 text-[8px] font-black uppercase text-slate-400 text-center">
@@ -130,7 +175,12 @@
                 ${seriesHtml}`;
                 container.appendChild(div);
             });
-            actualizarBarras();
+        }
+
+        function cambiarModoDia(val) {
+            db[user]["modo_"+dia] = val;
+            localStorage.setItem('pl_db', JSON.stringify(db));
+            renderEjercicios();
         }
 
         function agregarEjercicio() {
@@ -149,13 +199,6 @@
             renderDias();
         }
 
-        function guardarEj(idx, sIdx, campo, val) {
-            db[user][dia][idx].series[sIdx][campo] = val;
-            localStorage.setItem('pl_db', JSON.stringify(db));
-            actualizarBarras();
-        }
-        
-        // Versión simplificada para evitar errores de comillas en el DOM
         function guardarSerie(idxEj, sIdx, campo, val) {
             db[user][dia][idxEj].series[sIdx][campo] = val;
             localStorage.setItem('pl_db', JSON.stringify(db));
@@ -169,6 +212,30 @@
             renderDias();
         }
 
+        function finalizarDia() {
+            const hoy = new Date();
+            const fechaString = hoy.toISOString().split('T')[0];
+            const modoActual = db[user]["modo_"+dia] || "Pesado";
+
+            const lista = db[user][dia] || [];
+            lista.forEach(ej => {
+                ej.series.forEach((s, idxS) => {
+                    if(s.peso || s.reps) {
+                        history.push({
+                            usuario: user, fecha: fechaString, dia: dia, 
+                            ejercicio: ej.nombre, musculo: ej.musculo, intensidad: modoActual,
+                            serie: idxS+1, peso: s.peso, reps: s.reps
+                        });
+                    }
+                });
+            });
+            
+            localStorage.setItem('pl_history', JSON.stringify(history));
+            alert(`¡Entrenamiento guardado en el historial del día de hoy!`);
+            renderizarCalendario();
+            actualizarBarras();
+        }
+
         function actualizarBarras() {
             const panel = document.getElementById('panel-barras');
             panel.innerHTML = '';
@@ -176,8 +243,7 @@
             let hechos = {};
             Object.keys(METAS).forEach(m => hechos[m] = 0);
 
-            // Contar series con datos
-            if(db[user]) {
+            if(user && db[user]) {
                 for(let d=1; d<=6; d++) {
                     if(db[user][d]) {
                         db[user][d].forEach(ej => {
@@ -200,17 +266,94 @@
                 <div class="text-xs space-y-0.5">
                     <div class="flex justify-between font-black text-slate-700">
                         <span>${m}</span>
-                        <span>${hechas}/${meta}</span>
+                        <span>${hechas}/${meta} series</span>
                     </div>
                     <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div class="bg-blue-600 h-full" style="width: ${porc}%"></div>
+                        <div class="bg-blue-600 h-full transition-all" style="width: ${porc}%"></div>
                     </div>
                 </div>`;
             });
         }
 
+        // ================= CALENDARIO =================
+        function renderizarCalendario() {
+            const fechaActual = new Date();
+            const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            document.getElementById('mes-titulo').innerText = `${nombresMeses[fechaActual.getMonth()]} ${fechaActual.getFullYear()}`;
+
+            const contenedorCeldas = document.getElementById('celdas-calendario');
+            contenedorCeldas.innerHTML = '';
+
+            const año = fechaActual.getFullYear();
+            const mes = fechaActual.getMonth();
+            const indexPrimerDia = new Date(año, mes, 1).getDay();
+            const totalDiasMes = new Date(año, mes + 1, 0).getDate();
+
+            for (let i = 0; i < indexPrimerDia; i++) {
+                contenedorCeldas.appendChild(document.createElement('div'));
+            }
+
+            for (let diaCal = 1; diaCal <= totalDiasMes; diaCal++) {
+                const botonCelda = document.createElement('button');
+                botonCelda.type = "button";
+                
+                const diaPadded = String(diaCal).padStart(2, '0');
+                const mesPadded = String(mes + 1).padStart(2, '0');
+                const llaveFecha = `${año}-${mesPadded}-${diaPadded}`;
+
+                const registroExistente = history.some(log => log.fecha === llaveFecha && log.usuario === user);
+
+                botonCelda.className = `w-full aspect-square text-xs font-black rounded-xl flex items-center justify-center active:scale-90 transition-all ${registroExistente ? 'bg-blue-600 text-white shadow-md shadow-blue-600/10' : 'bg-slate-100 text-slate-500 border'}`;
+                botonCelda.innerText = diaCal;
+
+                botonCelda.onclick = function() { desplegarResumenDia(llaveFecha, diaCal); };
+                contenedorCeldas.appendChild(botonCelda);
+            }
+        }
+
+        function desplegarResumenDia(llaveFecha, nroDia) {
+            document.getElementById('titulo-detalle').innerText = `Entrenamientos guardados del día ${nroDia}:`;
+            const listaDetalles = document.getElementById('lista-detalles-dia');
+            listaDetalles.innerHTML = '';
+
+            const filtrados = history.filter(log => log.fecha === llaveFecha && log.usuario === user);
+
+            if (filtrados.length === 0) {
+                listaDetalles.innerHTML = `<div class="p-3 text-center bg-slate-50 rounded-xl text-xs text-slate-400 font-bold border">Sin registros en esta fecha.</div>`;
+                return;
+            }
+
+            let agrupado = {};
+            filtrados.forEach(log => {
+                if (!agrupado[log.ejercicio]) {
+                    agrupado[log.ejercicio] = { musculo: log.musculo, intensidad: log.intensidad, series: [] };
+                }
+                agrupado[log.ejercicio].series.push(log);
+            });
+
+            Object.keys(agrupado).forEach(nombre => {
+                const item = agrupado[nombre];
+                const tarj = document.createElement('div');
+                tarj.className = "bg-slate-50 border rounded-xl p-3 space-y-1";
+                
+                let lineasSeries = '';
+                item.series.forEach(s => {
+                    lineasSeries += `<div class="text-[11px] text-slate-600">Serie #${s.serie}: <span class="font-black text-slate-800">${s.peso}kg</span> x <span class="font-black">${s.reps} reps</span></div>`;
+                });
+
+                tarj.innerHTML = `
+                    <div class="flex justify-between items-center border-b pb-1 mb-1">
+                        <span class="font-black text-xs text-slate-800">${nombre}</span>
+                        <span class="text-[8px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-black uppercase">${item.intensidad}</span>
+                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded font-black uppercase">${item.musculo}</span>
+                    </div>
+                    <div class="space-y-0.5">${lineasSeries}</div>`;
+                listaDetalles.appendChild(tarj);
+            });
+        }
+
         function limpiarTodo() {
-            if(confirm("¿Seguro querés borrar todo?")) {
+            if(confirm("¿Seguro querés borrar todos los datos?")) {
                 localStorage.clear();
                 location.reload();
             }
