@@ -115,6 +115,12 @@
         let db = JSON.parse(localStorage.getItem('pl_db')) || {};
         let history = JSON.parse(localStorage.getItem('pl_history')) || [];
 
+        // Asegurar estructura del perfil activo al cargar la página
+        if(user && !db[user]) {
+            db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+            localStorage.setItem('pl_db', JSON.stringify(db));
+        }
+
         document.getElementById('sel-user').value = user;
         comprobarVistas();
 
@@ -122,11 +128,12 @@
             if(user && db[user]) {
                 document.getElementById('seccion-dias').classList.remove('hidden');
                 renderDias();
-                if(dia) {
+                if(dia && db[user][dia]) {
                     document.getElementById('seccion-ejercicios').classList.remove('hidden');
                     renderEjercicios();
                 } else {
                     document.getElementById('seccion-ejercicios').classList.add('hidden');
+                    document.getElementById('seccion-form-ejercicio').classList.add('hidden');
                 }
             } else {
                 document.getElementById('seccion-dias').classList.add('hidden');
@@ -288,7 +295,6 @@
             });
             localStorage.setItem('pl_db', JSON.stringify(db));
             
-            // Ocultar formulario y limpiar
             document.getElementById('seccion-form-ejercicio').classList.add('hidden');
             document.getElementById('form-ejercicio-custom').value = '';
 
@@ -387,12 +393,4 @@
             contenedorCeldas.innerHTML = '';
 
             const año = fechaActual.getFullYear();
-            const mes = fechaActual.getMonth();
-            const indexPrimerDia = new Date(año, mes, 1).getDay();
-            const totalDiasMes = new Date(año, mes + 1, 0).getDate();
-
-            for (let i = 0; i < indexPrimerDia; i++) {
-                contenedorCeldas.appendChild(document.createElement('div'));
-            }
-
-  
+            const mes =
