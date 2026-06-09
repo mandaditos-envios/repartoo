@@ -112,10 +112,19 @@
         
         let user = localStorage.getItem('pl_user') || "";
         let dia = parseInt(localStorage.getItem('pl_dia')) || null;
-        let db = JSON.parse(localStorage.getItem('pl_db')) || {};
-        let history = JSON.parse(localStorage.getItem('pl_history')) || [];
+        let db = {};
+        let history = [];
 
-        // Inicialización segura de perfiles
+        try {
+            db = JSON.parse(localStorage.getItem('pl_db')) || {};
+            history = JSON.parse(localStorage.getItem('pl_history')) || [];
+        } catch(e) {
+            localStorage.clear();
+            db = {};
+            history = [];
+        }
+
+        // Asegurar estructura del perfil activo al cargar la página
         if(user && !db[user]) {
             db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
             localStorage.setItem('pl_db', JSON.stringify(db));
@@ -125,11 +134,12 @@
         comprobarVistas();
 
         function comprobarVistas() {
-            if(user !== "") {
+            if(user && db[user]) {
                 document.getElementById('seccion-dias').classList.remove('hidden');
                 renderDias();
-                if(dia && db[user] && db[user][dia]) {
+                if(dia && db[user][dia]) {
                     document.getElementById('seccion-ejercicios').classList.remove('hidden');
+                    document.getElementById('seccion-form-ejercicio').classList.add('hidden');
                     renderEjercicios();
                 } else {
                     document.getElementById('seccion-ejercicios').classList.add('hidden');
@@ -161,6 +171,8 @@
             const container = document.getElementById('dias-lista');
             container.innerHTML = '';
             
+            if (!db[user]) return;
+
             for(let i=1; i<=6; i++) {
                 const cant = db[user][i]?.length || 0;
                 const esActivo = (i === dia);
@@ -387,10 +399,4 @@
         function renderizarCalendario() {
             const fechaActual = new Date();
             const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementById('mes-titulo').innerText = `${nombresMeses[fechaActual.getMonth()]} ${fechaActual.getFullYear()}`;
-
-            const contenedorCeldas = document.getElementById('celdas-calendario');
-            contenedorCeldas.innerHTML = '';
-
-            const año = fechaActual.getFullYear();
-            const mes = fechaActual.getM
+            document.getElementBy
