@@ -49,28 +49,27 @@
             const usuario = document.getElementById('selector-usuario-principal').value;
             localStorage.setItem('powerlog_usuario_actual', usuario);
             
-            // Estructura base por si es la primera vez que entran
-            let db = JSON.parse(localStorage.getItem('powerlog_db_v8')) || {};
+            let db = JSON.parse(localStorage.getItem('powerlog_db_v9')) || {};
             if (!db[usuario]) {
                 db[usuario] = {
                     rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
                     checksSemanales: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false },
                     identificadorSemana: calcularSemanaAño()
                 };
-                localStorage.setItem('powerlog_db_v8', JSON.stringify(db));
+                localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
             }
 
-            // Validación de reinicio (Lunes o 6 días completos)
             const semanaActual = calcularSemanaAño();
             const completóTodo = Object.values(db[usuario].checksSemanales || {}).every(v => v === true);
             
             if (db[usuario].identificadorSemana !== semanaActual || completóTodo) {
                 db[usuario].checksSemanales = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
                 db[usuario].identificadorSemana = semanaActual;
-                localStorage.setItem('powerlog_db_v8', JSON.stringify(db));
+                localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
             }
 
-            window.location.href = 'perfil.html';
+            // CAMBIO AQUÍ: Ruta relativa explícita para evitar errores en GitHub Pages
+            window.location.href = './perfil.html';
         }
         document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
     </script>
