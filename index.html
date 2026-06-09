@@ -11,56 +11,56 @@
 
     <div class="w-full min-h-screen p-4 flex flex-col justify-start">
 
-        <div id="view-inicio" class="space-y-6 pt-6 w-full">
+        <div id="view-inicio" class="block space-y-8 pt-8 w-full">
             <div class="text-center space-y-3">
-                <div class="bg-blue-600 w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
-                    <i data-lucide="dumbbell" class="w-8 h-8"></i>
+                <div class="bg-blue-600 w-20 h-20 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
+                    <i data-lucide="dumbbell" class="w-10 h-10"></i>
                 </div>
-                <h1 class="text-3xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
-                <p class="text-sm text-slate-400 font-medium">Selecciona tu perfil para ingresar</p>
+                <h1 class="text-4xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
+                <p class="text-base text-slate-400 font-medium">Selecciona tu perfil para ingresar</p>
             </div>
 
-            <div class="space-y-3 pt-2 w-full">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200 text-left font-bold py-4.5 px-5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
-                    <span class="text-base">Nico V</span>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
+            <div class="space-y-4 pt-4 w-full">
+                <button type="button" onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border-2 border-slate-200 text-left font-black py-6 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 shadow-md active:bg-slate-100 block">
+                    <span>Nico V</span>
+                    <i data-lucide="chevron-right" class="w-6 h-6 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200 text-left font-bold py-4.5 px-5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
-                    <span class="text-base">Nico</span>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
+                <button type="button" onclick="seleccionarUsuario('Nico')" class="w-full bg-white border-2 border-slate-200 text-left font-black py-6 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 shadow-md active:bg-slate-100 block">
+                    <span>Nico</span>
+                    <i data-lucide="chevron-right" class="w-6 h-6 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200 text-left font-bold py-4.5 px-5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
-                    <span class="text-base">Samuel</span>
-                    <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
+                <button type="button" onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border-2 border-slate-200 text-left font-black py-6 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 shadow-md active:bg-slate-100 block">
+                    <span>Samuel</span>
+                    <i data-lucide="chevron-right" class="w-6 h-6 text-blue-600"></i>
                 </button>
             </div>
         </div>
 
         <div id="view-usuario" class="hidden space-y-6 w-full">
             <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-                <button onclick="mostrarVista('view-inicio')" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2 cursor-pointer">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Volver
+                <button type="button" onclick="mostrarVista('view-inicio')" class="text-base font-black text-slate-500 hover:text-slate-800 flex items-center gap-2 py-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6 text-slate-600"></i> Volver Perfiles
                 </button>
                 <div class="text-right">
-                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-wider block">Perfil activo</span>
-                    <h2 id="nombre-perfil-activo" class="text-lg font-black text-slate-800">Nombre</h2>
+                    <span class="text-[11px] font-black text-blue-600 uppercase tracking-wider block">Perfil activo</span>
+                    <h2 id="nombre-perfil-activo" class="text-2xl font-black text-slate-800">Nombre</h2>
                 </div>
             </div>
 
             <div class="space-y-1">
-                <h3 class="text-base font-bold text-slate-700">Mis Rutinas</h3>
-                <p class="text-xs text-slate-400 font-medium">Elige el día que vas a organizar o entrenar</p>
+                <h3 class="text-lg font-black text-slate-700">Mis Rutinas</h3>
+                <p class="text-sm text-slate-400 font-medium">Elige el día que vas a organizar o entrenar</p>
             </div>
 
-            <div class="space-y-2 w-full" id="lista-dias-container">
+            <div class="space-y-3 w-full" id="lista-dias-container">
                 </div>
 
-            <div class="space-y-3 pt-4 border-t border-slate-200 w-full">
+            <div class="space-y-3 pt-6 border-t-2 border-slate-200 w-full">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                         <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Registros de este perfil
                     </h3>
-                    <button onclick="limpiarHistorialUsuario()" class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 active:scale-95 cursor-pointer">
+                    <button type="button" onclick="limpiarHistorialUsuario()" class="text-xs font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 active:scale-95">
                         Limpiar
                     </button>
                 </div>
@@ -72,17 +72,17 @@
 
         <div id="view-dia" class="hidden space-y-6 w-full">
             <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-                <button onclick="regresarAPantallaUsuario()" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2 cursor-pointer">
-                    <i data-lucide="arrow-left" class="w-5 h-5"></i> Volver a días
+                <button type="button" onclick="regresarAPantallaUsuario()" class="text-base font-black text-slate-500 hover:text-slate-800 flex items-center gap-2 py-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6 text-slate-600"></i> Volver a días
                 </button>
                 <div class="text-right">
-                    <span id="txt-perfil-en-dia" class="text-[10px] text-slate-400 font-bold block">Usuario</span>
-                    <h2 id="txt-dia-activo" class="text-lg font-black text-slate-800">Día X</h2>
+                    <span id="txt-perfil-en-dia" class="text-[11px] text-slate-400 font-bold block">Usuario</span>
+                    <h2 id="txt-dia-activo" class="text-2xl font-black text-slate-800">Día X</h2>
                 </div>
             </div>
 
-            <button onclick="abrirModalEjercicio()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-2xl text-base flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-md shadow-emerald-600/10 cursor-pointer">
-                <i data-lucide="plus-circle" class="w-5 h-5"></i> Agregar Ejercicio
+            <button type="button" onclick="abrirModalEjercicio()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-md shadow-emerald-600/10">
+                <i data-lucide="plus-circle" class="w-6 h-6"></i> Agregar Ejercicio
             </button>
 
             <div class="space-y-4 w-full" id="bloque-ejercicios-lista">
@@ -94,21 +94,21 @@
                     <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
                         <i data-lucide="target" class="w-4 h-4 text-emerald-500"></i> Repeticiones por Serie
                     </h4>
-                    <div class="grid grid-cols-3 gap-2 text-center text-[11px] font-bold">
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
                         <div class="bg-amber-50 text-amber-700 p-2 rounded-xl border border-amber-100">
-                            <span class="block text-slate-400 font-normal">Mínimo</span>
+                            <span class="block text-slate-400 font-normal text-[10px]">Mínimo</span>
                             5-6 reps
                         </div>
                         <div class="bg-emerald-50 text-emerald-700 p-2 rounded-xl border border-emerald-100">
-                            <span class="block text-slate-400 font-normal">Ideal</span>
+                            <span class="block text-slate-400 font-normal text-[10px]">Ideal</span>
                             6-15 reps
                         </div>
                         <div class="bg-rose-50 text-rose-700 p-2 rounded-xl border border-rose-100">
-                            <span class="block text-slate-400 font-normal">Máximo</span>
+                            <span class="block text-slate-400 font-normal text-[10px]">Máximo</span>
                             20-30 reps
                         </div>
                     </div>
-                    <p class="text-[10px] text-slate-400 leading-normal italic text-center pt-1">
+                    <p class="text-[11px] text-slate-400 leading-normal italic text-center pt-1">
                         "Lo más importante no es el número exacto, sino que termines cerca del fallo muscular."
                     </p>
                 </div>
@@ -131,21 +131,21 @@
     <div id="modal-ejercicio" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-lg font-black text-slate-800">Nuevo Ejercicio</h3>
-                <button onclick="cerrarModalEjercicio()" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
-                    <i data-lucide="x" class="w-5 h-5"></i>
+                <h3 class="text-xl font-black text-slate-800">Nuevo Ejercicio</h3>
+                <button type="button" onclick="cerrarModalEjercicio()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
             </div>
             
             <div class="space-y-4">
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre del ejercicio</label>
-                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca Inclinado" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500">
+                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca Inclinado" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-base font-medium text-slate-800 focus:outline-none focus:border-blue-500">
                 </div>
 
                 <div class="space-y-1.5">
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Grupo Muscular</label>
-                    <select id="select-grupo-muscular" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 focus:outline-none focus:border-blue-500">
+                    <select id="select-grupo-muscular" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3.5 text-base font-bold text-slate-600 focus:outline-none focus:border-blue-500">
                         <option value="Pecho">Pecho (10-20 series)</option>
                         <option value="Espalda">Espalda (10-20 series)</option>
                         <option value="Hombros">Hombros (10-20 series)</option>
@@ -159,10 +159,10 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button onclick="cerrarModalEjercicio()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition cursor-pointer">
+                <button type="button" onclick="cerrarModalEjercicio()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl text-base transition">
                     Cancelar
                 </button>
-                <button onclick="crearEjercicio()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-md shadow-blue-600/10 cursor-pointer">
+                <button type="button" onclick="crearEjercicio()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-base transition shadow-md shadow-blue-600/10">
                     Guardar
                 </button>
             </div>
@@ -191,7 +191,6 @@
             "Samuel": inicializarDatosUsuario()
         };
 
-        // Historial de logs organizados por usuario
         let historialLogs = JSON.parse(localStorage.getItem('gym_logs_historial_v2')) || [];
 
         let usuarioSeleccionado = "";
@@ -203,11 +202,17 @@
         }
 
         function mostrarVista(idVista) {
-            document.getElementById('view-inicio').classList.add('hidden');
-            document.getElementById('view-usuario').classList.add('hidden');
-            document.getElementById('view-dia').classList.add('hidden');
+            document.getElementById('view-inicio').style.display = 'none';
+            document.getElementById('view-usuario').style.display = 'none';
+            document.getElementById('view-dia').style.display = 'none';
 
-            document.getElementById(idVista).classList.remove('hidden');
+            // Usamos clases forzadas para evitar bloqueos de animaciones CSS
+            if(idVista === 'view-inicio') {
+                document.getElementById('view-inicio').style.display = 'block';
+            } else {
+                document.getElementById(idVista).classList.remove('hidden');
+            }
+            
             if (window.lucide) lucide.createIcons();
         }
 
@@ -222,13 +227,12 @@
 
             const idLogUnico = `${usuario}-${ejercicio}-${nroSerie}`;
 
-            // Filtrar para actualizar si cambia el valor de la misma serie
             historialLogs = historialLogs.filter(item => item.uid !== idLogUnico);
 
             historialLogs.unshift({
                 uid: idLogUnico,
                 fecha: timestampCompleto,
-                usuario: usuario, // Guarda quién lo hizo
+                usuario: usuario, 
                 ejercicio: ejercicio,
                 musculo: musculo,
                 peso: peso || '0',
@@ -244,12 +248,11 @@
             if (!contenedor) return;
             contenedor.innerHTML = '';
 
-            // Filtrar únicamente los registros que pertenecen a la persona activa
             const logsFiltrados = historialLogs.filter(log => log.usuario === usuarioSeleccionado);
 
             if (logsFiltrados.length === 0) {
                 contenedor.innerHTML = `
-                    <div class="p-4 text-center border border-dashed border-slate-200 rounded-xl bg-white text-[11px] text-slate-400 font-medium">
+                    <div class="p-4 text-center border border-dashed border-slate-200 rounded-xl bg-white text-xs text-slate-400 font-medium">
                         No hay ejercicios anotados en este perfil todavía.
                     </div>
                 `;
@@ -258,13 +261,13 @@
 
             logsFiltrados.forEach(log => {
                 const item = document.createElement('div');
-                item.className = "bg-white border border-slate-200 rounded-xl p-3 shadow-sm text-xs space-y-0.5";
+                item.className = "bg-white border border-slate-200 rounded-xl p-3 shadow-sm text-sm space-y-0.5";
                 item.innerHTML = `
                     <div class="flex justify-between text-[10px] text-slate-400 font-bold">
                         <span>[${log.fecha}]</span>
-                        <span class="text-slate-500 uppercase text-[9px] font-black">${log.musculo}</span>
+                        <span class="text-slate-500 uppercase font-black">${log.musculo}</span>
                     </div>
-                    <div class="text-slate-800 font-semibold">
+                    <div class="text-slate-800 font-bold">
                         ${log.ejercicio}: <span class="text-emerald-600 font-black">${log.peso}kg</span> x <span class="text-blue-600 font-black">${log.reps} reps</span>
                     </div>
                 `;
@@ -291,7 +294,7 @@
             document.getElementById('input-nombre-ejercicio').value = '';
         }
 
-        // --- NAVEGACIÓN Y APERTURA DE PERFILES (CORREGIDO) ---
+        // --- SELECCIONAR USUARIO FÁCIL Y SIN ERRORES ---
         function seleccionarUsuario(nombre) {
             usuarioSeleccionado = nombre;
             document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
@@ -299,11 +302,8 @@
             const containerDias = document.getElementById('lista-dias-container');
             containerDias.innerHTML = '';
 
-            // Construir botones de días de forma segura
+            // Construir botones GRANDES para los días
             for (let i = 1; i <= 6; i++) {
-                const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-xl flex items-center justify-between transition text-base text-slate-700 mb-2 shadow-sm active:bg-slate-50 cursor-pointer";
-                
                 if (!db[usuarioSeleccionado].rutinas[i]) {
                     db[usuarioSeleccionado].rutinas[i] = [];
                 }
@@ -311,22 +311,22 @@
                 const cantEjercicios = db[usuarioSeleccionado].rutinas[i].length;
                 const textoContador = cantEjercicios === 1 ? '1 ejercicio' : `${cantEjercicios} ejercicios`;
 
+                const btnDia = document.createElement('button');
+                btnDia.type = "button";
+                btnDia.className = "w-full bg-white border-2 border-slate-200 text-left font-black py-5 px-6 rounded-2xl flex items-center justify-between text-lg text-slate-800 mb-2 shadow-sm active:bg-slate-100 block";
                 btnDia.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                        <div class="w-3.5 h-3.5 rounded-full bg-blue-600"></div>
                         <span>Día ${i}</span>
                     </div>
-                    <span class="text-xs text-slate-400 font-normal">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
+                    <span class="text-xs text-slate-400 font-bold">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
                 `;
                 
-                btnDia.onclick = (function(diaActual) {
-                    return function() { abrirDia(diaActual); };
-                })(i);
-
+                // Evento seguro
+                btnDia.setAttribute('onclick', `abrirDia(${i})`);
                 containerDias.appendChild(btnDia);
             }
 
-            // Cargar el historial del usuario antes de cambiar la vista
             renderizarHistorialDelUsuarioActual();
             mostrarVista('view-usuario');
         }
@@ -377,4 +377,6 @@
                 return;
             }
 
-            const se
+            const seriesFijas = [
+                { peso: '', reps: '' }, { peso: '', reps: '' },
+                { peso: '', reps: '' }, { peso: '', reps: '
