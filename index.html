@@ -3,368 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PowerLog Multi - Nuestro Gym</title>
-    <!-- Tailwind CSS para diseño limpio, blanco y moderno -->
+    <title>PowerLog - Control de Entrenamiento</title>
+    <!-- Tailwind CSS para diseño limpio y moderno -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <!-- Iconos limpios -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased">
 
-    <div class="max-w-md mx-auto p-4 pb-24">
-        
-        <!-- ENCABEZADO Y SELECTOR DE PERFIL -->
-        <header class="flex items-center justify-between mb-5 pt-2 bg-white border border-slate-200 p-3 rounded-2xl shadow-sm">
-            <div class="flex items-center gap-2.5">
-                <div class="bg-blue-600 p-2 rounded-xl text-white">
-                    <i data-lucide="users" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h1 class="text-sm font-black tracking-tight text-slate-900">POWERLOG TEAM</h1>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase">Entrenamiento Grupal</p>
-                </div>
-            </div>
-            <!-- Selector de Usuario -->
-            <div>
-                <select id="user-selector" onchange="cambiarUsuario(this.value)" class="bg-slate-100 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-blue-600 focus:outline-none focus:border-blue-500">
-                    <option value="usuario_1">Atleta 1</option>
-                    <option value="usuario_2">Atleta 2</option>
-                    <option value="usuario_3">Atleta 3</option>
-                </select>
-            </div>
-        </header>
+    <div class="max-w-md mx-auto p-4 pb-12">
 
-        <!-- RECORDATORIO INTELIGENTE -->
-        <div class="bg-white border border-slate-200/80 rounded-2xl p-4 mb-5 shadow-sm flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-50 p-2 rounded-xl text-blue-600">
-                    <i data-lucide="calendar" class="w-4 h-4"></i>
+        <!-- ================= PANTALLA 1: INICIO / SELECCIÓN DE USUARIO ================= -->
+        <div id="view-inicio" class="space-y-6 pt-10">
+            <div class="text-center space-y-2">
+                <div class="bg-blue-600 w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-white shadow-md shadow-blue-600/20">
+                    <i data-lucide="dumbbell" class="w-7 h-7"></i>
                 </div>
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Siguiente entreno</span>
-                    <span id="reminder-text" class="text-sm font-bold text-blue-600">Día 1</span>
-                </div>
-            </div>
-            <button onclick="irADiaSiguiente()" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3 py-2 rounded-xl transition active:scale-95 shadow-sm">
-                Entrenar Ya
-            </button>
-        </div>
-
-        <!-- PESTAÑAS PRINCIPALES: RUTINA / REGISTROS -->
-        <div class="flex gap-2 bg-slate-200/60 p-1 rounded-xl mb-5 border border-slate-200/40">
-            <button id="tab-rutina" onclick="switchTab('rutina')" class="flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-sm">
-                <i data-lucide="notebook" class="w-3.5 h-3.5"></i> Mi Rutina
-            </button>
-            <button id="tab-registros" onclick="switchTab('registros')" class="flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-900">
-                <i data-lucide="folder-heart" class="w-3.5 h-3.5"></i> Ver Registros
-            </button>
-        </div>
-
-        <!-- ====== SECCIÓN: MI RUTINA ====== -->
-        <section id="section-rutina" class="space-y-5">
-            
-            <!-- PANEL DE VOLUMEN SEMANAL (SERIES RESTANTES) -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                    <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-500"></i> Series restantes esta semana
-                </h3>
-                <div id="muscle-progress-container" class="space-y-2.5">
-                    <!-- Dinámico -->
-                </div>
+                <h1 class="text-2xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
+                <p class="text-xs text-slate-400 font-medium">Selecciona tu perfil para ingresar</p>
             </div>
 
-            <!-- SELECTOR DE LOS 6 DÍAS -->
-            <div class="grid grid-cols-3 gap-2" id="days-tabs-container"></div>
-
-            <!-- CONTENIDO DEL DÍA SELECCIONADO -->
-            <div class="space-y-3">
-                <div class="flex justify-between items-center pt-2 gap-1">
-                    <h2 id="selected-day-title" class="text-base font-black text-slate-800 min-w-[50px]">Día 1</h2>
-                    
-                    <div class="flex items-center gap-1.5">
-                        <button onclick="abrirModal()" class="bg-slate-200 hover:bg-slate-300/80 text-slate-700 text-[11px] font-bold px-2.5 py-2 rounded-xl flex items-center gap-1 transition">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Añadir
-                        </button>
-                        <button onclick="finalizarEntrenamiento()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold px-3 py-2 rounded-xl flex items-center gap-1 transition shadow-sm">
-                            <i data-lucide="check" class="w-3.5 h-3.5"></i> Finalizar Día
-                        </button>
-                    </div>
-                </div>
-
-                <!-- LISTA DE EJERCICIOS -->
-                <div id="exercises-container" class="space-y-3"></div>
-            </div>
-        </section>
-
-        <!-- ====== SECCIÓN: REGISTROS (HISTORIAL) ====== -->
-        <section id="section-registros" class="hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <h2 class="text-base font-black text-slate-800">Historial Guardado</h2>
-                <button onclick="borrarHistorial()" class="text-xs font-bold text-rose-500 hover:text-rose-600 transition flex items-center gap-1">
-                    <i data-lucide="trash" class="w-3.5 h-3.5"></i> Limpiar todo
+            <div class="space-y-3 pt-4">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group">
+                    <span class="group-hover:text-blue-600">Nico V</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
+                </button>
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group">
+                    <span class="group-hover:text-blue-600">Nico</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
+                </button>
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group">
+                    <span class="group-hover:text-blue-600">Samuel</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
             </div>
-            <div id="registros-container" class="space-y-3"></div>
-        </section>
+        </div>
 
-    </div>
-
-    <!-- MODAL PARA AGREGAR EJERCICIO -->
-    <div id="modal-ejercicio" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white border border-slate-200 w-full max-w-sm rounded-2xl p-5 shadow-xl">
-            <h3 class="text-sm font-bold mb-3 text-slate-800">Nuevo Ejercicio</h3>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nombre</label>
-                    <input type="text" id="input-nombre" placeholder="Ej. Press de Banca" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium">
-                </div>
-                <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Grupo Muscular</label>
-                    <select id="input-musculo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-medium">
-                        <option value="Pecho">Pecho (Meta: 12 series)</option>
-                        <option value="Espalda">Espalda (Meta: 12 series)</option>
-                        <option value="Piernas">Piernas (Meta: 12 series)</option>
-                        <option value="Hombros">Hombros (Meta: 10 series)</option>
-                        <option value="Brazos">Brazos (Meta: 10 series)</option>
-                    </select>
-                </div>
-                <div class="flex gap-2 pt-1">
-                    <button onclick="cerrarModal()" class="flex-1 bg-slate-100 text-slate-600 text-xs font-bold py-2.5 rounded-xl">Cancelar</button>
-                    <button onclick="agregarEjercicio()" class="flex-1 bg-blue-600 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm">Agregar</button>
+        <!-- ================= PANTALLA 2: SELECCIÓN DE DÍAS ================= -->
+        <div id="view-usuario" class="hidden space-y-5">
+            <!-- Botón Volver e Info de Perfil -->
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
+                <button onclick="mostrarVista('view-inicio')" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
+                </button>
+                <div class="text-right">
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-wider block">Perfil activo</span>
+                    <h2 id="nombre-perfil-activo" class="text-base font-black text-slate-800">Nombre</h2>
                 </div>
             </div>
+
+            <div class="space-y-1">
+                <h3 class="text-sm font-bold text-slate-700">Mis Rutinas</h3>
+                <p class="text-xs text-slate-400 font-medium">Elige el día que vas a organizar o entrenar</p>
+            </div>
+
+            <!-- Lista de 6 días uno abajo del otro -->
+            <div class="space-y-2.5" id="lista-dias-container">
+                <!-- Se rellena con JS -->
+            </div>
         </div>
+
+        <!-- ================= PANTALLA 3: EL DÍA Y SUS EJERCICIOS ================= -->
+        <div id="view-dia" class="hidden space-y-5">
+            <!-- Menú superior -->
+            <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
+                <button onclick="regresarAPantallaUsuario()" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a días
+                </button>
+                <div class="text-right">
+                    <span id="txt-perfil-en-dia" class="text-[10px] text-slate-400 font-bold block">Nico</span>
+                    <h2 id="txt-dia-activo" class="text-base font-black text-slate-800">Día X</h2>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR RECOMENDACIONES DE VOLUMEN (ZONA INFERIOR/PLANA RECTA) -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+                <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
+                    <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-500"></i> Balance de series esta semana
+                </h4>
+                
+                <!-- Barra Pecho -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[11px] font-medium">
+                        <span class="text-slate-700 font-bold">Pecho</span>
+                        <span id="conteo-pecho" class="text-slate-500 font-semibold">Quedan 12 series</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-pecho" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Barra Espalda -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[11px] font-medium">
+                        <span class="text-slate-700 font-bold">Espalda</span>
+                        <span id="conteo-espalda" class="text-slate-500 font-semibold">Quedan 12 series</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-espalda" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Barra Piernas -->
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[11px] font-medium">
+                        <span class="text-slate-700 font-bold">Piernas</span>
+                        <span id="conteo-piernas" class="text-slate-500 font-semibold">Quedan 12 series</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="bar-piernas" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-slate-400 leading-normal pt-1 border-t border-slate-100">
+                    * Se recomienda realizar de **10 a 12 series semanales** por grupo muscular principal para hipertrofia. Las series se descuentan automáticamente al registrar pesos o repeticiones.
+                </p>
+            </div>
+
+            <!-- AGREGAR EJERCICIO RAPIDAMENTE -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Agregar Ejercicio</span>
+                <div class="grid grid-cols-12 gap-2">
+                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca" class="col-span-7 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-medium text-slate-800 focus:outline-none focus:border-blue-500">
+                    
+                    <select id="select-grupo-muscular" class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 text-xs font-bold text-slate-600 focus:outline-none focus:border-blue-500">
+                        <option value="Pecho">Pecho</option>
+                        <option value="Espalda">Espalda</option>
+                        <option value="Piernas">Piernas</option>
+                    </select>
+                </div>
+                <button onclick="crearEjercicio()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Guardar Ejercicio
+                </button>
+            </div>
+
+            <!-- CONTENEDOR DE EJERCICIOS AGREGADOS -->
+            <div class="space-y-3" id="bloque-ejercicios-lista">
+                <!-- Tarjetas de ejercicios -->
+            </div>
+        </div>
+
     </div>
 
-    <!-- PROGRAMACIÓN LOGICA -->
+    <!-- SCRIPT DE CONTROL TOTAL -->
     <script>
-        const METAS_MUSCULO = { "Pecho": 12, "Espalda": 12, "Piernas": 12, "Hombros": 10, "Brazos": 10 };
+        // Metas recomendadas semanales
+        const METAS = { "Pecho": 12, "Espalda": 12, "Piernas": 12 };
 
-        // Estructura limpia por defecto para cualquier usuario nuevo
-        function crearEstructuraBaseVacia() {
-            return {
-                proximoDia: 1,
-                diaSeleccionado: 1,
-                rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
-                historial: [],
-                diasTrabajados: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false },
-                seriesCompletadasSemana: { "Pecho": 0, "Espalda": 0, "Piernas": 0, "Hombros": 0, "Brazos": 0 }
+        // Estructura limpia para un usuario nuevo
+        function inicializarDatosUsuario() {
+            let estructura = {
+                rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
             };
+            return estructura;
         }
 
-        // Base de datos global multiusuario
-        let dbGlobal = JSON.parse(localStorage.getItem('powerlog_multi_db')) || {
-            usuarioActivo: "usuario_1",
-            perfiles: {
-                "usuario_1": crearEstructuraBaseVacia(),
-                "usuario_2": crearEstructuraBaseVacia(),
-                "usuario_3": crearEstructuraBaseVacia()
-            }
+        // Base de datos que se guarda en el teléfono
+        let db = JSON.parse(localStorage.getItem('gym_step_by_step_db')) || {
+            "Nico V": inicializarDatosUsuario(),
+            "Nico": inicializarDatosUsuario(),
+            "Samuel": inicializarDatosUsuario()
         };
 
-        // Acceso directo al estado del usuario seleccionado en este momento
-        let estado = dbGlobal.perfiles[dbGlobal.usuarioActivo];
+        // Estado temporal de navegación
+        let usuarioSeleccionado = "";
+        let diaSeleccionado = 1;
 
-        function guardar() {
-            dbGlobal.perfiles[dbGlobal.usuarioActivo] = estado; // Sincroniza
-            localStorage.setItem('powerlog_multi_db', JSON.stringify(dbGlobal));
-            renderizar();
+        function guardarEnAlmacenamiento() {
+            localStorage.setItem('gym_step_by_step_db', JSON.stringify(db));
+            calcularYActualizarSeriesRestantes();
         }
 
-        function cambiarUsuario(idUsuario) {
-            dbGlobal.usuarioActivo = idUsuario;
-            estado = dbGlobal.perfiles[idUsuario];
-            // Asegurar que si es una base vieja, tenga la estructura completa
-            if (!estado.diasTrabajados) {
-                dbGlobal.perfiles[idUsuario] = crearEstructuraBaseVacia();
-                estado = dbGlobal.perfiles[idUsuario];
-            }
-            guardar();
-            // Si estaba en la pestaña de registros, refrescarla
-            const secRegistros = document.getElementById('section-registros');
-            if (!secRegistros.classList.contains('hidden')) {
-                renderizaraRegistros();
-            }
+        function mostrarVista(idVista) {
+            document.getElementById('view-inicio').classList.add('hidden');
+            document.getElementById('view-usuario').classList.add('hidden');
+            document.getElementById('view-dia').classList.add('hidden');
+
+            document.getElementById(idVista).classList.remove('hidden');
+            lucide.createIcons();
         }
 
-        // --- PESTAÑAS ---
-        function switchTab(tab) {
-            const btnRutina = document.getElementById('tab-rutina');
-            const btnRegistros = document.getElementById('tab-registros');
-            const secRutina = document.getElementById('section-rutina');
-            const secRegistros = document.getElementById('section-registros');
-
-            if (tab === 'rutina') {
-                btnRutina.className = "flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-sm";
-                btnRegistros.className = "flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-900";
-                secRutina.classList.remove('hidden');
-                secRegistros.classList.add('hidden');
-            } else {
-                btnRegistros.className = "flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 bg-white text-slate-900 shadow-sm";
-                btnRutina.className = "flex-1 py-2 text-xs font-bold rounded-lg transition flex items-center justify-center gap-1.5 text-slate-500 hover:text-slate-900";
-                secRutina.classList.add('hidden');
-                secRegistros.classList.remove('hidden');
-                renderizaraRegistros();
-            }
-        }
-
-        // --- MODAL ---
-        function abrirModal() { document.getElementById('modal-ejercicio').classList.remove('hidden'); }
-        function cerrarModal() { document.getElementById('modal-ejercicio').classList.add('hidden'); document.getElementById('input-nombre').value = ''; }
-
-        // --- GESTIÓN ---
-        function cambiarDia(d) { estado.diaSeleccionado = d; guardar(); }
-        function irADiaSiguiente() { estado.diaSeleccionado = estado.proximoDia; guardar(); }
-
-        function agregarEjercicio() {
-            const nombre = document.getElementById('input-nombre').value.trim();
-            const musculo = document.getElementById('input-musculo').value;
-            if (!nombre) return alert('Escribe el nombre del ejercicio');
-
-            let series = [{p:'', r:''}, {p:'', r:''}, {p:'', r:''}, {p:'', r:''}];
-            estado.rutinas[estado.diaSeleccionado].push({ id: Date.now(), nombre: nombre, musculo: musculo, series: series });
-            cerrarModal();
-            guardar();
-        }
-
-        function eliminarEjercicio(id) {
-            estado.rutinas[estado.diaSeleccionado] = estado.rutinas[estado.diaSeleccionado].filter(e => e.id !== id);
-            guardar();
-        }
-
-        function editarSerie(ejercicioId, idx, campo, valor) {
-            const ex = estado.rutinas[estado.diaSeleccionado].find(e => e.id === ejercicioId);
-            if (ex) {
-                ex.series[idx][campo] = valor;
-                localStorage.setItem('powerlog_multi_db', JSON.stringify(dbGlobal));
-            }
-        }
-
-        function finalizarEntrenamiento() {
-            const actuales = estado.rutinas[estado.diaSeleccionado];
-            if (actuales.length === 0) return alert("Agrega ejercicios antes de finalizar.");
-
-            estado.diasTrabajados[estado.diaSeleccionado] = true;
-
-            actuales.forEach(ex => {
-                let seriesHechas = ex.series.filter(s => s.p !== '' || s.r !== '').length;
-                if(seriesHechas === 0) seriesHechas = 4;
-                estado.seriesCompletadasSemana[ex.musculo] += seriesHechas;
-            });
-
-            const log = {
-                id: Date.now(),
-                fecha: new Date().toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' }),
-                dia: `Día ${estado.diaSeleccionado}`,
-                ejercicios: JSON.parse(JSON.stringify(actuales))
-            };
-            estado.historial.unshift(log);
-
-            let sig = estado.diaSeleccionado + 1;
-            if (sig > 6) {
-                sig = 1;
-                estado.seriesCompletadasSemana = { "Pecho": 0, "Espalda": 0, "Piernas": 0, "Hombros": 0, "Brazos": 0 };
-                estado.diasTrabajados = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-            }
-
-            estado.proximoDia = sig;
-            estado.diaSeleccionado = sig;
-            alert(`¡Entrenamiento guardado en el perfil actual!`);
-            guardar();
-        }
-
-        function borrarHistorial() {
-            if(confirm("¿Borrar el historial de este usuario?")) {
-                estado.historial = [];
-                estado.seriesCompletadasSemana = { "Pecho": 0, "Espalda": 0, "Piernas": 0, "Hombros": 0, "Brazos": 0 };
-                estado.diasTrabajados = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-                guardar();
-                renderizaraRegistros();
-            }
-        }
-
-        // --- VISTAS ---
-        function renderizar() {
-            // Sincronizar selector visual con la DB
-            document.getElementById('user-selector').value = dbGlobal.usuarioActivo;
+        // --- ACCIONES PANTALLA 1 ---
+        function seleccionarUsuario(nombre) {
+            usuarioSeleccionado = nombre;
+            document.getElementById('nombre-perfil-activo').innerText = nombre;
             
-            document.getElementById('reminder-text').innerText = `Día ${estado.proximoDia}`;
-            document.getElementById('selected-day-title').innerText = `Día ${estado.diaSeleccionado}`;
+            // Renderizar los 6 días uno abajo del otro para este usuario
+            const containerDias = document.getElementById('lista-dias-container');
+            containerDias.innerHTML = '';
 
-            // Volumen Semanal
-            const volumeContainer = document.getElementById('muscle-progress-container');
-            volumeContainer.innerHTML = '';
-            Object.keys(METAS_MUSCULO).forEach(musculo => {
-                const meta = METAS_MUSCULO[musculo];
-                const completadas = estado.seriesCompletadasSemana[musculo] || 0;
-                const restantes = Math.max(0, meta - completadas);
-
-                const div = document.createElement('div');
-                div.className = "space-y-1";
-                div.innerHTML = `
-                    <div class="flex justify-between text-[11px] font-bold">
-                        <span class="text-slate-700">${musculo}</span>
-                        <span class="${restantes === 0 ? 'text-emerald-600 font-black' : 'text-slate-500'}">
-                            ${restantes === 0 ? '¡Meta Lista! 🎉' : `Faltan ${restantes} series`}
-                        </span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden border border-slate-200/50">
-                        <div class="bg-blue-600 h-full rounded-full transition-all duration-500" style="width: ${Math.min(100, (completadas/meta)*100)}%"></div>
-                    </div>
-                `;
-                volumeContainer.appendChild(div);
-            });
-
-            // Botones Superiores (Días)
-            const tabsContainer = document.getElementById('days-tabs-container');
-            tabsContainer.innerHTML = '';
             for (let i = 1; i <= 6; i++) {
-                const esActivo = estado.diaSeleccionado === i;
-                const esProximo = estado.proximoDia === i;
-                const estaTrabajado = estado.diasTrabajados[i];
-
-                const btn = document.createElement('button');
-                btn.className = `py-2 rounded-xl font-bold text-xs transition flex flex-col items-center justify-center border ${
-                    esActivo 
-                    ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-600/10' 
-                    : 'bg-white text-slate-500 border-slate-200 hover:text-slate-800'
-                }`;
+                const btnDia = document.createElement('button');
+                btnDia.className = "w-full bg-white border border-slate-200/80 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700";
                 
-                let tagExtra = '';
-                if (estaTrabajado) {
-                    tagExtra = `<span class="text-[9px] text-emerald-500 font-black mt-0.5">✓ Hecho</span>`;
-                    if (esActivo) tagExtra = `<span class="text-[9px] text-emerald-200 font-black mt-0.5">✓ Hecho</span>`;
-                } else if (esProximo) {
-                    tagExtra = `<span class="text-[8px] text-blue-500 font-black mt-0.5 bg-blue-50 px-1 rounded">TOCA</span>`;
-                    if (esActivo) tagExtra = '<span class="text-[8px] text-blue-200 font-black mt-0.5">TOCA</span>';
-                }
+                // Contar cuántos ejercicios tiene guardados ese día
+                const cantEjercicios = db[usuarioSeleccionado].rutinas[i].length;
+                const textoContador = cantEjercicios === 1 ? '1 ejercicio' : `${cantEjercicios} ejercicios`;
 
-                btn.innerHTML = `<span>Día ${i}</span>${tagExtra}`;
-                btn.onclick = () => cambiarDia(i);
-                tabsContainer.appendChild(btn);
+                btnDia.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                        <span>Día ${i}</span>
+                    </div>
+                    <span class="text-xs text-slate-400 font-normal">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
+                `;
+                btnDia.onclick = () => abrirDia(i);
+                containerDias.appendChild(btnDia);
             }
 
-            // Ejercicios del Día Seleccionado
-            const containerEjercicios = document.getElementById('exercises-container');
-            containerEjercicios.innerHTML = '';
-            const lista = estado.rutinas[estado.diaSeleccionado];
+            mostrarVista('view-usuario');
+        }
 
-            if (lista.length === 0) {
-                containerEjercicios.innerHTML = `
-                    <div class="py-12 text-center border border-dashed border-slate-200 rounded-2xl bg-white">
-                        <p class="text-xs text-slate-400 font-medium">No hay ejercicios agregados hoy.</p>
+        // --- ACCIONES PANTALLA 2 ---
+        function abrirDia(numeroDia) {
+            diaSeleccionado = numeroDia;
+            document.getElementById('txt-perfil-en-dia').innerText = usuarioSeleccionado;
+            document.getElementById('txt-dia-activo').innerText = `Día ${numeroDia}`;
+            
+            renderizarEjerciciosDelDia();
+            mostrarVista('view-dia');
+        }
+
+        function regresarAPantallaUsuario() {
+            // Recalcula los textos de los días por si se agregaron cosas
+            seleccionarUsuario(usuarioSeleccionado);
+        }
+
+        // --- ACCIONES PANTALLA 3 (EJERCICIOS) ---
+        function crearEjercicio() {
+            const inputNombre = document.getElementById('input-nombre-ejercicio');
+            const nombre = inputNombre.value.trim();
+            const musculo = document.getElementById('select-grupo-muscular').value;
+
+            if (!nombre) return alert("Por favor escribe el nombre del ejercicio.");
+
+            // Cada ejercicio inicia con 4 series limpias para rellenar peso y repeticiones
+            const seriesFijas = [
+                { peso: '', reps: '' },
+                { peso: '', reps: '' },
+                { peso: '', reps: '' },
+                { peso: '', reps: '' }
+            ];
+
+            db[usuarioSeleccionado].rutinas[diaSeleccionado].push({
+                id: Date.now(),
+                nombre: nombre,
+                musculo: musculo,
+                series: seriesFijas
+            });
+
+            inputNombre.value = ''; // Limpiar cuadro de escritura
+            guardarEnAlmacenamiento();
+            renderizarEjerciciosDelDia();
+        }
+
+        function eliminarEjercicio(idEjercicio) {
+            db[usuarioSeleccionado].rutinas[diaSeleccionado] = db[usuarioSeleccionado].rutinas[diaSeleccionado].filter(e => e.id !== idEjercicio);
+            guardarEnAlmacenamiento();
+            renderizarEjerciciosDelDia();
+        }
+
+        function actualizarDatoSerie(idEjercicio, indexSerie, propiedad, valor) {
+            const ejercicio = db[usuarioSeleccionado].rutinas[diaSeleccionado].find(e => e.id === idEjercicio);
+            if (ejercicio) {
+                ejercicio.series[indexSerie][propiedad] = valor;
+                // Guardamos en tiempo real lo que escribe el usuario
+                localStorage.setItem('gym_step_by_step_db', JSON.stringify(db));
+                calcularYActualizarSeriesRestantes();
+            }
+        }
+
+        function renderizarEjerciciosDelDia() {
+            const container = document.getElementById('bloque-ejercicios-lista');
+            container.innerHTML = '';
+
+            const listaEjercicios = db[usuarioSeleccionado].rutinas[diaSeleccionado];
+
+            if (listaEjercicios.length === 0) {
+                container.innerHTML = `
+                    <div class="py-10 text-center border border-dashed border-slate-200 rounded-2xl bg-white">
+                        <p class="text-xs text-slate-400 font-medium">No hay ejercicios agregados en este día aún.</p>
                     </div>
                 `;
-            } else {
-                lista.forEach(ex => {
-                    const card = document.createElement('div');
-                    card.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm";
+                return;
+            }
 
-                    let html = `
-                        <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                            <div>
-                                <h4 class="font-bold text-xs text-slate-800 tracking-tight">${ex.nombre}</h4>
-                                <span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">${ex.musculo}</span>
-                            </div>
-                            <button onclick="eliminarEjercicio(${ex.id})" class="text-slate-400 hover:text-rose-500 transition p-1">
-                     
+            listaEjercicios.forEach(ej => {
+                const tarjeta = document.createElement('div');
+                tarjeta.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm";
+
+                let htmlSeries = '';
+                ej.series.forEach((serie, index) => {
+                    htmlSeries += `
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <span class="col-span-2 text-xs font-bold text-slate-400 text-center">#${index + 1}</span>
+                            
+                            <!-- Entrada para el Peso -->
+                            <input type="text" placeholder="Peso (ej. 60kg)" value="${serie.peso}"
+                                oninput="actualizarDatoSerie(${ej.id}, ${index}, 'peso', this.value)"
+                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-center text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
+                            
+                            <!-- Entrada para las Repeticiones -->
+                            <input type="number" placeholder="Reps" value="${serie.reps}"
+                                oninput="actualizarDatoSerie(${ej.id}, ${index}, 'reps', this.value)"
+                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-center text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
+                        </div>
+                    `;
+                });
+
+                tarjeta.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-slate-100 pb-2">
+                        <div>
+                            <h4 class="font-bold text-xs text-slate-800 tracking-tight">${ej.nombre}</h4>
+                            <span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">${ej.musculo}</span>
+                        </div>
+                        <button onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 transition p-1">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-12 gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider text-center">
+                            <span class="col-span-2 text-left text-slate-300">Serie</span>
+                            <span class="col-span-5">Peso Realizado</span>
+                            <span class="col-span-5">Repeticiones</span>
+                        </div>
+                        ${htmlSeries}
+                    </div>
+                `;
+
+                container.appendChild(tarjeta);
+            });
+
+            calcularYActualizarSeriesRestantes();
+            lucide.createIcons();
+        }
+
+        // --- RECOMENDACIÓN Y CONTEO DE SERIES (CÁLCULO DINÁMICO) ---
+        function calcularYActualizarSeriesRestantes() {
+            if (!usuarioSeleccionado) return;
+
+            // Contadores de series completadas en la semana completa del usuario activo
+            let seriesHechas = { "Pecho": 0, "Espalda": 0, "Piernas": 0 };
+
+            // Recorremos los 6 días buscando series que tengan anotado al menos el peso o repetición
+            for (let d = 1; d <= 6; d++) {
+                db[usuarioSeleccionado].rutinas[d].forEach(ej => {
+                    if (seriesHechas.hasOwnProperty(ej.musculo)) {
+                        // Contamos cuántas de las 4 series rellenó
+                        ej.series.forEach(s => {
+                            if (s.peso.trim() !== '' || s.reps !== '') {
+                                seriesHechas[ej.musculo]++;
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Actualizar etiquetas visuales y barras de progreso rectas abajo
+            Object.keys(METAS).forEach(m => {
+                const metaDelMusculo = METAS[m];
+                const completadas = seriesHechas[m];
+                const quedan = Math.max(0, metaDelMusculo - completadas);
+
+                const textoConteo = document.getElementById(`conteo-${m.toLowerCase()}`);
+                const barraProgreso = document.getElementById(`bar-${m.toLowerCase()}`);
+
+                if (quedan === 0) {
+                    textoConteo.innerText = "¡Meta cumplida! 🎉";
+                    textoConteo.className = "text-emerald-600 font-black";
+                } else {
+                    textoConteo.innerText = `Quedan ${quan(quetan, quedan)} series`;
+                    textoConteo.innerText = `Quedan ${quetan(quedan)} series`;
+   
