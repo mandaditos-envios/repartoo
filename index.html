@@ -4,16 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PowerLog - Control de Entrenamiento</title>
-    <!-- Tailwind CSS Versión 3 (Ultra estable para cualquier celular) -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@3.4.15"></script>
-    <!-- Iconos limpios -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased">
 
     <div class="max-w-md mx-auto p-4 pb-12">
 
-        <!-- ================= PANTALLA 1: INICIO / SELECCIÓN DE USUARIO ================= -->
         <div id="view-inicio" class="space-y-6 pt-10">
             <div class="text-center space-y-2">
                 <div class="bg-blue-600 w-14 h-14 rounded-2xl mx-auto flex items-center justify-center text-white shadow-md shadow-blue-600/20">
@@ -24,25 +21,23 @@
             </div>
 
             <div class="space-y-3 pt-4">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition hover:border-blue-500 hover:shadow-sm group cursor-pointer">
                     <span class="group-hover:text-blue-600">Nico V</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition hover:border-blue-500 hover:shadow-sm group cursor-pointer">
                     <span class="group-hover:text-blue-600">Nico</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition hover:border-blue-500 hover:shadow-sm group cursor-pointer">
                     <span class="group-hover:text-blue-600">Samuel</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
             </div>
         </div>
 
-        <!-- ================= PANTALLA 2: SELECCIÓN DE DÍAS ================= -->
         <div id="view-usuario" class="hidden space-y-5">
-            <!-- Botón Volver e Info de Perfil -->
-            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
                 <button onclick="mostrarVista('view-inicio')" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
                 </button>
@@ -57,16 +52,12 @@
                 <p class="text-xs text-slate-400 font-medium">Elige el día que vas a organizar o entrenar</p>
             </div>
 
-            <!-- Lista de 6 días uno abajo del otro -->
             <div class="space-y-2.5" id="lista-dias-container">
-                <!-- Se rellena dinámicamente con JS -->
-            </div>
+                </div>
         </div>
 
-        <!-- ================= PANTALLA 3: EL DÍA Y SUS EJERCICIOS ================= -->
         <div id="view-dia" class="hidden space-y-5">
-            <!-- Menú superior -->
-            <div class="flex items-center justify-between border-b border-slate-200 pb-3">
+            <div class="flex items-center justify-between border-b border-slate-200/80 pb-3">
                 <button onclick="regresarAPantallaUsuario()" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a días
                 </button>
@@ -76,13 +67,11 @@
                 </div>
             </div>
 
-            <!-- RECOMENDACIONES DE VOLUMEN (ZONA INFERIOR/PLANA RECTA) -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
                 <h4 class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1">
                     <i data-lucide="activity" class="w-3.5 h-3.5 text-blue-500"></i> Balance de series esta semana
                 </h4>
                 
-                <!-- Barra Pecho -->
                 <div class="space-y-1">
                     <div class="flex justify-between text-[11px] font-medium">
                         <span class="text-slate-700 font-bold">Pecho</span>
@@ -93,7 +82,6 @@
                     </div>
                 </div>
 
-                <!-- Barra Espalda -->
                 <div class="space-y-1">
                     <div class="flex justify-between text-[11px] font-medium">
                         <span class="text-slate-700 font-bold">Espalda</span>
@@ -104,7 +92,6 @@
                     </div>
                 </div>
 
-                <!-- Barra Piernas -->
                 <div class="space-y-1">
                     <div class="flex justify-between text-[11px] font-medium">
                         <span class="text-slate-700 font-bold">Piernas</span>
@@ -120,7 +107,6 @@
                 </p>
             </div>
 
-            <!-- AGREGAR EJERCICIO RAPIDAMENTE -->
             <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-3">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Agregar Ejercicio</span>
                 <div class="grid grid-cols-12 gap-2">
@@ -137,15 +123,12 @@
                 </button>
             </div>
 
-            <!-- CONTENEDOR DE EJERCICIOS AGREGADOS -->
             <div class="space-y-3" id="bloque-ejercicios-lista">
-                <!-- Tarjetas de ejercicios -->
-            </div>
+                </div>
         </div>
 
     </div>
 
-    <!-- SCRIPT DE CONTROL TOTAL -->
     <script>
         // Metas recomendadas semanales
         const METAS = { "Pecho": 12, "Espalda": 12, "Piernas": 12 };
@@ -186,18 +169,16 @@
 
         // --- ACCIONES PANTALLA 1: SELECCIONAR USUARIO ---
         function seleccionarUsuario(nombre) {
-            usuarioSeleccionado = nombre;
-            document.getElementById('nombre-perfil-activo').innerText = nombre;
+            usuarioSeleccionado = ...nombre || nombre; // Asegurar paso de string limpio
+            document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
             
-            // Renderizar los 6 días
             const containerDias = document.getElementById('lista-dias-container');
             containerDias.innerHTML = '';
 
             for (let i = 1; i <= 6; i++) {
                 const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700 cursor-pointer mb-2.5";
+                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700 cursor-pointer mb-2.5 shadow-sm";
                 
-                // Asegurar que exista la estructura del día
                 if (!db[usuarioSeleccionado].rutinas[i]) {
                     db[usuarioSeleccionado].rutinas[i] = [];
                 }
@@ -213,7 +194,6 @@
                     <span class="text-xs text-slate-400 font-normal">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
                 `;
                 
-                // Asignar el clic de forma segura
                 btnDia.onclick = (function(diaActual) {
                     return function() {
                         abrirDia(diaActual);
@@ -297,7 +277,7 @@
 
             if (listaEjercicios.length === 0) {
                 container.innerHTML = `
-                    <div class="py-10 text-center border border-dashed border-slate-200 rounded-2xl bg-white">
+                    <div class="py-10 text-center border border-dashed border-slate-200 rounded-2xl bg-white shadow-sm">
                         <p class="text-xs text-slate-400 font-medium">No hay ejercicios agregados en este día aún.</p>
                     </div>
                 `;
@@ -383,4 +363,21 @@
                         textoConteo.innerText = "¡Meta cumplida! 🎉";
                         textoConteo.className = "text-emerald-600 font-black text-xs";
                         barraProgreso.className = "bg-emerald-500 h-full transition-all duration-300";
-  
+                    } else {
+                        textoConteo.innerText = `Quedan ${quan} series`;
+                        textoConteo.innerText = `Quedan ${quedan} series`;
+                        textoConteo.className = "text-slate-500 font-semibold text-xs";
+                        barraProgreso.className = "bg-blue-600 h-full transition-all duration-300";
+                    }
+                    const porcentaje = Math.min(100, (completadas / metaDelMusculo) * 100);
+                    barraProgreso.style.width = `${porcentaje}%`;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
