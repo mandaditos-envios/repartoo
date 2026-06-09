@@ -11,7 +11,7 @@
 
     <div class="w-full min-h-screen p-4 flex flex-col justify-start">
 
-        <div id="view-inicio" class="space-y-6 pt-10 w-full">
+        <div id="view-inicio" class="space-y-6 pt-6 w-full">
             <div class="text-center space-y-3">
                 <div class="bg-blue-600 w-16 h-16 rounded-2xl mx-auto flex items-center justify-center text-white shadow-lg shadow-blue-600/20">
                     <i data-lucide="dumbbell" class="w-8 h-8"></i>
@@ -20,19 +20,33 @@
                 <p class="text-sm text-slate-400 font-medium">Selecciona tu perfil para ingresar</p>
             </div>
 
-            <div class="space-y-4 pt-6 w-full">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
-                    <span class="text-lg">Nico V</span>
+            <div class="space-y-3 pt-2 w-full">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200 text-left font-bold py-4.5 px-5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
+                    <span class="text-base">Nico V</span>
                     <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
-                    <span class="text-lg">Nico</span>
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200 text-left font-bold py-4.5 px-5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
+                    <span class="text-base">Nico</span>
                     <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
-                    <span class="text-lg">Samuel</span>
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200 text-left font-bold py-4.5 px-5 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
+                    <span class="text-base">Samuel</span>
                     <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
+            </div>
+
+            <div class="space-y-3 pt-2 w-full">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Historial de Registros Recientes
+                    </h3>
+                    <button onclick="limpiarHistorial()" class="text-[10px] font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 active:scale-95 cursor-pointer">
+                        Limpiar
+                    </button>
+                </div>
+                
+                <div id="contenedor-historial-global" class="space-y-2 max-h-80 overflow-y-auto pr-1">
+                    </div>
             </div>
         </div>
 
@@ -109,10 +123,6 @@
                     <div id="panel-barras-musculos" class="space-y-3.5">
                         </div>
                 </div>
-
-                <p class="text-[11px] text-slate-400 leading-normal pt-2 border-t border-slate-100">
-                    * El sistema descuenta las series automáticamente al registrar datos. Los rangos objetivos se basan en recomendaciones óptimas para hipertrofia.
-                </p>
             </div>
         </div>
 
@@ -172,16 +182,18 @@
         };
 
         function inicializarDatosUsuario() {
-            return {
-                rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
-            };
+            return { rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] } };
         }
 
+        // Base de Datos Estructurada
         let db = JSON.parse(localStorage.getItem('gym_step_by_step_db')) || {
             "Nico V": inicializarDatosUsuario(),
             "Nico": inicializarDatosUsuario(),
             "Samuel": inicializarDatosUsuario()
         };
+
+        // Historial de logs por fecha
+        let historialLogs = JSON.parse(localStorage.getItem('gym_logs_historial')) || [];
 
         let usuarioSeleccionado = "";
         let diaSeleccionado = 1;
@@ -198,8 +210,87 @@
 
             document.getElementById(idVista).classList.remove('hidden');
             if (window.lucide) lucide.createIcons();
+            
+            // Si regresa a la pantalla de inicio, recarga el historial ordenado
+            if (idVista === 'view-inicio') {
+                renderizarHistorialGlobal();
+            }
         }
 
+        // --- MANEJO DEL HISTORIAL POR FECHA ---
+        function registrarLogEnHistorial(usuario, ejercicio, musculo, nroSerie, peso, reps) {
+            if (!peso && !reps) return; // No registrar vacíos
+            
+            const ahora = new Date();
+            const fechaString = ahora.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
+            const horaString = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            const timestampCompleto = `${fechaString} ${horaString}`;
+
+            // Clave única para evitar spam de registros repetidos al escribir letra por letra
+            const idLogUnico = `${usuario}-${ejercicio}-${nroSerie}`;
+
+            // Eliminar si ya existía un registro de esa misma serie para actualizarlo al más nuevo
+            historialLogs = historialLogs.filter(item => item.uid !== idLogUnico);
+
+            // Insertar al inicio de la lista
+            historialLogs.unshift({
+                uid: idLogUnico,
+                fecha: timestampCompleto,
+                usuario: usuario,
+                ejercicio: ejercicio,
+                musculo: musculo,
+                peso: peso || '0',
+                reps: reps || '0'
+            });
+
+            // Mantener solo los últimos 40 registros para no saturar
+            if (historialLogs.length > 40) {
+                historialLogs.pop();
+            }
+
+            localStorage.setItem('gym_logs_historial', JSON.stringify(historialLogs));
+        }
+
+        function renderizarHistorialGlobal() {
+            const contenedor = document.getElementById('contenedor-historial-global');
+            if (!contenedor) return;
+            contenedor.innerHTML = '';
+
+            if (historialLogs.length === 0) {
+                contenedor.innerHTML = `
+                    <div class="p-4 text-center border border-dashed border-slate-200 rounded-xl bg-white text-[11px] text-slate-400 font-medium">
+                        Ningún peso registrado todavía hoy.
+                    </div>
+                `;
+                return;
+            }
+
+            historialLogs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = "bg-white border border-slate-200 rounded-xl p-3 shadow-sm text-xs space-y-0.5";
+                item.innerHTML = `
+                    <div class="flex justify-between text-[10px] text-slate-400 font-bold">
+                        <span>[${log.fecha}]</span>
+                        <span class="text-blue-600">${log.usuario}</span>
+                    </div>
+                    <div class="text-slate-800 font-semibold">
+                        ${log.ejercicio}: <span class="text-emerald-600 font-black">${log.peso}kg</span> x <span class="text-blue-600 font-black">${log.reps} reps</span>
+                        <span class="text-[9px] bg-slate-100 text-slate-500 px-1 rounded ml-1 uppercase font-normal text-[9px]">${log.musculo}</span>
+                    </div>
+                `;
+                contenedor.appendChild(item);
+            });
+        }
+
+        function limpiarHistorial() {
+            if (confirm("¿Quieres borrar la lista de registros recientes?")) {
+                historialLogs = [];
+                localStorage.setItem('gym_logs_historial', JSON.stringify(historialLogs));
+                renderizarHistorialGlobal();
+            }
+        }
+
+        // --- MODAL ---
         function abrirModalEjercicio() {
             document.getElementById('modal-ejercicio').classList.remove('hidden');
             document.getElementById('input-nombre-ejercicio').focus();
@@ -210,6 +301,7 @@
             document.getElementById('input-nombre-ejercicio').value = '';
         }
 
+        // --- NAVEGACIÓN PERFILES ---
         function seleccionarUsuario(nombre) {
             usuarioSeleccionado = nombre;
             document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
@@ -219,7 +311,7 @@
 
             for (let i = 1; i <= 6; i++) {
                 const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-base text-slate-700 mb-2 shadow-sm active:bg-slate-50 cursor-pointer";
+                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-xl flex items-center justify-between transition text-base text-slate-700 mb-2 shadow-sm active:bg-slate-50 cursor-pointer";
                 
                 if (!db[usuarioSeleccionado].rutinas[i]) {
                     db[usuarioSeleccionado].rutinas[i] = [];
@@ -262,6 +354,7 @@
 
         function construirEstructuraBarras() {
             const container = document.getElementById('panel-barras-musculos');
+            if (!container) return;
             container.innerHTML = '';
 
             Object.keys(METAS).forEach(m => {
@@ -270,7 +363,7 @@
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-medium">
                             <span class="text-slate-700 font-bold">${m} <span class="text-[10px] text-slate-400 font-normal">(${RANGOS_TEXTO[m]} sem)</span></span>
-                            <span id="conteo-${lower}" class="text-slate-500 font-semibold text-xs">Calculando...</span>
+                            <span id="conteo-${lower}" class="text-slate-500 font-semibold text-xs">0 series</span>
                         </div>
                         <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                             <div id="bar-${lower}" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
@@ -280,94 +373,11 @@
             });
         }
 
+        // --- MANEJO DE EJERCICIOS ---
         function crearEjercicio() {
             const inputNombre = document.getElementById('input-nombre-ejercicio');
             const nombre = inputNombre.value.trim();
             const musculo = document.getElementById('select-grupo-muscular').value;
 
             if (!nombre) {
-                alert("Por favor escribe el nombre del ejercicio.");
-                return;
-            }
-
-            const seriesFijas = [
-                { peso: '', reps: '' },
-                { peso: '', reps: '' },
-                { peso: '', reps: '' },
-                { peso: '', reps: '' }
-            ];
-
-            db[usuarioSeleccionado].rutinas[diaSeleccionado].push({
-                id: Date.now(),
-                nombre: nombre,
-                musculo: musculo,
-                series: seriesFijas
-            });
-
-            cerrarModalEjercicio();
-            guardarEnAlmacenamiento();
-            renderizarEjerciciosDelDia();
-        }
-
-        function eliminarEjercicio(idEjercicio) {
-            db[usuarioSeleccionado].rutinas[diaSeleccionado] = db[usuarioSeleccionado].rutinas[diaSeleccionado].filter(e => e.id !== idEjercicio);
-            guardarEnAlmacenamiento();
-            renderizarEjerciciosDelDia();
-        }
-
-        // --- CALCULAR SÍMBOLO DINÁMICO DE REPETICIONES ---
-        function obtenerEtiquetaReps(reps) {
-            if (!reps || isNaN(reps) || String(reps).trim() === '') return '';
-            const r = parseInt(reps);
-            if (r < 6) return '<span class="text-[10px] text-amber-600 font-black flex items-center justify-center gap-0.5 bg-amber-50 px-1 py-1 rounded-lg border border-amber-200 leading-none">🔴 Pesado</span>';
-            if (r >= 6 && r <= 12) return '<span class="text-[10px] text-emerald-600 font-black flex items-center justify-center gap-0.5 bg-emerald-50 px-1 py-1 rounded-lg border border-emerald-200 leading-none">🟢 Ideal</span>';
-            if (r > 12) return '<span class="text-[10px] text-blue-600 font-black flex items-center justify-center gap-0.5 bg-blue-50 px-1 py-1 rounded-lg border border-blue-200 leading-none">🟡 Liviano</span>';
-            return '';
-        }
-
-        function actualizarDatoSerie(idEjercicio, indexSerie, propiedad, valor) {
-            const ejercicio = db[usuarioSeleccionado].rutinas[diaSeleccionado].find(e => e.id === idEjercicio);
-            if (ejercicio) {
-                ejercicio.series[indexSerie][propiedad] = valor;
-                localStorage.setItem('gym_step_by_step_db', JSON.stringify(db));
-                
-                // Si cambiamos reps, actualizamos el símbolo flotante en esa celda sin recargar toda la lista
-                if (propiedad === 'reps') {
-                    const contenedorEtiqueta = document.getElementById(`tag-${idEjercicio}-${indexSerie}`);
-                    if (contenedorEtiqueta) {
-                        contenedorEtiqueta.innerHTML = obtenerEtiquetaReps(valor);
-                    }
-                }
-                calcularYActualizarSeriesRestantes();
-            }
-        }
-
-        function renderizarEjerciciosDelDia() {
-            const container = document.getElementById('bloque-ejercicios-lista');
-            container.innerHTML = '';
-
-            const listaEjercicios = db[usuarioSeleccionado].rutinas[diaSeleccionado] || [];
-
-            if (listaEjercicios.length === 0) {
-                container.innerHTML = `
-                    <div class="py-12 text-center border border-dashed border-slate-200 rounded-2xl bg-white shadow-sm w-full">
-                        <p class="text-sm text-slate-400 font-medium">No hay ejercicios agregados en este día aún.</p>
-                    </div>
-                `;
-                calcularYActualizarSeriesRestantes();
-                return;
-            }
-
-            listaEjercicios.forEach(ej => {
-                const tarjeta = document.createElement('div');
-                tarjeta.className = "bg-white border border-slate-200 rounded-2xl p-4 space-y-3 shadow-sm mb-3 w-full";
-
-                let htmlSeries = '';
-                ej.series.forEach((serie, index) => {
-                    htmlSeries += `
-                        <div class="grid grid-cols-12 gap-1.5 items-center">
-                            <span class="col-span-1 text-xs font-bold text-slate-400 text-center">#${index + 1}</span>
-                            
-                            <input type="text" placeholder="Peso" value="${serie.peso}"
-                                oninput="actualizarDatoSerie(${ej.id}, ${index}, 'peso', this.value)"
-                                class="col-span-3 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center text-sm text-slate-800 focus:outline-none focus:border-
+                alert("Por favor escribe el nombre
