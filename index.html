@@ -3,35 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PowerLog</title>
+    <title>PowerLog - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#eef2f6',
+                            100: '#e2e8f0',
+                            600: '#475569',
+                            800: '#1e293b',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .active-scale:active { transform: scale(0.97); }
+    </style>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased p-4 max-w-md mx-auto space-y-6">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen antialiased p-4 max-w-md mx-auto space-y-5">
 
-    <div class="flex justify-between items-center bg-white p-4 rounded-2xl border-2 border-slate-200 shadow-sm">
+    <header class="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-sm flex justify-between items-center">
         <div>
-            <h1 class="font-black text-2xl tracking-tight text-slate-800">💪 PowerLog</h1>
-            <p class="text-[10px] font-black uppercase text-slate-400">Registro de Entrenamiento</p>
+            <h1 class="font-black text-2xl tracking-tight text-slate-900 leading-none">💪 PowerLog</h1>
+            <p class="text-[10px] font-extrabold tracking-widest uppercase text-slate-400 mt-0.5">Registro Pro</p>
         </div>
-        <select id="sel-user" onchange="seleccionarUsuario()" class="bg-slate-50 border-2 border-slate-300 font-black p-3 rounded-xl text-sm focus:outline-none">
-            <option value="">Seleccionar perfil...</option>
+        <select id="sel-user" onchange="seleccionarUsuario()" class="bg-slate-50 border-2 border-slate-200 font-black p-3 rounded-2xl text-sm focus:outline-none focus:border-indigo-500 transition-all cursor-pointer">
+            <option value="">👤 Cambiar perfil...</option>
             <option value="Nico V">Nico V</option>
             <option value="Nico">Nico</option>
             <option value="Samuel">Samuel</option>
         </select>
+    </header>
+
+    <div id="mensaje-inicio" class="bg-indigo-50 border border-indigo-100 p-6 rounded-3xl text-center space-y-2">
+        <span class="text-3xl">👋</span>
+        <h2 class="font-black text-indigo-950 text-base">¡Hola! Seleccioná tu perfil arriba</h2>
+        <p class="text-xs text-indigo-600/80 font-bold">Elige tu nombre en el menú superior para ver tus rutinas y empezar a registrar.</p>
     </div>
 
-    <div id="seccion-dias" class="space-y-3 hidden">
-        <h2 class="font-black text-base text-slate-700">📅 Mis Rutinas (Selecciona un día)</h2>
-        <div class="grid grid-cols-3 gap-2" id="dias-lista"></div>
-    </div>
+    <section id="seccion-dias" class="space-y-3 hidden">
+        <h2 class="font-black text-sm text-slate-700 uppercase tracking-wider">📅 Mis Rutinas (Selecciona un día)</h2>
+        <div class="grid grid-cols-3 gap-2.5" id="dias-lista"></div>
+    </section>
 
-    <div id="seccion-form-ejercicio" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3 hidden">
-        <h3 class="font-black text-sm text-slate-800 border-b pb-1">➕ Añadir Ejercicio</h3>
-        <div class="space-y-2.5 text-xs">
+    <section id="seccion-ejercicios" class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-4 hidden">
+        <div class="flex justify-between items-center border-b border-slate-100 pb-3">
             <div>
-                <label class="font-black text-slate-400 uppercase block mb-0.5">1. Grupo Muscular</label>
-                <select id="form-musculo" onchange="actualizarSelectEjercicios()" class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none">
+                <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-900">Ejercicios</h3>
+                <p class="text-[10px] font-bold text-slate-400">Tus levantamientos del día</p>
+            </div>
+            <button onclick="mostrarFormulario()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black px-4 py-2.5 rounded-2xl shadow-sm active-scale transition-all flex items-center gap-1.5">➕ Añadir</button>
+        </div>
+        
+        <div id="ejercicios-lista" class="space-y-4"></div>
+        
+        <button onclick="finalizarDia()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-black py-3.5 rounded-2xl shadow-md shadow-emerald-600/10 active-scale transition-all">✅ Finalizar y guardar Día</button>
+    </section>
+
+    <div id="seccion-form-ejercicio" class="bg-white border-2 border-indigo-100 rounded-3xl p-5 shadow-md space-y-4 hidden">
+        <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="font-black text-sm text-indigo-950">➕ Nuevo Ejercicio</h3>
+            <button onclick="ocultarFormulario()" class="text-slate-400 font-bold text-xs bg-slate-100 px-2.5 py-1 rounded-xl">✕</button>
+        </div>
+        <div class="space-y-3.5 text-xs">
+            <div>
+                <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">1. Grupo Muscular</label>
+                <select id="form-musculo" onchange="actualizarSelectEjercicios()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all">
                     <option value="Pecho">Pecho</option>
                     <option value="Espalda">Espalda</option>
                     <option value="Hombros">Hombros</option>
@@ -43,13 +85,13 @@
                 </select>
             </div>
             <div>
-                <label class="font-black text-slate-400 uppercase block mb-0.5">2. Ejercicio</label>
-                <select id="form-ejercicio" onchange="verificarCustomEj()" class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none"></select>
-                <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none mt-1 hidden">
+                <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">2. Ejercicio</label>
+                <select id="form-ejercicio" onchange="verificarCustomEj()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all"></select>
+                <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all mt-1.5 hidden">
             </div>
             <div>
-                <label class="font-black text-slate-400 uppercase block mb-0.5">3. Parte del músculo</label>
-                <select id="form-parte" class="w-full bg-slate-50 border-2 rounded-xl p-2.5 font-bold focus:outline-none">
+                <label class="font-black text-slate-400 uppercase block mb-1 tracking-wider">3. Parte del músculo</label>
+                <select id="form-parte" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 font-bold focus:outline-none focus:border-indigo-500 transition-all">
                     <option value="Medio">Medio / General</option>
                     <option value="Superior">Superior / Inclinado</option>
                     <option value="Inferior">Inferior / Declinado</option>
@@ -58,43 +100,30 @@
                     <option value="Otro">Otra zona</option>
                 </select>
             </div>
-            <button onclick="guardarNuevoEjercicio()" class="w-full bg-emerald-600 text-white font-black py-2.5 rounded-xl shadow-sm active:scale-98 mt-2">Guardar Ejercicio</button>
+            <button onclick="guardarNuevoEjercicio()" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl shadow-sm active-scale transition-all mt-2">Guardar Ejercicio</button>
         </div>
     </div>
 
-    <div id="seccion-ejercicios" class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-4 hidden">
-        <div class="flex justify-between items-center border-b pb-2">
-            <div>
-                <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-800">Ejercicios</h3>
-            </div>
-            <button onclick="mostrarFormulario()" class="bg-emerald-600 text-white text-xs font-black px-3 py-2 rounded-xl shadow-sm active:scale-95">➕ Nuevo</button>
-        </div>
-        
-        <div id="ejercicios-lista" class="space-y-4"></div>
-        
-        <button onclick="finalizarDia()" class="w-full bg-blue-600 text-white text-sm font-black py-3 rounded-xl shadow-md active:scale-98">✅ Finalizar y guardar Día</button>
-    </div>
+    <section class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
+        <h4 class="text-xs font-black uppercase tracking-wider text-slate-400">📊 Volumen Semanal (Series acumuladas)</h4>
+        <div id="panel-barras" class="space-y-2.5"></div>
+    </section>
 
-    <div class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
-        <h4 class="text-xs font-black uppercase text-slate-400">📊 Volumen Semanal (Series acumuladas)</h4>
-        <div id="panel-barras" class="space-y-2"></div>
-    </div>
-
-    <div class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
-        <h3 class="font-black text-base text-slate-700">📅 Registro por Calendario</h3>
-        <div class="text-center font-black text-sm text-slate-500 uppercase py-1" id="mes-titulo">Mes</div>
-        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase">
+    <section class="bg-white border border-slate-200/80 rounded-3xl p-5 shadow-sm space-y-3">
+        <h3 class="font-black text-sm text-slate-700 uppercase tracking-wider">📅 Registro por Calendario</h3>
+        <div class="text-center font-black text-sm text-indigo-600 tracking-wide uppercase py-1 bg-indigo-50 rounded-xl" id="mes-titulo">Mes</div>
+        <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-black text-slate-400 uppercase pt-2">
             <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
         </div>
         <div class="grid grid-cols-7 gap-1.5" id="celdas-calendario"></div>
         
-        <div class="pt-2 border-t">
+        <div class="pt-3 border-t border-slate-100">
             <h4 class="text-[10px] font-black text-slate-400 uppercase mb-2" id="titulo-detalle">Toca un día marcado en azul</h4>
-            <div id="lista-detalles-dia" class="space-y-2 max-h-48 overflow-y-auto"></div>
+            <div id="lista-detalles-dia" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
         </div>
-    </div>
+    </section>
 
-    <button onclick="limpiarTodo()" class="w-full bg-rose-50 border border-rose-200 text-rose-600 text-[10px] font-black py-3 rounded-xl">⚠️ Borrar datos y reiniciar app</button>
+    <button onclick="limpiarTodo()" class="w-full bg-rose-50 border border-rose-100 text-rose-600 text-xs font-extrabold py-3.5 rounded-2xl active-scale transition-all">⚠️ Borrar datos y reiniciar app</button>
 
     <script>
         const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
@@ -115,7 +144,6 @@
         let db = {};
         let history = [];
 
-        // Inicialización a prueba de errores de lectura
         try {
             user = localStorage.getItem('pl_user') || "";
             dia = parseInt(localStorage.getItem('pl_dia')) || null;
@@ -127,7 +155,6 @@
             history = [];
         }
 
-        // Asegurar estructura del perfil activo al cargar la página
         if(user && !db[user]) {
             db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
             localStorage.setItem('pl_db', JSON.stringify(db));
@@ -138,8 +165,10 @@
 
         function comprobarVistas() {
             if(user && db[user]) {
+                document.getElementById('mensaje-inicio').classList.add('hidden');
                 document.getElementById('seccion-dias').classList.remove('hidden');
                 renderDias();
+                
                 if(dia && db[user][dia]) {
                     document.getElementById('seccion-ejercicios').classList.remove('hidden');
                     document.getElementById('seccion-form-ejercicio').classList.add('hidden');
@@ -149,6 +178,7 @@
                     document.getElementById('seccion-form-ejercicio').classList.add('hidden');
                 }
             } else {
+                document.getElementById('mensaje-inicio').classList.remove('hidden');
                 document.getElementById('seccion-dias').classList.add('hidden');
                 document.getElementById('seccion-ejercicios').classList.add('hidden');
                 document.getElementById('seccion-form-ejercicio').classList.add('hidden');
@@ -188,8 +218,8 @@
                 const esActivo = (i === dia);
                 
                 const btn = document.createElement('button');
-                btn.className = `p-3 rounded-xl font-black text-xs flex flex-col items-center gap-1 border-2 transition-all ${esActivo ? 'bg-blue-600 text-white border-blue-700 shadow-md' : 'bg-white border-slate-200 text-slate-800'}`;
-                btn.innerHTML = `<span>Día ${i}</span> <span class="${esActivo ? 'text-blue-200' : 'text-slate-400'} text-[10px] font-bold">${cant} ej.</span>`;
+                btn.className = `p-4 rounded-2xl font-black text-xs flex flex-col items-center gap-1 border transition-all active-scale ${esActivo ? 'bg-indigo-600 text-white border-indigo-700 shadow-md shadow-indigo-600/10' : 'bg-white border-slate-200 text-slate-800 hover:border-slate-300'}`;
+                btn.innerHTML = `<span>Día ${i}</span> <span class="${esActivo ? 'text-indigo-200' : 'text-slate-400'} text-[10px] font-bold tracking-wider">${cant} ejercicios</span>`;
                 
                 btn.onclick = () => {
                     dia = i;
@@ -208,13 +238,13 @@
 
             const lista = db[user][dia] || [];
             if(lista.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-6">No hay ejercicios cargados hoy.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-400 font-bold text-center py-8 bg-slate-50 rounded-2xl border border-dashed">No hay ejercicios cargados hoy.</p>`;
                 return;
             }
 
             lista.forEach((ej, idxEj) => {
                 const div = document.createElement('div');
-                div.className = "bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2";
+                div.className = "bg-slate-50 p-4 rounded-2xl border border-slate-200/60 space-y-3";
                 
                 let seriesHtml = '';
                 [0,1,2,3].forEach(sIdx => {
@@ -224,31 +254,31 @@
                     if (s.ps !== '') {
                         const repsNum = parseInt(s.ps) || 0;
                         if (repsNum <= 6) {
-                            avisoIntensidad = `<span class="text-[8px] font-black bg-rose-200 text-rose-800 px-1.5 py-0.5 rounded-md uppercase ml-1">🪨 Pesado (≤6)</span>`;
+                            avisoIntensidad = `<span class="text-[8px] font-black bg-rose-200 text-rose-800 px-2 py-0.5 rounded uppercase ml-1">🪨 Pesado</span>`;
                         } else if (repsNum >= 12) {
-                            avisoIntensidad = `<span class="text-[8px] font-black bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded-md uppercase ml-1">🪶 Liviano (≥12)</span>`;
+                            avisoIntensidad = `<span class="text-[8px] font-black bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded uppercase ml-1">🪶 Liviano</span>`;
                         }
                     }
 
                     seriesHtml += `
-                    <div class="grid grid-cols-9 gap-1 items-center text-xs">
-                        <span class="font-black text-slate-400">#${sIdx+1}</span>
-                        <input type="number" placeholder="Peso" value="${s.peso || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'peso', this.value)" class="col-span-4 bg-white border p-1.5 rounded-lg text-center font-bold focus:outline-none">
+                    <div class="grid grid-cols-9 gap-2 items-center text-xs">
+                        <span class="font-black text-slate-400 pl-1">#${sIdx+1}</span>
+                        <input type="number" placeholder="Peso (kg)" value="${s.peso || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'peso', this.value)" class="col-span-4 bg-white border border-slate-200 p-2 rounded-xl text-center font-bold focus:outline-none focus:border-indigo-500">
                         <div class="col-span-4 flex items-center">
-                            <input type="number" placeholder="Reps" value="${s.ps || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'ps', this.value)" class="w-full bg-white border p-1.5 rounded-lg text-center font-bold focus:outline-none">
+                            <input type="number" placeholder="Reps" value="${s.ps || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'ps', this.value)" class="w-full bg-white border border-slate-200 p-2 rounded-xl text-center font-bold focus:outline-none focus:border-indigo-500">
                             ${avisoIntensidad}
                         </div>
                     </div>`;
                 });
 
                 div.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="font-black text-sm text-slate-800 leading-tight">${ej.nombre} 
-                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black tracking-wider block mt-0.5">Grupo: ${ej.musculo} • Zona: ${ej.parteMusculo}</span>
+                <div class="flex justify-between items-start">
+                    <span class="font-bold text-sm text-slate-900 leading-tight">${ej.nombre} 
+                        <span class="text-[9px] bg-slate-200 px-2 py-0.5 rounded-lg font-black uppercase tracking-wider block mt-1 w-fit">${ej.musculo} • Zona: ${ej.parteMusculo}</span>
                     </span>
-                    <button onclick="eliminarEj(${idxEj})" class="text-rose-500 font-bold text-xs bg-rose-50 px-2 py-1 rounded-lg self-start">X</button>
+                    <button onclick="eliminarEj(${idxEj})" class="text-rose-500 font-black text-xs bg-rose-50 px-3 py-1.5 rounded-xl border border-rose-100 active-scale">Eliminar</button>
                 </div>
-                <div class="grid grid-cols-9 gap-1 text-[8px] font-black uppercase text-slate-400 text-center pt-2 border-t">
+                <div class="grid grid-cols-9 gap-1 text-[8px] font-black uppercase text-slate-400 text-center pt-2.5 border-t border-slate-200/50">
                     <span></span><span class="col-span-4">Peso (kg)</span><span class="col-span-4">Reps</span>
                 </div>
                 ${seriesHtml}`;
@@ -258,8 +288,14 @@
 
         function mostrarFormulario() {
             document.getElementById('seccion-form-ejercicio').classList.remove('hidden');
+            document.getElementById('seccion-ejercicios').classList.add('hidden');
             actualizarSelectEjercicios();
             window.scrollTo({ top: document.getElementById('seccion-form-ejercicio').offsetTop, behavior: 'smooth' });
+        }
+
+        function ocultarFormulario() {
+            document.getElementById('seccion-form-ejercicio').classList.add('hidden');
+            document.getElementById('seccion-ejercicios').classList.remove('hidden');
         }
 
         function actualizarSelectEjercicios() {
@@ -320,6 +356,7 @@
             document.getElementById('seccion-form-ejercicio').classList.add('hidden');
             document.getElementById('form-ejercicio-custom').value = '';
 
+            document.getElementById('seccion-ejercicios').classList.remove('hidden');
             renderEjercicios();
             renderDias();
             actualizarBarras();
@@ -338,72 +375,4 @@
 
         function eliminarEj(idx) {
             db[user][dia].splice(idx, 1);
-            localStorage.setItem('pl_db', JSON.stringify(db));
-            renderEjercicios();
-            renderDias();
-        }
-
-        function finalizarDia() {
-            const hoy = new Date();
-            const fechaString = hoy.toISOString().split('T')[0];
-
-            const lista = db[user][dia] || [];
-            lista.forEach(ej => {
-                ej.series.forEach((s, idxS) => {
-                    if(s.peso || s.ps) {
-                        history.push({
-                            usuario: user, fecha: fechaString, dia: dia, 
-                            ejercicio: ej.nombre, musculo: ej.musculo, parte: ej.parteMusculo,
-                            serie: idxS+1, peso: s.peso, reps: s.ps
-                        });
-                    }
-                });
-            });
-            
-            localStorage.setItem('pl_history', JSON.stringify(history));
-            alert(`¡Entrenamiento guardado en el historial del día de hoy!`);
-            renderizarCalendario();
-            actualizarBarras();
-        }
-
-        function actualizarBarras() {
-            const panel = document.getElementById('panel-barras');
-            panel.innerHTML = '';
-            
-            let hechos = {};
-            Object.keys(METAS).forEach(m => hechos[m] = 0);
-
-            if(user && db[user]) {
-                for(let d=1; d<=6; d++) {
-                    if(db[user][d]) {
-                        db[user][d].forEach(ej => {
-                            ej.series.forEach(s => {
-                                if(s.peso || s.ps) {
-                                    if(hechos[ej.musculo] !== undefined) hechos[ej.musculo]++;
-                                }
-                            });
-                        });
-                    }
-                }
-            }
-
-            Object.keys(METAS).forEach(m => {
-                const hechas = hechos[m] || 0;
-                const meta = METAS[m];
-                const porc = Math.min(100, (hechas / meta) * 100);
-                
-                panel.innerHTML += `
-                <div class="text-xs space-y-0.5">
-                    <div class="flex justify-between font-black text-slate-700">
-                        <span>${m}</span>
-                        <span>${hechas}/${meta} series</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div class="bg-blue-600 h-full transition-all" style="width: ${porc}%"></div>
-                    </div>
-                </div>`;
-            });
-        }
-
-        // ================= CALENDARIO =================
-        function renderizarCalend
+            localStorage.setItem('pl_db', JSON.stringify(d
