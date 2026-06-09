@@ -24,15 +24,15 @@
             </div>
 
             <div class="space-y-3 pt-4">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
                     <span class="group-hover:text-blue-600">Nico V</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group">
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
                     <span class="group-hover:text-blue-600">Nico</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group">
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border border-slate-200/80 hover:border-blue-500 hover:shadow-sm text-slate-700 font-bold py-4 px-5 rounded-2xl flex items-center justify-between transition group cursor-pointer">
                     <span class="group-hover:text-blue-600">Samuel</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-blue-500"></i>
                 </button>
@@ -43,7 +43,7 @@
         <div id="view-usuario" class="hidden space-y-5">
             <!-- Botón Volver e Info de Perfil -->
             <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
-                <button onclick="mostrarVista('view-inicio')" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                <button onclick="mostrarVista('view-inicio')" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver
                 </button>
                 <div class="text-right">
@@ -67,7 +67,7 @@
         <div id="view-dia" class="hidden space-y-5">
             <!-- Menú superior -->
             <div class="flex items-center justify-between border-b border-slate-200/60 pb-3">
-                <button onclick="regresarAPantallaUsuario()" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1">
+                <button onclick="regresarAPantallaUsuario()" class="text-xs font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-4 h-4"></i> Volver a días
                 </button>
                 <div class="text-right">
@@ -116,7 +116,7 @@
                 </div>
 
                 <p class="text-[10px] text-slate-400 leading-normal pt-1 border-t border-slate-100">
-                    * Se recomienda realizar de **10 a 12 series semanales** por grupo muscular principal para hipertrofia. Las series se descuentan automáticamente al registrar pesos o repeticiones.
+                    * Se recomienda realizar de 10 a 12 series semanales por grupo muscular principal para hipertrofia. Las series se descuentan automáticamente al registrar pesos o repeticiones.
                 </p>
             </div>
 
@@ -132,7 +132,7 @@
                         <option value="Piernas">Piernas</option>
                     </select>
                 </div>
-                <button onclick="crearEjercicio()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition">
+                <button onclick="crearEjercicio()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1 transition cursor-pointer">
                     <i data-lucide="plus" class="w-4 h-4"></i> Guardar Ejercicio
                 </button>
             </div>
@@ -152,10 +152,9 @@
 
         // Estructura limpia para un usuario nuevo
         function inicializarDatosUsuario() {
-            let estructura = {
+            return {
                 rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] }
             };
-            return estructura;
         }
 
         // Base de datos que se guarda en el teléfono
@@ -194,10 +193,10 @@
 
             for (let i = 1; i <= 6; i++) {
                 const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200/80 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700";
+                btnDia.className = "w-full bg-white border border-slate-200/80 text-left font-bold py-3.5 px-4 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-sm text-slate-700 cursor-pointer";
                 
                 // Contar cuántos ejercicios tiene guardados ese día
-                const cantEjercicios = db[usuarioSeleccionado].rutinas[i].length;
+                const cantEjercicios = db[usuarioSeleccionado].rutinas[i] ? db[usuarioSeleccionado].rutinas[i].length : 0;
                 const textoContador = cantEjercicios === 1 ? '1 ejercicio' : `${cantEjercicios} ejercicios`;
 
                 btnDia.innerHTML = `
@@ -225,7 +224,6 @@
         }
 
         function regresarAPantallaUsuario() {
-            // Recalcula los textos de los días por si se agregaron cosas
             seleccionarUsuario(usuarioSeleccionado);
         }
 
@@ -237,13 +235,16 @@
 
             if (!nombre) return alert("Por favor escribe el nombre del ejercicio.");
 
-            // Cada ejercicio inicia con 4 series limpias para rellenar peso y repeticiones
             const seriesFijas = [
                 { peso: '', reps: '' },
                 { peso: '', reps: '' },
                 { peso: '', reps: '' },
                 { peso: '', reps: '' }
             ];
+
+            if (!db[usuarioSeleccionado].rutinas[diaSeleccionado]) {
+                db[usuarioSeleccionado].rutinas[diaSeleccionado] = [];
+            }
 
             db[usuarioSeleccionado].rutinas[diaSeleccionado].push({
                 id: Date.now(),
@@ -252,7 +253,7 @@
                 series: seriesFijas
             });
 
-            inputNombre.value = ''; // Limpiar cuadro de escritura
+            inputNombre.value = '';
             guardarEnAlmacenamiento();
             renderizarEjerciciosDelDia();
         }
@@ -267,7 +268,6 @@
             const ejercicio = db[usuarioSeleccionado].rutinas[diaSeleccionado].find(e => e.id === idEjercicio);
             if (ejercicio) {
                 ejercicio.series[indexSerie][propiedad] = valor;
-                // Guardamos en tiempo real lo que escribe el usuario
                 localStorage.setItem('gym_step_by_step_db', JSON.stringify(db));
                 calcularYActualizarSeriesRestantes();
             }
@@ -277,7 +277,7 @@
             const container = document.getElementById('bloque-ejercicios-lista');
             container.innerHTML = '';
 
-            const listaEjercicios = db[usuarioSeleccionado].rutinas[diaSeleccionado];
+            const listaEjercicios = db[usuarioSeleccionado].rutinas[diaSeleccionado] || [];
 
             if (listaEjercicios.length === 0) {
                 container.innerHTML = `
@@ -285,6 +285,7 @@
                         <p class="text-xs text-slate-400 font-medium">No hay ejercicios agregados en este día aún.</p>
                     </div>
                 `;
+                calcularYActualizarSeriesRestantes();
                 return;
             }
 
@@ -297,13 +298,9 @@
                     htmlSeries += `
                         <div class="grid grid-cols-12 gap-2 items-center">
                             <span class="col-span-2 text-xs font-bold text-slate-400 text-center">#${index + 1}</span>
-                            
-                            <!-- Entrada para el Peso -->
-                            <input type="text" placeholder="Peso (ej. 60kg)" value="${serie.peso}"
+                            <input type="text" placeholder="Peso" value="${serie.peso}"
                                 oninput="actualizarDatoSerie(${ej.id}, ${index}, 'peso', this.value)"
                                 class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-center text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
-                            
-                            <!-- Entrada para las Repeticiones -->
                             <input type="number" placeholder="Reps" value="${serie.reps}"
                                 oninput="actualizarDatoSerie(${ej.id}, ${index}, 'reps', this.value)"
                                 class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-1.5 text-center text-xs text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
@@ -317,15 +314,15 @@
                             <h4 class="font-bold text-xs text-slate-800 tracking-tight">${ej.nombre}</h4>
                             <span class="text-[9px] bg-slate-100 text-slate-500 px-1.5 py-0.5 rounded font-bold uppercase tracking-wider">${ej.musculo}</span>
                         </div>
-                        <button onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 transition p-1">
+                        <button onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 transition p-1 cursor-pointer">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </div>
                     <div class="space-y-2">
                         <div class="grid grid-cols-12 gap-2 text-[9px] font-bold text-slate-400 uppercase tracking-wider text-center">
                             <span class="col-span-2 text-left text-slate-300">Serie</span>
-                            <span class="col-span-5">Peso Realizado</span>
-                            <span class="col-span-5">Repeticiones</span>
+                            <span class="col-span-5">Peso</span>
+                            <span class="col-span-5">Reps</span>
                         </div>
                         ${htmlSeries}
                     </div>
@@ -342,16 +339,14 @@
         function calcularYActualizarSeriesRestantes() {
             if (!usuarioSeleccionado) return;
 
-            // Contadores de series completadas en la semana completa del usuario activo
             let seriesHechas = { "Pecho": 0, "Espalda": 0, "Piernas": 0 };
 
-            // Recorremos los 6 días buscando series que tengan anotado al menos el peso o repetición
             for (let d = 1; d <= 6; d++) {
-                db[usuarioSeleccionado].rutinas[d].forEach(ej => {
+                const ejerciciosDelDia = db[usuarioSeleccionado].rutinas[d] || [];
+                ejerciciosDelDia.forEach(ej => {
                     if (seriesHechas.hasOwnProperty(ej.musculo)) {
-                        // Contamos cuántas de las 4 series rellenó
                         ej.series.forEach(s => {
-                            if (s.peso.trim() !== '' || s.reps !== '') {
+                            if (String(s.peso).trim() !== '' || String(s.reps).trim() !== '') {
                                 seriesHechas[ej.musculo]++;
                             }
                         });
@@ -359,7 +354,6 @@
                 });
             }
 
-            // Actualizar etiquetas visuales y barras de progreso rectas abajo
             Object.keys(METAS).forEach(m => {
                 const metaDelMusculo = METAS[m];
                 const completadas = seriesHechas[m];
@@ -368,10 +362,15 @@
                 const textoConteo = document.getElementById(`conteo-${m.toLowerCase()}`);
                 const barraProgreso = document.getElementById(`bar-${m.toLowerCase()}`);
 
-                if (quedan === 0) {
-                    textoConteo.innerText = "¡Meta cumplida! 🎉";
-                    textoConteo.className = "text-emerald-600 font-black";
-                } else {
-                    textoConteo.innerText = `Quedan ${quan(quetan, quedan)} series`;
-                    textoConteo.innerText = `Quedan ${quetan(quedan)} series`;
-   
+                if (textoConteo && barraProgreso) {
+                    if (quedan === 0) {
+                        textoConteo.innerText = "¡Meta cumplida! 🎉";
+                        textoConteo.className = "text-emerald-600 font-black text-xs";
+                        barraProgreso.className = "bg-emerald-500 h-full transition-all duration-300";
+                    } else {
+                        textoConteo.innerText = `Quedan ${quedan} series`;
+                        textoConteo.className = "text-slate-500 font-semibold text-xs";
+                        barraProgreso.className = "bg-blue-600 h-full transition-all duration-300";
+                    }
+                    const porcentaje = Math.min(100, (completadas / metaDelMusculo) * 100);
+         
