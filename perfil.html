@@ -11,18 +11,18 @@
 
     <div class="space-y-6 w-full">
         <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-            <button type="button" onclick="window.location.href='./index.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+            <a href="index.html" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i> Salir
-            </button>
+            </a>
             <div class="text-right">
                 <span class="text-[11px] font-black text-blue-600 uppercase tracking-wider block">Perfil activo</span>
                 <h2 id="nombre-perfil-activo" class="text-2xl font-black text-slate-800">---</h2>
             </div>
         </div>
 
-        <button type="button" onclick="window.location.href='./registro.html'" class="w-full bg-slate-800 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-3 shadow-md active:bg-slate-900 transition-all">
+        <a href="registro.html" class="w-full bg-slate-800 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-3 shadow-md active:bg-slate-900 transition-all">
             <i data-lucide="calendar" class="w-6 h-6 text-blue-400"></i> Ver Mi Registro Histórico
-        </button>
+        </a>
 
         <div class="space-y-1 pt-2">
             <h3 class="text-xl font-black text-slate-700">Mis Rutinas</h3>
@@ -33,34 +33,36 @@
     </div>
 
     <script>
-        const usuario = localStorage.getItem('powerlog_usuario_actual') || "Nico V";
+        const usuario = localStorage.getItem('powerlog_usuario_actual');
+        if (!usuario) window.location.href = 'index.html';
+        
         document.getElementById('nombre-perfil-activo').innerText = usuario;
 
-        let db = JSON.parse(localStorage.getItem('powerlog_db_v9')) || {};
-        if (!db[usuario]) window.location.href = './index.html';
-
+        let db = JSON.parse(localStorage.getItem('powerlog_db_v11')) || {};
         const container = document.getElementById('lista-dias-container');
-        const checks = db[usuario].checksSemanales || { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+        const checks = db[usuario]?.checksSemanales || { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
 
         for (let i = 1; i <= 6; i++) {
-            const cant = db[usuario].rutinas[i] ? db[usuario].rutinas[i].length : 0;
+            const cant = (db[usuario] && db[usuario].rutinas && db[usuario].rutinas[i]) ? db[usuario].rutinas[i].length : 0;
             const estaListo = checks[i];
             
-            const btn = document.createElement('button');
-            btn.className = `w-full border-2 ${estaListo ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-slate-200'} text-left font-black py-5 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 mb-2 shadow-sm active:scale-[0.99] transition-all`;
+            const btn = document.createElement('a');
+            btn.href = "dia.html";
+            btn.className = `w-full border-2 ${estaListo ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-slate-200'} text-left font-black py-5 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 mb-2 shadow-sm active:scale-[0.99] transition-all block`;
             
             btn.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="w-4 h-4 rounded-full ${estaListo ? 'bg-emerald-500' : 'bg-blue-600'}"></div>
-                    <span>Día ${i}</span>
-                    ${estaListo ? '<span class="text-emerald-600 text-sm font-black ml-2">✔️ LISTO</span>' : ''}
+                <div class="flex items-center justify-between w-full">
+                    <div class="flex items-center gap-3">
+                        <div class="w-4 h-4 rounded-full ${estaListo ? 'bg-emerald-500' : 'bg-blue-600'}"></div>
+                        <span>Día ${i}</span>
+                        ${estaListo ? '<span class="text-emerald-600 text-sm font-black ml-2">✔️ LISTO</span>' : ''}
+                    </div>
+                    <span class="text-sm text-slate-400 font-black">${cant > 0 ? cant + ' ej.' : 'Vacío'}</span>
                 </div>
-                <span class="text-sm text-slate-400 font-black">${cant > 0 ? cant + ' ej.' : 'Vacío'}</span>
             `;
             
             btn.onclick = function() {
                 localStorage.setItem('powerlog_dia_actual', i);
-                window.location.href = './dia.html';
             };
             container.appendChild(btn);
         }
