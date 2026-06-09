@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PowerLog - PRO</title>
+    <title>PowerLog v2026</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
@@ -13,8 +13,8 @@
 
         <div id="view-inicio" class="space-y-8 pt-12 w-full">
             <div class="text-center space-y-3">
-                <div class="bg-blue-600 w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
-                    <i data-lucide="dumbbell" class="w-12 h-12"></i>
+                <div class="bg-blue-600 w-20 h-20 rounded-3xl mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
+                    <i data-lucide="dumbbell" class="w-10 h-10"></i>
                 </div>
                 <h1 class="text-4xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
                 <p class="text-base text-slate-400 font-semibold">Desliza abajo para elegir tu nombre</p>
@@ -22,7 +22,7 @@
 
             <div class="space-y-4 pt-4 w-full">
                 <div class="relative">
-                    <select id="selector-usuario-principal" class="w-full bg-white border-2 border-slate-300 text-slate-800 font-black py-6 px-6 rounded-2xl text-xl shadow-md appearance-none text-center focus:outline-none focus:border-blue-600">
+                    <select id="selector-usuario-principal" class="w-full bg-white border-2 border-slate-300 text-slate-800 font-black py-5 px-6 rounded-2xl text-xl shadow-md appearance-none text-center focus:outline-none focus:border-blue-600">
                         <option value="Nico V">Nico V</option>
                         <option value="Nico">Nico</option>
                         <option value="Samuel">Samuel</option>
@@ -32,7 +32,7 @@
                     </div>
                 </div>
 
-                <button type="button" onclick="ingresarAlPerfil()" class="w-full bg-blue-600 text-white font-black py-6 px-6 rounded-2xl text-xl shadow-lg active:bg-blue-700 text-center block tracking-wide mt-4">
+                <button type="button" onclick="ingresarAlPerfil()" class="w-full bg-blue-600 text-white font-black py-5 px-6 rounded-2xl text-xl shadow-lg active:bg-blue-700 text-center block mt-4 transition-all">
                     Ingresar a mi Perfil
                 </button>
             </div>
@@ -40,7 +40,7 @@
 
         <div id="view-usuario" class="space-y-6 w-full" style="display: none;">
             <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-                <button type="button" onclick="irAPantalla('view-inicio')" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+                <button type="button" onclick="mostrarPantalla('view-inicio')" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                     <i data-lucide="arrow-left" class="w-6 h-6"></i> Salir
                 </button>
                 <div class="text-right">
@@ -49,22 +49,21 @@
                 </div>
             </div>
 
-            <button type="button" onclick="abrirPantallaRegistro()" class="w-full bg-slate-800 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-3 shadow-md active:bg-slate-900">
-                <i data-lucide="calendar" class="w-6 h-6 text-blue-400"></i> Ver Mi Registro Histórico
+            <button type="button" onclick="abrirCalendarioRegistro()" class="w-full bg-slate-800 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-3 shadow-md active:bg-slate-900 transition-all">
+                <i data-lucide="calendar" class="w-6 h-6 text-blue-400"></i> Ver Mi Registro
             </button>
 
             <div class="space-y-1 pt-2">
                 <h3 class="text-xl font-black text-slate-700">Mis Rutinas Semanales</h3>
-                <p class="text-sm text-slate-400 font-medium">Mira qué día toca o cuál ya finalizaste</p>
+                <p class="text-sm text-slate-400 font-medium">Elige el día para entrenar o ver su estado</p>
             </div>
 
-            <div class="space-y-3 w-full" id="lista-dias-container">
-                </div>
+            <div class="space-y-3 w-full" id="lista-dias-container"></div>
         </div>
 
         <div id="view-dia" class="space-y-6 w-full" style="display: none;">
             <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-                <button type="button" onclick="irAPantalla('view-usuario')" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+                <button type="button" onclick="mostrarPantalla('view-usuario')" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                     <i data-lucide="arrow-left" class="w-6 h-6"></i> Volver a días
                 </button>
                 <div class="text-right">
@@ -73,7 +72,7 @@
                 </div>
             </div>
 
-            <button type="button" onclick="abrirModalEjercicio()" class="w-full bg-emerald-600 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-2 shadow-md active:bg-emerald-700">
+            <button type="button" onclick="abrirModal()" class="w-full bg-emerald-600 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-2 shadow-md active:bg-emerald-700">
                 <i data-lucide="plus-circle" class="w-6 h-6"></i> Agregar Ejercicio
             </button>
 
@@ -86,35 +85,32 @@
                 <div id="panel-barras-musculos" class="space-y-3.5"></div>
             </div>
 
-            <button type="button" onclick="finalizarEntrenamientoDia()" class="w-full bg-blue-600 text-white font-black py-6 px-6 rounded-2xl text-xl shadow-lg active:bg-blue-700 text-center block tracking-wide mt-8 border-2 border-blue-500">
+            <button type="button" onclick="finalizarEntrenamiento()" class="w-full bg-blue-600 text-white font-black py-5 px-6 rounded-2xl text-xl shadow-lg active:bg-blue-700 text-center block mt-6 border-2 border-blue-500">
                 ✅ Finalizar Entrenamiento
             </button>
         </div>
 
         <div id="view-registro" class="space-y-6 w-full" style="display: none;">
             <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-                <button type="button" onclick="irAPantalla('view-usuario')" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
-                    <i data-lucide="arrow-left" class="w-6 h-6"></i> Volver al Perfil
+                <button type="button" onclick="mostrarPantalla('view-usuario')" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i> Volver
                 </button>
                 <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
-                    <i data-lucide="calendar-days" class="text-blue-600"></i> Mi Calendario
+                    <i data-lucide="calendar-days" class="text-blue-600"></i> Historial Calendario
                 </h2>
             </div>
 
             <div class="bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-sm space-y-3">
-                <div class="text-center font-black text-lg text-slate-700 uppercase tracking-wide py-1" id="mes-calendario-titulo">
-                    Mes Actual
-                </div>
+                <div class="text-center font-black text-lg text-slate-700 uppercase py-1" id="mes-titulo">Mes</div>
                 <div class="grid grid-cols-7 gap-1 text-center text-xs font-black text-slate-400 uppercase">
                     <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
                 </div>
-                <div class="grid grid-cols-7 gap-1.5 id" id="bloque-celdas-calendario">
-                    </div>
+                <div class="grid grid-cols-7 gap-1.5" id="celdas-calendario"></div>
             </div>
 
             <div class="space-y-2">
-                <h3 class="text-xs font-black uppercase tracking-wider text-slate-400" id="titulo-detalle-dia">Selecciona un día marcado en azul</h3>
-                <div id="lista-detalles-ejercicios-dia" class="space-y-2 max-h-60 overflow-y-auto"></div>
+                <h3 class="text-xs font-black uppercase tracking-wider text-slate-400" id="titulo-detalle">Toca un día marcado en azul</h3>
+                <div id="lista-detalles-dia" class="space-y-2 max-h-64 overflow-y-auto"></div>
             </div>
         </div>
 
@@ -122,18 +118,15 @@
 
     <div id="modal-ejercicio" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" style="display: none;">
         <div class="bg-white rounded-3xl w-full max-w-sm p-6 space-y-5 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-2">
-                <h3 class="text-xl font-black text-slate-800">Nuevo Ejercicio</h3>
-                <button type="button" onclick="cerrarModalEjercicio()" class="text-slate-400 p-1"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
+            <h3 class="text-xl font-black text-slate-800 border-b pb-2">Nuevo Ejercicio</h3>
             <div class="space-y-4">
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase">Nombre</label>
-                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press Inclinado" class="w-full bg-slate-50 border rounded-xl px-4 py-3.5 text-base font-bold text-slate-800">
+                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press Inclinado" class="w-full bg-slate-50 border rounded-xl px-4 py-3.5 text-base font-bold text-slate-800 focus:outline-none">
                 </div>
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase">Grupo Muscular</label>
-                    <select id="select-grupo-muscular" class="w-full bg-slate-50 border rounded-xl px-3 py-3.5 text-base font-bold text-slate-600">
+                    <select id="select-grupo-muscular" class="w-full bg-slate-50 border rounded-xl px-3 py-3.5 text-base font-bold text-slate-600 focus:outline-none">
                         <option value="Pecho">Pecho (10-20 series)</option><option value="Espalda">Espalda (10-20 series)</option>
                         <option value="Hombros">Hombros (10-20 series)</option><option value="Bíceps">Bíceps (8-15 series)</option>
                         <option value="Tríceps">Tríceps (8-15 series)</option><option value="Cuádriceps">Cuádriceps (10-20 series)</option>
@@ -142,7 +135,7 @@
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-3 pt-2">
-                <button type="button" onclick="cerrarModalEjercicio()" class="bg-slate-100 text-slate-600 font-bold py-3.5 rounded-xl">Cancelar</button>
+                <button type="button" onclick="cerrarModal()" class="bg-slate-100 text-slate-600 font-bold py-3.5 rounded-xl">Cancelar</button>
                 <button type="button" onclick="crearEjercicio()" class="bg-blue-600 text-white font-bold py-3.5 rounded-xl">Guardar</button>
             </div>
         </div>
@@ -151,26 +144,36 @@
     <script>
         const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
 
-        function inicializarDatosUsuario() {
-            return { 
+        function generarEstructuraBase() {
+            return {
                 rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] },
-                checksFinalizados: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false },
-                timestampSemana: getNumeroSemanaActual()
+                checksSemanales: { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false },
+                identificadorSemana: calcularSemanaAño()
             };
         }
 
-        let db = JSON.parse(localStorage.getItem('gym_step_by_step_db_v6')) || {
-            "Nico V": inicializarDatosUsuario(),
-            "Nico": inicializarDatosUsuario(),
-            "Samuel": inicializarDatosUsuario()
+        // Obtener identificador único de semana actual (Para reiniciar los lunes de forma exacta)
+        function calcularSemanaAño() {
+            const copiaFecha = new Date();
+            copiaFecha.setHours(0,0,0,0);
+            copiaFecha.setDate(copiaFecha.getDate() + 4 - (copiaFecha.getDay() || 7));
+            const inicioAño = new Date(copiaFecha.getFullYear(), 0, 1);
+            const numSemana = Math.ceil((((copiaFecha - inicioAño) / 86400000) + 1) / 7);
+            return `${copiaFecha.getFullYear()}-W${numSemana}`;
+        }
+
+        let db = JSON.parse(localStorage.getItem('powerlog_db_v7')) || {
+            "Nico V": generarEstructuraBase(),
+            "Nico": generarEstructuraBase(),
+            "Samuel": generarEstructuraBase()
         };
 
-        let historialLogs = JSON.parse(localStorage.getItem('gym_logs_calendar_v6')) || [];
-        let usuarioSeleccionado = "";
-        let diaSeleccionado = 1;
+        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v7')) || [];
+        let usuarioActivo = "";
+        let diaActivo = 1;
 
-        // --- MANEJO DE VISTAS SEGURO ---
-        function irAPantalla(idVista) {
+        // Cambiador de pantallas seguro
+        function mostrarPantalla(idVista) {
             document.getElementById('view-inicio').style.display = 'none';
             document.getElementById('view-usuario').style.display = 'none';
             document.getElementById('view-dia').style.display = 'none';
@@ -180,100 +183,87 @@
             if (window.lucide) lucide.createIcons();
         }
 
-        // Obtener identificador único de semana (Año + Número de semana) para reiniciar los lunes
-        function getNumeroSemanaActual() {
-            const d = new Date();
-            d.setHours(0,0,0,0);
-            d.setDate(d.getDate() + 4 - (d.getDay() || 7));
-            const yearStart = new Date(d.getFullYear(),0,1);
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-            return `${d.getFullYear()}-W${weekNo}`;
-        }
-
-        // Control de reinicios automáticos (Lunes o completado los 6 días)
-        function validarYReiniciarControlesSemanales(user) {
-            if (!db[user].checksFinalizados) {
-                db[user].checksFinalizados = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-                db[user].timestampSemana = getNumeroSemanaActual();
+        // Validación de reinicio de controles (Lunes o al terminar los 6 días)
+        function verificarFiltrosDeLimpieza(perfil) {
+            if (!db[perfil].checksSemanales) {
+                db[perfil].checksSemanales = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+                db[perfil].identificadorSemana = calcularSemanaAño();
                 return;
             }
 
-            const semanaActual = getNumeroSemanaActual();
-            const todosCompletos = Object.values(db[user].checksFinalizados).every(v => v === true);
+            const semanaActual = calcularSemanaAño();
+            const completóTodo = Object.values(db[perfil].checksSemanales).every(v => v === true);
 
-            // Si es un lunes nuevo o si ya terminaron los 6 días, se limpia para la nueva tanda
-            if (db[user].timestampSemana !== semanaActual || todosCompletos) {
-                db[user].checksFinalizados = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
-                db[user].timestampSemana = semanaActual;
-                localStorage.setItem('gym_step_by_step_db_v6', JSON.stringify(db));
+            // Si cambió la semana o ya completaron las 6 casillas, se reinicia de cero
+            if (db[perfil].identificadorSemana !== semanaActual || completóTodo) {
+                db[perfil].checksSemanales = { 1: false, 2: false, 3: false, 4: false, 5: false, 6: false };
+                db[perfil].identificadorSemana = semanaActual;
+                localStorage.setItem('powerlog_db_v7', JSON.stringify(db));
             }
         }
 
         function ingresarAlPerfil() {
-            usuarioSeleccionado = document.getElementById('selector-usuario-principal').value;
-            if (!usuarioSeleccionado) return;
+            usuarioActivo = document.getElementById('selector-usuario-principal').value;
+            if (!usuarioActivo) return;
 
-            validarYReiniciarControlesSemanales(usuarioSeleccionado);
-            document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
+            verificarFiltrosDeLimpieza(usuarioActivo);
+            document.getElementById('nombre-perfil-activo').innerText = usuarioActivo;
             renderizarMenuDias();
-            irAPantalla('view-usuario');
+            mostrarPantalla('view-usuario');
         }
 
         function renderizarMenuDias() {
-            const containerDias = document.getElementById('lista-dias-container');
-            containerDias.innerHTML = '';
+            const contenedor = document.getElementById('lista-dias-container');
+            contenedor.innerHTML = '';
 
             for (let i = 1; i <= 6; i++) {
-                const cantEjercicios = db[usuarioSeleccionado].rutinas[i] ? db[usuarioSeleccionado].rutinas[i].length : 0;
-                const estaFinalizado = db[usuarioSeleccionado].checksFinalizados[i];
+                const totalEjercicios = db[usuarioActivo].rutinas[i] ? db[usuarioActivo].rutinas[i].length : 0;
+                const checkListo = db[usuarioActivo].checksSemanales[i];
 
-                const btnDia = document.createElement('button');
-                btnDia.type = "button";
-                // Color verde clarito si está listo, blanco si falta
-                btnDia.className = `w-full border-2 ${estaFinalizado ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-slate-200'} text-left font-black py-5 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 mb-2 shadow-sm active:bg-slate-100`;
+                const boton = document.createElement('button');
+                boton.type = "button";
+                boton.className = `w-full border-2 ${checkListo ? 'bg-emerald-50 border-emerald-300' : 'bg-white border-slate-200'} text-left font-black py-5 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 mb-2 shadow-sm active:scale-[0.99] transition-all`;
                 
-                btnDia.innerHTML = `
+                boton.innerHTML = `
                     <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded-full ${estaFinalizado ? 'bg-emerald-500' : 'bg-blue-600'}"></div>
+                        <div class="w-4 h-4 rounded-full ${checkListo ? 'bg-emerald-500' : 'bg-blue-600'}"></div>
                         <span>Día ${i}</span>
-                        ${estaFinalizado ? '<span class="text-emerald-600 text-sm font-black flex items-center gap-1 ml-2">✔️ LISTO</span>' : ''}
+                        ${checkListo ? '<span class="text-emerald-600 text-sm font-black flex items-center gap-1 ml-2">✔️ LISTO</span>' : ''}
                     </div>
-                    <span class="text-sm text-slate-400 font-black">${cantEjercicios > 0 ? cantEjercicios + ' ej.' : 'Vacío'}</span>
+                    <span class="text-sm text-slate-400 font-black">${totalEjercicios > 0 ? totalEjercicios + ' ej.' : 'Vacío'}</span>
                 `;
                 
-                btnDia.onclick = function() { abrirDia(i); };
-                containerDias.appendChild(btnDia);
+                boton.onclick = function() { irAlDia(i); };
+                contenedor.appendChild(boton);
             }
         }
 
-        function abrirDia(numeroDia) {
-            diaSeleccionado = numeroDia;
-            document.getElementById('txt-perfil-en-dia').innerText = usuarioSeleccionado;
+        function irAlDia(numeroDia) {
+            diaActivo = numeroDia;
+            document.getElementById('txt-perfil-en-dia').innerText = usuarioActivo;
             document.getElementById('txt-dia-activo').innerText = `Día ${numeroDia}`;
             
             renderizarEjerciciosDelDia();
-            irAPantalla('view-dia');
+            mostrarPantalla('view-dia');
         }
 
-        function finalizarEntrenamientoDia() {
-            // Guardar check de finalizado
-            db[usuarioSeleccionado].checksFinalizados[diaSeleccionado] = true;
-            localStorage.setItem('gym_step_by_step_db_v6', JSON.stringify(db));
+        function finalizarEntrenamiento() {
+            db[usuarioActivo].checksSemanales[diaActivo] = true;
+            localStorage.setItem('powerlog_db_v7', JSON.stringify(db));
 
-            // Guardar log en el historial con fecha exacta del día de hoy para el calendario
             const hoy = new Date();
-            const fechaID = hoy.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+            const fechaString = hoy.toISOString().split('T')[0]; // YYYY-MM-DD
 
-            const ejerciciosDelDia = db[usuarioSeleccionado].rutinas[diaSeleccionado] || [];
+            const listaEjercicios = db[usuarioActivo].rutinas[diaActivo] || [];
             
-            // Registramos la sesión en el historial general si tiene datos cargados
-            ejerciciosDelDia.forEach(ej => {
+            // Almacenar en estructura limpia para el calendario histórico
+            listaEjercicios.forEach(ej => {
                 ej.series.forEach((s, idx) => {
                     if (s.peso || s.reps) {
-                        historialLogs.push({
-                            fechaKey: fechaID,
-                            usuario: usuarioSeleccionado,
-                            diaNum: diaSeleccionado,
+                        logsHistorial.push({
+                            fechaKey: fechaString,
+                            usuario: usuarioActivo,
+                            diaNum: diaActivo,
                             ejercicio: ej.nombre,
                             musculo: ej.musculo,
                             serie: idx + 1,
@@ -284,76 +274,83 @@
                 });
             });
 
-            localStorage.setItem('gym_logs_calendar_v6', JSON.stringify(historialLogs));
+            localStorage.setItem('powerlog_history_v7', JSON.stringify(logsHistorial));
             
-            alert(`¡Entrenamiento del Día ${diaSeleccionado} guardado con éxito!`);
+            alert(`¡Día ${diaActivo} marcado como completado con éxito!`);
             renderizarMenuDias();
-            irAPantalla('view-usuario');
+            mostrarPantalla('view-usuario');
         }
 
-        // --- MANEJO DE EJERCICIOS ---
-        function abrirModalEjercicio() { document.getElementById('modal-ejercicio').style.display = 'flex'; }
-        function cerrarModalEjercicio() { document.getElementById('modal-ejercicio').style.display = 'none'; document.getElementById('input-nombre-ejercicio').value = ''; }
+        // --- GESTIÓN DE EJERCICIOS ---
+        function abrirModal() { document.getElementById('modal-ejercicio').style.display = 'flex'; }
+        function cerrarModal() { document.getElementById('modal-ejercicio').style.display = 'none'; document.getElementById('input-nombre-ejercicio').value = ''; }
 
         function crearEjercicio() {
             const nombre = document.getElementById('input-nombre-ejercicio').value.trim();
             const musculo = document.getElementById('select-grupo-muscular').value;
             if (!nombre) return;
 
-            db[usuarioSeleccionado].rutinas[diaSeleccionado].push({
+            db[usuarioActivo].rutinas[diaActivo].push({
                 id: Date.now(),
                 nombre: nombre,
                 musculo: musculo,
                 series: [{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''}]
             });
 
-            localStorage.setItem('gym_step_by_step_db_v6', JSON.stringify(db));
-            cerrarModalEjercicio();
+            localStorage.setItem('powerlog_db_v7', JSON.stringify(db));
+            cerrarModal();
             renderizarEjerciciosDelDia();
         }
 
         function eliminarEjercicio(id) {
-            db[usuarioSeleccionado].rutinas[diaSeleccionado] = db[usuarioSeleccionado].rutinas[diaSeleccionado].filter(e => e.id !== id);
-            localStorage.setItem('gym_step_by_step_db_v6', JSON.stringify(db));
+            db[usuarioActivo].rutinas[diaActivo] = db[usuarioActivo].rutinas[diaActivo].filter(e => e.id !== id);
+            localStorage.setItem('powerlog_db_v7', JSON.stringify(db));
             renderizarEjerciciosDelDia();
         }
 
-        function actualizarDatoSerie(idEj, idx, prop, val) {
-            const ej = db[usuarioSeleccionado].rutinas[diaSeleccionado].find(e => e.id === idEj);
+        function guardarValorSerie(idEj, idx, campo, valor) {
+            const ej = db[usuarioActivo].rutinas[diaActivo].find(e => e.id === idEj);
             if (ej) {
-                ej.series[idx][prop] = val;
-                localStorage.setItem('gym_step_by_step_db_v6', JSON.stringify(db));
-                actualizarBarrasVolumen();
+                ej.series[idx][campo] = valor;
+                localStorage.setItem('powerlog_db_v7', JSON.stringify(db));
+                actualizarBarrasMusculos();
             }
         }
 
         function renderizarEjerciciosDelDia() {
             const container = document.getElementById('bloque-ejercicios-lista');
             container.innerHTML = '';
-            const lista = db[usuarioSeleccionado].rutinas[diaSeleccionado] || [];
+            const listado = db[usuarioActivo].rutinas[diaActivo] || [];
 
-            if (lista.length === 0) {
-                container.innerHTML = `<div class="py-12 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white text-slate-400 font-semibold">No hay ejercicios aquí. Agrega uno arriba.</div>`;
-                actualizarBarrasVolumen();
+            if (listado.length === 0) {
+                container.innerHTML = `<div class="py-12 text-center border-2 border-dashed border-slate-200 rounded-3xl bg-white text-slate-400 font-semibold">No hay ejercicios aún. Añade uno arriba.</div>`;
+                actualizarBarrasMusculos();
                 return;
             }
 
-            lista.forEach(ej => {
-                const tarjeta = document.createElement('div');
-                tarjeta.className = "bg-white border-2 border-slate-200 rounded-3xl p-5 space-y-4 mb-3 w-full";
+            listado.forEach(ej => {
+                const card = document.createElement('div');
+                card.className = "bg-white border-2 border-slate-200 rounded-3xl p-5 space-y-4 mb-3 w-full";
                 
-                let htmlSeries = '';
+                let seriesHtml = '';
                 ej.series.forEach((s, idx) => {
-                    htmlSeries += `
+                    seriesHtml += `
                         <div class="grid grid-cols-12 gap-2 items-center">
                             <span class="col-span-1 text-base font-black text-slate-400 text-center">#${idx+1}</span>
-                            <input type="text" placeholder="Peso" value="${s.peso}" oninput="actualizarDatoSerie(${ej.id}, ${idx}, 'peso', this.value)" class="col-span-4 bg-slate-50 border border-slate-300 rounded-xl py-3 text-center text-lg font-black text-slate-800">
-                            <input type="number" placeholder="Reps" value="${s.reps}" oninput="actualizarDatoSerie(${ej.id}, ${idx}, 'reps', this.value)" class="col-span-4 bg-slate-50 border border-slate-300 rounded-xl py-3 text-center text-lg font-black text-slate-800">
+                            <input type="text" placeholder="Peso" value="${s.peso}" oninput="guardarValorSerie(${ej.id}, ${idx}, 'peso', this.value)" class="col-span-5 bg-slate-50 border border-slate-300 rounded-xl py-3 text-center text-lg font-black text-slate-800 focus:border-blue-500 focus:outline-none">
+                            <input type="number" placeholder="Reps" value="${s.reps}" oninput="guardarValorSerie(${ej.id}, ${idx}, 'reps', this.value)" class="col-span-5 bg-slate-50 border border-slate-300 rounded-xl py-3 text-center text-lg font-black text-slate-800 focus:border-blue-500 focus:outline-none">
                         </div>`;
                 });
 
-                tarjeta.innerHTML = `
+                card.innerHTML = `
                     <div class="flex justify-between items-center border-b pb-3">
                         <div>
-                            <h4 class="font-black text-xl text-slate-800">${ej.nombre}</h4>
-                            <span class="text
+                            <h4 class="font-black text-xl text-slate-800 tracking-tight">${ej.nombre}</h4>
+                            <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md font-black uppercase tracking-wider">${ej.musculo}</span>
+                        </div>
+                        <button type="button" onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 p-2"><i data-lucide="trash-2" class="w-6 h-6"></i></button>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="grid grid-cols-12 gap-2 text-xs font-black text-slate-400 uppercase text-center mb-1">
+                            <span class="col-span-1"></span><span class="col-span-5">Carga (kg)</span><span class="col-span-5">Reps</span>
+                        </div>
