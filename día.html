@@ -11,9 +11,9 @@
 
     <div class="space-y-6 w-full">
         <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-            <button type="button" onclick="window.location.href='./perfil.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+            <a href="perfil.html" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i> Volver a días
-            </button>
+            </a>
             <div class="text-right">
                 <span id="txt-perfil-en-dia" class="text-[11px] text-slate-400 font-bold block">---</span>
                 <h2 id="txt-dia-activo" class="text-2xl font-black text-slate-800">Día X</h2>
@@ -71,8 +71,8 @@
         document.getElementById('txt-perfil-en-dia').innerText = usuario;
         document.getElementById('txt-dia-activo').innerText = `Día ${dia}`;
 
-        let db = JSON.parse(localStorage.getItem('powerlog_db_v9')) || {};
-        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v9')) || [];
+        let db = JSON.parse(localStorage.getItem('powerlog_db_v11')) || {};
+        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v11')) || [];
 
         function abrirModal() { document.getElementById('modal-ejercicio').style.display = 'flex'; }
         function cerrarModal() { document.getElementById('modal-ejercicio').style.display = 'none'; document.getElementById('input-nombre-ejercicio').value = ''; }
@@ -87,14 +87,14 @@
                 id: Date.now(), nombre: textName, musculo: musculo,
                 series: [{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''}]
             });
-            localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
+            localStorage.setItem('powerlog_db_v11', JSON.stringify(db));
             cerrarModal();
             render();
         }
 
         function eliminarEjercicio(id) {
             db[usuario].rutinas[dia] = db[usuario].rutinas[dia].filter(e => e.id !== id);
-            localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
+            localStorage.setItem('powerlog_db_v11', JSON.stringify(db));
             render();
         }
 
@@ -102,40 +102,34 @@
             const ej = db[usuario].rutinas[dia].find(e => e.id === idEj);
             if (ej) {
                 ej.series[idx][campo] = valor;
-                localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
+                localStorage.setItem('powerlog_db_v11', JSON.stringify(db));
                 actualizarBarrasMusculos();
             }
         }
 
         function finalizarEntrenamientoDia() {
             db[usuario].checksSemanales[dia] = true;
-            localStorage.setItem('powerlog_db_v9', JSON.stringify(db));
+            localStorage.setItem('powerlog_db_v11', JSON.stringify(db));
 
             const hoy = new Date();
             const fechaString = hoy.toISOString().split('T')[0];
-
             const listaEjercicios = db[usuario].rutinas[dia] || [];
             
             listaEjercicios.forEach(ej => {
                 ej.series.forEach((s, idx) => {
                     if (s.peso || s.reps) {
                         logsHistorial.push({
-                            fechaKey: fechaString,
-                            usuario: usuario,
-                            diaNum: dia,
-                            ejercicio: ej.nombre,
-                            musculo: ej.musculo,
-                            serie: idx + 1,
-                            peso: s.peso || '0',
-                            reps: s.reps || '0'
+                            fechaKey: fechaString, usuario: usuario, diaNum: dia,
+                            ejercicio: ej.nombre, musculo: ej.musculo, serie: idx + 1,
+                            peso: s.peso || '0', reps: s.reps || '0'
                         });
                     }
                 });
             });
 
-            localStorage.setItem('powerlog_history_v9', JSON.stringify(logsHistorial));
-            alert(`¡Entrenamiento del Día ${dia} Finalizado!`);
-            window.location.href = './perfil.html';
+            localStorage.setItem('powerlog_history_v11', JSON.stringify(logsHistorial));
+            alert(`¡Día ${dia} completado con éxito!`);
+            window.location.href = 'perfil.html';
         }
 
         function render() {
@@ -191,9 +185,11 @@
             Object.keys(METAS).forEach(m => hechos[m] = 0);
 
             for (let d = 1; d <= 6; d++) {
-                (db[usuario].rutinas[d] || []).forEach(e => {
-                    e.series.forEach(s => { if(s.peso || s.reps) hechos[e.musculo]++; });
-                });
+                if(db[usuario] && db[usuario].rutinas && db[usuario].rutinas[d]) {
+                    db[usuario].rutinas[d].forEach(e => {
+                        e.series.forEach(s => { if(s.peso || s.reps) hechos[e.musculo]++; });
+                    });
+                }
             }
 
             Object.keys(METAS).forEach(m => {
