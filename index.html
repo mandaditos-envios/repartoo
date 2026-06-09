@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -512,21 +513,24 @@
             padding: 16px;
             border-radius: 16px;
             cursor: pointer;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <header id="app-header" class="hidden">
+        <header>
             <div>
                 <h1>💪 PowerLog</h1>
                 <p class="sub-header">Registro Pro</p>
             </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span id="user-display" style="font-weight: 900; font-size: 13px; color: var(--primary);"></span>
-                <button onclick="cerrarSesion()" class="form-cerrar">Cerrar sesión</button>
-            </div>
+            <select id="sel-user" onchange="seleccionarUsuario()">
+                <option value="">👤 Cambiar...</option>
+                <option value="Nico V">Nico V</option>
+                <option value="Nico">Nico</option>
+                <option value="Samuel">Samuel</option>
+            </select>
         </header>
 
         <div id="card-login" class="card-login">
@@ -587,7 +591,18 @@
                         <select id="form-ejercicio" onchange="verificarCustomEj()" class="input-estilizado"></select>
                         <input type="text" id="form-ejercicio-custom" placeholder="Escribe el nombre del ejercicio..." class="input-estilizado hidden" style="margin-top: 6px;">
                     </div>
-                    <button onclick="guardarNuevoEjercicio()" class="btn-guardar-ej">Guardar Ejercicio</button>
+                    <div class="form-control">
+                        <label>3. Parte del músculo</label>
+                        <select id="form-parte" class="input-estilizado">
+                            <option value="Medio">Medio / General</option>
+                            <option value="Superior">Superior / Inclinado</option>
+                            <option value="Inferior">Inferior / Declinado</option>
+                            <option value="Interno">Interno</option>
+                            <option value="Externo">Externo</option>
+                            <option value="Otro">Otra zona</option>
+                        </select>
+                    </div>
+                    <button onclick="guardarNuevoEjercicio()" class="btn-guardar-ej" style="background: var(--primary); color: white; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">Guardar Ejercicio</button>
                 </div>
             </div>
 
@@ -611,21 +626,4 @@
             </section>
         </div>
 
-        <button onclick="limpiarTodo()" class="btn-reset active-scale">⚠️ Borrar datos y reiniciar app</button>
-    </div>
-
-    <script>
-        const METAS = { "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 };
-        
-        const CATALOGO = {
-            "Pecho": ["Press de Banca Plano", "Press Inclinado con Mancuernas", "Aperturas en Polea", "Fondos en Paralelas", "Pecho Declinado"],
-            "Espalda": ["Dominadas", "Jalón al Pecho", "Remo con Barra", "Remo con Mancuerna", "Remo en Polea Baja", "Pullover"],
-            "Hombros": ["Press Militar", "Elevaciones Laterales", "Vuelos Posteriores", "Vuelos Frontales", "Encogimientos Trapecio"],
-            "Bíceps": ["Curl con Barra", "Curl con Mancuernas", "Curl Martillo", "Curl Scott", "Curl en Polea"],
-            "Tríceps": ["Extensión en Polea", "Press Francés", "Copa con Mancuerna", "Patada de Tríceps", "Fondos en Banco"],
-            "Cuádriceps": ["Sentadilla Libre", "Prensa 45°", "Extensión de Cuádriceps", "Zancadas", "Sentadilla Búlgara"],
-            "Femorales": ["Curl Femoral", "Peso Muerto Rumano", "Buenos Días", "Máquina Femoral Parado"],
-            "Gemelos": ["Elevación de Talones Parado", "Elevación de Talones Sentado", "Gemelos en Prensa"]
-        };
-        
-     
+        <but
