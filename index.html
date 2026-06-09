@@ -30,12 +30,11 @@
         <div class="flex justify-between items-center border-b pb-2">
             <div>
                 <h3 id="titulo-dia-ejercicios" class="font-black text-base text-slate-800">Ejercicios</h3>
-                <span id="txt-modo-dia" class="text-[9px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded font-black uppercase tracking-wider">Carga: ---</span>
             </div>
             <button onclick="agregarEjercicio()" class="bg-emerald-600 text-white text-xs font-black px-3 py-2 rounded-xl shadow-sm active:scale-95">➕ Agregar</button>
         </div>
         
-        <div id="ejercicios-lista" class="space-y-3"></div>
+        <div id="ejercicios-lista" class="space-y-4"></div>
         
         <button onclick="finalizarDia()" class="w-full bg-blue-600 text-white text-sm font-black py-3 rounded-xl shadow-md active:scale-98">✅ Finalizar y guardar Día</button>
     </div>
@@ -126,17 +125,6 @@
 
         function renderEjercicios() {
             document.getElementById('titulo-dia-ejercicios').innerText = `Ejercicios - Día ${dia}`;
-            
-            // Asignar o verificar modo de carga del día actual (Pesado / Liviano) guardado en la estructura
-            if(!db[user]["modo_"+dia]) db[user]["modo_"+dia] = "Pesado";
-            
-            const modoActual = db[user]["modo_"+dia];
-            document.getElementById('txt-modo-dia').innerHTML = `
-                Carga: <select class="bg-transparent font-black underline cursor-pointer focus:outline-none" onchange="cambiarModoDia(this.value)">
-                    <option value="Pesado" ${modoActual==='Pesado'?'selected':''}>Pesado</option>
-                    <option value="Liviano" ${modoActual==='Liviano'?'selected':''}>Liviano</option>
-                </select>
-            `;
 
             const container = document.getElementById('ejercicios-lista');
             container.innerHTML = '';
@@ -154,22 +142,37 @@
                 let seriesHtml = '';
                 [0,1,2,3].forEach(sIdx => {
                     const s = ej.series[sIdx] || {peso:'', reps:''};
+                    
+                    // Comprobador visual automático de intensidad
+                    let avisoIntensidad = '';
+                    if (s.reps !== '') {
+                        const repsNum = parseInt(s.ps) || 0;
+                        if (repsNum <= 6) {
+                            avisoIntensidad = `<span class="text-[8px] font-black bg-rose-200 text-rose-800 px-1.5 py-0.5 rounded-md uppercase ml-1">🪨 Pesado (≤6)</span>`;
+                        } else if (repsNum >= 12) {
+                            avisoIntensidad = `<span class="text-[8px] font-black bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded-md uppercase ml-1">🪶 Liviano (≥12)</span>`;
+                        }
+                    }
+
                     seriesHtml += `
                     <div class="grid grid-cols-9 gap-1 items-center text-xs">
                         <span class="font-black text-slate-400">#${sIdx+1}</span>
-                        <input type="number" placeholder="Peso" value="${s.peso}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'peso', this.value)" class="col-span-4 bg-white border p-1.5 rounded-lg text-center font-bold focus:outline-none">
-                        <input type="number" placeholder="Reps" value="${s.reps}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'reps', this.value)" class="col-span-4 bg-white border p-1.5 rounded-lg text-center font-bold focus:outline-none">
+                        <input type="number" placeholder="Peso" value="${s.peso || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'peso', this.value)" class="col-span-4 bg-white border p-1.5 rounded-lg text-center font-bold focus:outline-none">
+                        <div class="col-span-4 flex items-center">
+                            <input type="number" placeholder="Reps" value="${s.ps || ''}" oninput="guardarSerie(${idxEj}, ${sIdx}, 'ps', this.value)" class="w-full bg-white border p-1.5 rounded-lg text-center font-bold focus:outline-none">
+                            ${avisoIntensidad}
+                        </div>
                     </div>`;
                 });
 
                 div.innerHTML = `
                 <div class="flex justify-between items-center">
-                    <span class="font-black text-sm text-slate-800">${ej.nombre} 
-                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black tracking-wider">${ej.musculo}</span>
+                    <span class="font-black text-sm text-slate-800 leading-tight">${ej.nombre} 
+                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded uppercase font-black tracking-wider block mt-0.5">Músculo: ${ej.musculo} / Parte: ${ej.parteMusculo}</span>
                     </span>
-                    <button onclick="eliminarEj(${idxEj})" class="text-rose-500 font-bold text-xs bg-rose-50 px-2 py-1 rounded-lg">X</button>
+                    <button onclick="eliminarEj(${idxEj})" class="text-rose-500 font-bold text-xs bg-rose-50 px-2 py-1 rounded-lg self-start">X</button>
                 </div>
-                <div class="grid grid-cols-9 gap-1 text-[8px] font-black uppercase text-slate-400 text-center">
+                <div class="grid grid-cols-9 gap-1 text-[8px] font-black uppercase text-slate-400 text-center pt-2 border-t">
                     <span></span><span class="col-span-4">Peso (kg)</span><span class="col-span-4">Reps</span>
                 </div>
                 ${seriesHtml}`;
@@ -177,22 +180,18 @@
             });
         }
 
-        function cambiarModoDia(val) {
-            db[user]["modo_"+dia] = val;
-            localStorage.setItem('pl_db', JSON.stringify(db));
-            renderEjercicios();
-        }
-
         function agregarEjercicio() {
             const name = prompt("Nombre del ejercicio:");
             if(!name) return;
-            const musculo = prompt("Músculo (Pecho, Espalda, Hombros, Bíceps, Tríceps, Cuádriceps, Femorales, Gemelos):", "Pecho");
+            const musculo = prompt("Músculo principal (Pecho, Espalda, Hombros, Bíceps, Tríceps, Cuádriceps, Femorales, Gemelos):", "Pecho");
+            const parte = prompt("¿Qué parte o zona del músculo es? (Ej: Superior, Inferior, Medio, Dorsal, etc.):", "Medio");
             
             if(!db[user][dia]) db[user][dia] = [];
             db[user][dia].push({
                 nombre: name,
                 musculo: musculo || "Pecho",
-                series: [{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''},{peso:'',reps:''}]
+                parteMusculo: parte || "Medio",
+                series: [{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''},{peso:'',ps:''}]
             });
             localStorage.setItem('pl_db', JSON.stringify(db));
             renderEjercicios();
@@ -200,8 +199,14 @@
         }
 
         function guardarSerie(idxEj, sIdx, campo, val) {
+            if(!db[user][dia][idxEj].series[sIdx]) db[user][dia][idxEj].series[sIdx] = {peso:'', ps:''};
             db[user][dia][idxEj].series[sIdx][campo] = val;
             localStorage.setItem('pl_db', JSON.stringify(db));
+            
+            // Si modificamos repeticiones, refrescamos la interfaz para actualizar la etiqueta de pesado/liviano instantáneamente
+            if(campo === 'ps') {
+                renderEjercicios();
+            }
             actualizarBarras();
         }
 
@@ -215,16 +220,15 @@
         function finalizarDia() {
             const hoy = new Date();
             const fechaString = hoy.toISOString().split('T')[0];
-            const modoActual = db[user]["modo_"+dia] || "Pesado";
 
             const lista = db[user][dia] || [];
             lista.forEach(ej => {
                 ej.series.forEach((s, idxS) => {
-                    if(s.peso || s.reps) {
+                    if(s.peso || s.ps) {
                         history.push({
                             usuario: user, fecha: fechaString, dia: dia, 
-                            ejercicio: ej.nombre, musculo: ej.musculo, intensidad: modoActual,
-                            serie: idxS+1, peso: s.peso, reps: s.reps
+                            ejercicio: ej.nombre, musculo: ej.musculo, parte: ej.parteMusculo,
+                            serie: idxS+1, peso: s.peso, reps: s.ps
                         });
                     }
                 });
@@ -248,7 +252,7 @@
                     if(db[user][d]) {
                         db[user][d].forEach(ej => {
                             ej.series.forEach(s => {
-                                if(s.peso || s.reps) {
+                                if(s.peso || s.ps) {
                                     if(hechos[ej.musculo] !== undefined) hechos[ej.musculo]++;
                                 }
                             });
@@ -326,7 +330,7 @@
             let agrupado = {};
             filtrados.forEach(log => {
                 if (!agrupado[log.ejercicio]) {
-                    agrupado[log.ejercicio] = { musculo: log.musculo, intensidad: log.intensidad, series: [] };
+                    agrupado[log.ejercicio] = { musculo: log.musculo, parte: log.parte, series: [] };
                 }
                 agrupado[log.ejercicio].series.push(log);
             });
@@ -338,14 +342,19 @@
                 
                 let lineasSeries = '';
                 item.series.forEach(s => {
-                    lineasSeries += `<div class="text-[11px] text-slate-600">Serie #${s.serie}: <span class="font-black text-slate-800">${s.peso}kg</span> x <span class="font-black">${s.reps} reps</span></div>`;
+                    let tipoIntensidad = '';
+                    const reps = parseInt(s.reps) || 0;
+                    if(reps <= 6) tipoIntensidad = 'Pesado';
+                    else if(reps >= 12) tipoIntensidad = 'Liviano';
+                    else tipoIntensidad = 'Medio/Normal';
+
+                    lineasSeries += `<div class="text-[11px] text-slate-600">Serie #${s.serie}: <span class="font-black text-slate-800">${s.peso}kg</span> x <span class="font-black">${s.reps} reps</span> (${tipoIntensidad})</div>`;
                 });
 
                 tarj.innerHTML = `
-                    <div class="flex justify-between items-center border-b pb-1 mb-1">
+                    <div class="flex justify-between items-center border-b pb-1 mb-1 flex-wrap gap-1">
                         <span class="font-black text-xs text-slate-800">${nombre}</span>
-                        <span class="text-[8px] bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded font-black uppercase">${item.intensidad}</span>
-                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded font-black uppercase">${item.musculo}</span>
+                        <span class="text-[8px] bg-slate-200 px-1.5 py-0.5 rounded font-black uppercase">${item.musculo} - ${item.parte}</span>
                     </div>
                     <div class="space-y-0.5">${lineasSeries}</div>`;
                 listaDetalles.appendChild(tarj);
