@@ -20,7 +20,7 @@
                 }
             }
         }
-    </script>
+    </style>
     <style>
         .active-scale:active { transform: scale(0.97); }
     </style>
@@ -155,18 +155,14 @@
             history = [];
         }
 
-        // SINCRONIZACIÓN INICIAL FORZADA
-        if(user) {
-            if(!db[user]) {
-                db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
-                localStorage.setItem('pl_db', JSON.stringify(db));
-            }
-            // Aseguramos que el select tenga el valor cargado en memoria
-            setTimeout(() => {
-                document.getElementById('sel-user').value = user;
-            }, 100);
+        // SINCRONIZACIÓN INICIAL DIRECTA
+        if (user && !db[user]) {
+            db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
+            localStorage.setItem('pl_db', JSON.stringify(db));
         }
 
+        // Asignamos el valor al select de manera síncrona y luego comprobamos vistas
+        document.getElementById('sel-user').value = user;
         comprobarVistas();
 
         function comprobarVistas() {
@@ -374,4 +370,9 @@
             localStorage.setItem('pl_db', JSON.stringify(db));
             
             if(campo === 'ps') {
-           
+                renderEjercicios();
+            }
+            actualizarBarras();
+        }
+
+   
