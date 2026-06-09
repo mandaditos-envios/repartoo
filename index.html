@@ -110,12 +110,15 @@
             "Gemelos": ["Elevación de Talones Parado", "Elevación de Talones Sentado", "Gemelos en Prensa"]
         };
         
-        let user = localStorage.getItem('pl_user') || "";
-        let dia = parseInt(localStorage.getItem('pl_dia')) || null;
+        let user = "";
+        let dia = null;
         let db = {};
         let history = [];
 
+        // Inicialización a prueba de errores de lectura
         try {
+            user = localStorage.getItem('pl_user') || "";
+            dia = parseInt(localStorage.getItem('pl_dia')) || null;
             db = JSON.parse(localStorage.getItem('pl_db')) || {};
             history = JSON.parse(localStorage.getItem('pl_history')) || [];
         } catch(e) {
@@ -156,11 +159,18 @@
 
         function seleccionarUsuario() {
             user = document.getElementById('sel-user').value;
+            
+            if (!user) {
+                localStorage.clear();
+                location.reload();
+                return;
+            }
+
             localStorage.setItem('pl_user', user);
             dia = null;
             localStorage.removeItem('pl_dia');
             
-            if(user && !db[user]) {
+            if(!db[user]) {
                 db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
                 localStorage.setItem('pl_db', JSON.stringify(db));
             }
@@ -396,7 +406,4 @@
         }
 
         // ================= CALENDARIO =================
-        function renderizarCalendario() {
-            const fechaActual = new Date();
-            const nombresMeses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
-            document.getElementBy
+        function renderizarCalend
