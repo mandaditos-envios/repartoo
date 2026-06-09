@@ -115,7 +115,7 @@
         let db = JSON.parse(localStorage.getItem('pl_db')) || {};
         let history = JSON.parse(localStorage.getItem('pl_history')) || [];
 
-        // Asegurar estructura del perfil activo al cargar la página
+        // Inicialización segura de perfiles
         if(user && !db[user]) {
             db[user] = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] };
             localStorage.setItem('pl_db', JSON.stringify(db));
@@ -125,10 +125,10 @@
         comprobarVistas();
 
         function comprobarVistas() {
-            if(user && db[user]) {
+            if(user !== "") {
                 document.getElementById('seccion-dias').classList.remove('hidden');
                 renderDias();
-                if(dia && db[user][dia]) {
+                if(dia && db[user] && db[user][dia]) {
                     document.getElementById('seccion-ejercicios').classList.remove('hidden');
                     renderEjercicios();
                 } else {
@@ -393,4 +393,4 @@
             contenedorCeldas.innerHTML = '';
 
             const año = fechaActual.getFullYear();
-            const mes =
+            const mes = fechaActual.getM
