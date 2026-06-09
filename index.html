@@ -3,397 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PowerLog - Control de Entrenamiento</title>
+    <title>PowerLog - Inicio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans min-h-screen antialiased">
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen p-4 flex flex-col justify-start">
 
-    <div class="w-full min-h-screen p-4 flex flex-col justify-start">
-
-        <div id="view-inicio" class="space-y-8 pt-12 w-full">
-            <div class="text-center space-y-3">
-                <div class="bg-blue-600 w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
-                    <i data-lucide="dumbbell" class="w-12 h-12"></i>
-                </div>
-                <h1 class="text-4xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
-                <p class="text-base text-slate-400 font-semibold">Desliza abajo para elegir tu nombre</p>
+    <div class="space-y-8 pt-12 w-full">
+        <div class="text-center space-y-3">
+            <div class="bg-blue-600 w-24 h-24 rounded-3xl mx-auto flex items-center justify-center text-white shadow-xl shadow-blue-600/20">
+                <i data-lucide="dumbbell" class="w-12 h-12"></i>
             </div>
-
-            <div class="space-y-4 pt-4 w-full">
-                <div class="relative">
-                    <select id="selector-usuario-principal" class="w-full bg-white border-2 border-slate-300 text-slate-800 font-black py-6 px-6 rounded-2xl text-xl shadow-md focus:outline-none focus:border-blue-600 appearance-none text-center">
-                        <option value="Nico V">Nico V</option>
-                        <option value="Nico">Nico</option>
-                        <option value="Samuel">Samuel</option>
-                    </select>
-                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-6 text-slate-500">
-                        <i data-lucide="chevron-down" class="w-6 h-6"></i>
-                    </div>
-                </div>
-
-                <button type="button" onclick="confirmarIngresoUsuario()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-6 px-6 rounded-2xl text-xl shadow-lg shadow-blue-600/20 active:bg-blue-800 text-center block tracking-wide mt-4">
-                    Ingresar a mi Perfil
-                </button>
-            </div>
+            <h1 class="text-4xl font-black tracking-tight text-slate-800">Entrenamiento</h1>
+            <p class="text-base text-slate-400 font-semibold">Desliza abajo para elegir tu nombre</p>
         </div>
 
-        <div id="view-usuario" class="space-y-6 w-full" style="display: none;">
-            <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-                <button type="button" onclick="irAInicio()" class="text-base font-black text-slate-500 hover:text-slate-800 flex items-center gap-2 py-2">
-                    <i data-lucide="arrow-left" class="w-6 h-6 text-slate-600"></i> Salir
-                </button>
-                <div class="text-right">
-                    <span class="text-[11px] font-black text-blue-600 uppercase tracking-wider block">Perfil activo</span>
-                    <h2 id="nombre-perfil-activo" class="text-2xl font-black text-slate-800">Nombre</h2>
+        <div class="space-y-4 pt-4 w-full">
+            <div class="relative">
+                <select id="selector-usuario-principal" class="w-full bg-white border-2 border-slate-300 text-slate-800 font-black py-6 px-6 rounded-2xl text-xl shadow-md appearance-none text-center focus:outline-none focus:border-blue-600">
+                    <option value="Nico V">Nico V</option>
+                    <option value="Nico">Nico</option>
+                    <option value="Samuel">Samuel</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-6 text-slate-500">
+                    <i data-lucide="chevron-down" class="w-6 h-6"></i>
                 </div>
             </div>
 
-            <div class="space-y-1">
-                <h3 class="text-xl font-black text-slate-700">Mis Rutinas</h3>
-                <p class="text-sm text-slate-400 font-medium">Elige el día que vas a organizar o entrenar</p>
-            </div>
-
-            <div class="space-y-3 w-full" id="lista-dias-container">
-                </div>
-
-            <div class="space-y-3 pt-6 border-t-2 border-slate-200 w-full">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xs font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <i data-lucide="history" class="w-4 h-4 text-slate-400"></i> Registros de este perfil
-                    </h3>
-                    <button type="button" onclick="limpiarHistorialUsuario()" class="text-xs font-bold text-rose-500 bg-rose-50 px-2 py-1 rounded-lg border border-rose-100 active:scale-95">
-                        Limpiar
-                    </button>
-                </div>
-                
-                <div id="contenedor-historial-usuario" class="space-y-2 max-h-80 overflow-y-auto pr-1">
-                    </div>
-            </div>
-        </div>
-
-        <div id="view-dia" class="space-y-6 w-full" style="display: none;">
-            <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-                <button type="button" onclick="regresarAPantallaUsuario()" class="text-base font-black text-slate-500 hover:text-slate-800 flex items-center gap-2 py-2">
-                    <i data-lucide="arrow-left" class="w-6 h-6 text-slate-600"></i> Volver a días
-                </button>
-                <div class="text-right">
-                    <span id="txt-perfil-en-dia" class="text-[11px] text-slate-400 font-bold block">Usuario</span>
-                    <h2 id="txt-dia-activo" class="text-2xl font-black text-slate-800">Día X</h2>
-                </div>
-            </div>
-
-            <button type="button" onclick="abrirModalEjercicio()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-5 px-6 rounded-2xl text-lg flex items-center justify-center gap-2 shadow-md shadow-emerald-600/10">
-                <i data-lucide="plus-circle" class="w-6 h-6"></i> Agregar Ejercicio
+            <button type="button" onclick="ingresarNativo()" class="w-full bg-blue-600 text-white font-black py-6 px-6 rounded-2xl text-xl shadow-lg text-center block mt-4 active:bg-blue-800">
+                Ingresar a mi Perfil
             </button>
-
-            <div class="space-y-4 w-full" id="bloque-ejercicios-lista">
-                </div>
-
-            <div class="bg-white border-2 border-slate-200 rounded-3xl p-5 shadow-sm space-y-4">
-                
-                <div class="space-y-2">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <i data-lucide="target" class="w-4 h-4 text-emerald-500"></i> Repeticiones por Serie
-                    </h4>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-                        <div class="bg-amber-50 text-amber-700 p-2 rounded-xl border border-amber-100">
-                            <span class="block text-slate-400 font-normal text-[10px]">Mínimo</span>
-                            5-6 reps
-                        </div>
-                        <div class="bg-emerald-50 text-emerald-700 p-2 rounded-xl border border-emerald-100">
-                            <span class="block text-slate-400 font-normal text-[10px]">Ideal</span>
-                            6-15 reps
-                        </div>
-                        <div class="bg-rose-50 text-rose-700 p-2 rounded-xl border border-rose-100">
-                            <span class="block text-slate-400 font-normal text-[10px]">Máximo</span>
-                            20-30 reps
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="border-slate-100">
-
-                <div class="space-y-3">
-                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                        <i data-lucide="activity" class="w-4 h-4 text-blue-500"></i> Volumen de Series Semanales Completadas
-                    </h4>
-                    
-                    <div id="panel-barras-musculos" class="space-y-3.5">
-                        </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="modal-ejercicio" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50" style="display: none;">
-        <div class="bg-white rounded-3xl w-full max-w-sm p-6 space-y-5 shadow-2xl">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-xl font-black text-slate-800">Nuevo Ejercicio</h3>
-                <button type="button" onclick="cerrarModalEjercicio()" class="text-slate-400 hover:text-slate-600 p-1">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-4">
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre del ejercicio</label>
-                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca Inclinado" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3.5 text-base font-medium text-slate-800 focus:outline-none focus:border-blue-500">
-                </div>
-
-                <div class="space-y-1.5">
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Grupo Muscular</label>
-                    <select id="select-grupo-muscular" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3.5 text-base font-bold text-slate-600 focus:outline-none focus:border-blue-500">
-                        <option value="Pecho">Pecho (10-20 series)</option>
-                        <option value="Espalda">Espalda (10-20 series)</option>
-                        <option value="Hombros">Hombros (10-20 series)</option>
-                        <option value="Bíceps">Bíceps (8-15 series)</option>
-                        <option value="Tríceps">Tríceps (8-15 series)</option>
-                        <option value="Cuádriceps">Cuádriceps (10-20 series)</option>
-                        <option value="Femorales">Femorales (8-15 series)</option>
-                        <option value="Gemelos">Gemelos (8-20 series)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 pt-2">
-                <button type="button" onclick="cerrarModalEjercicio()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3.5 rounded-xl text-base">
-                    Cancelar
-                </button>
-                <button type="button" onclick="crearEjercicio()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-base">
-                    Guardar
-                </button>
-            </div>
         </div>
     </div>
 
     <script>
-        const METAS = { 
-            "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, 
-            "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 
-        };
-
-        const RANGOS_TEXTO = {
-            "Pecho": "10-20", "Espalda": "10-20", "Hombros": "10-20",
-            "Bíceps": "8-15", "Tríceps": "8-15", "Cuádriceps": "10-20",
-            "Femorales": "8-15", "Gemelos": "8-20"
-        };
-
-        function inicializarDatosUsuario() {
-            return { rutinas: { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [] } };
+        function ingresarNativo() {
+            const usuario = document.getElementById('selector-usuario-principal').value;
+            // Guardamos quién entra para que la otra página sepa de quién es
+            localStorage.setItem('usuario_actual', usuario);
+            // Salto de página nativo del navegador
+            window.location.href = 'perfil.html';
         }
-
-        let db = JSON.parse(localStorage.getItem('gym_step_by_step_db')) || {
-            "Nico V": inicializarDatosUsuario(),
-            "Nico": inicializarDatosUsuario(),
-            "Samuel": inicializarDatosUsuario()
-        };
-
-        let historialLogs = JSON.parse(localStorage.getItem('gym_logs_historial_v4')) || [];
-
-        let usuarioSeleccionado = "";
-        let diaSeleccionado = 1;
-
-        function guardarEnAlmacenamiento() {
-            localStorage.setItem('gym_step_by_step_db', JSON.stringify(db));
-            calcularYActualizarSeriesRestantes();
-        }
-
-        // CONTROL ABSOLUTO DE PANTALLAS POR JAVASCRIPT NATIVO (ELIMINA ERRORES DE NAVEGACIÓN)
-        function cambiarVistaPantalla(idAMostrar) {
-            document.getElementById('view-inicio').style.display = 'none';
-            document.getElementById('view-usuario').style.display = 'none';
-            document.getElementById('view-dia').style.display = 'none';
-
-            document.getElementById(idAMostrar).style.display = 'block';
-            
-            if (window.lucide) lucide.createIcons();
-        }
-
-        function irAInicio() {
-            cambiarVistaPantalla('view-inicio');
-        }
-
-        // --- ACCIÓN DEL SELECT DESPLEGABLE ---
-        function confirmarIngresoUsuario() {
-            const nombreSeleccionado = document.getElementById('selector-usuario-principal').value;
-            if (!nombreSeleccionado) return;
-
-            usuarioSeleccionado = nombreSeleccionado;
-            document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
-            
-            const containerDias = document.getElementById('lista-dias-container');
-            containerDias.innerHTML = '';
-
-            // Renderizar los 6 botones de días grandes
-            for (let i = 1; i <= 6; i++) {
-                if (!db[usuarioSeleccionado].rutinas[i]) {
-                    db[usuarioSeleccionado].rutinas[i] = [];
-                }
-
-                const cantEjercicios = db[usuarioSeleccionado].rutinas[i].length;
-                const textoContador = cantEjercicios === 1 ? '1 ejercicio' : `${cantEjercicios} ejercicios`;
-
-                const btnDia = document.createElement('button');
-                btnDia.type = "button";
-                btnDia.className = "w-full bg-white border-2 border-slate-200 text-left font-black py-5 px-6 rounded-2xl flex items-center justify-between text-xl text-slate-800 mb-2 shadow-sm active:bg-slate-100 block";
-                btnDia.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded-full bg-blue-600"></div>
-                        <span>Día ${i}</span>
-                    </div>
-                    <span class="text-sm text-slate-400 font-black">${cantEjercicios > 0 ? textoContador : 'Vacío'}</span>
-                `;
-                
-                btnDia.onclick = function() { abrirDia(i); };
-                containerDias.appendChild(btnDia);
-            }
-
-            renderizarHistorialDelUsuarioActual();
-            cambiarVistaPantalla('view-usuario');
-        }
-
-        // --- HISTORIAL INDIVIDUAL ---
-        function registrarLogEnHistorial(usuario, ejercicio, musculo, nroSerie, peso, reps) {
-            if (!peso && !reps) return; 
-
-            const ahora = new Date();
-            const fechaString = ahora.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
-            const horaString = ahora.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            const timestampCompleto = `${fechaString} ${horaString}`;
-
-            const idLogUnico = `${usuario}-${ejercicio}-${nroSerie}`;
-
-            historialLogs = historialLogs.filter(item => item.uid !== idLogUnico);
-
-            historialLogs.unshift({
-                uid: idLogUnico,
-                fecha: timestampCompleto,
-                usuario: usuario, 
-                ejercicio: ejercicio,
-                musculo: musculo,
-                peso: peso || '0',
-                reps: reps || '0'
-            });
-
-            if (historialLogs.length > 60) historialLogs.pop();
-            localStorage.setItem('gym_logs_historial_v4', JSON.stringify(historialLogs));
-        }
-
-        function renderizarHistorialDelUsuarioActual() {
-            const contenedor = document.getElementById('contenedor-historial-usuario');
-            if (!contenedor) return;
-            contenedor.innerHTML = '';
-
-            const logsFiltrados = historialLogs.filter(log => log.usuario === usuarioSeleccionado);
-
-            if (logsFiltrados.length === 0) {
-                contenedor.innerHTML = `
-                    <div class="p-4 text-center border border-dashed border-slate-200 rounded-xl bg-white text-sm text-slate-400 font-semibold">
-                        No hay ejercicios anotados en este perfil todavía.
-                    </div>
-                `;
-                return;
-            }
-
-            logsFiltrados.forEach(log => {
-                const item = document.createElement('div');
-                item.className = "bg-white border border-slate-200 rounded-xl p-3 shadow-sm text-base space-y-0.5";
-                item.innerHTML = `
-                    <div class="flex justify-between text-[11px] text-slate-400 font-bold">
-                        <span>[${log.fecha}]</span>
-                        <span class="text-slate-500 uppercase font-black">${log.musculo}</span>
-                    </div>
-                    <div class="text-slate-800 font-black">
-                        ${log.ejercicio}: <span class="text-emerald-600">${log.peso}kg</span> x <span class="text-blue-600">${log.reps} reps</span>
-                    </div>
-                `;
-                contenedor.appendChild(item);
-            });
-        }
-
-        function limpiarHistorialUsuario() {
-            if (confirm(`¿Quieres borrar los registros de ${usuarioSeleccionado}?`)) {
-                historialLogs = historialLogs.filter(log => log.usuario !== usuarioSeleccionado);
-                localStorage.setItem('gym_logs_historial_v4', JSON.stringify(historialLogs));
-                renderizarHistorialDelUsuarioActual();
-            }
-        }
-
-        // --- NAVEGACIÓN SECUNDARIA ---
-        function abrirDia(numeroDia) {
-            diaSeleccionado = numeroDia;
-            document.getElementById('txt-perfil-en-dia').innerText = usuarioSeleccionado;
-            document.getElementById('txt-dia-activo').innerText = `Día ${numeroDia}`;
-            
-            construirEstructuraBarras();
-            renderizarEjerciciosDelDia();
-            cambiarVistaPantalla('view-dia');
-        }
-
-        function regresarAPantallaUsuario() {
-            confirmarIngresoUsuario();
-        }
-
-        function construirEstructuraBarras() {
-            const container = document.getElementById('panel-barras-musculos');
-            if (!container) return;
-            container.innerHTML = '';
-
-            Object.keys(METAS).forEach(m => {
-                const lower = m.toLowerCase().replace('í', 'i').replace('é', 'e');
-                container.innerHTML += `
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-sm font-semibold">
-                            <span class="text-slate-700 font-black">${m} <span class="text-xs text-slate-400 font-normal">(${RANGOS_TEXTO[m]} sem)</span></span>
-                            <span id="conteo-${lower}" class="text-slate-500 font-bold text-xs">0 series</span>
-                        </div>
-                        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden">
-                            <div id="bar-${lower}" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // --- MANEJO DE EJERCICIOS ---
-        function abrirModalEjercicio() {
-            document.getElementById('modal-ejercicio').style.display = 'flex';
-            document.getElementById('input-nombre-ejercicio').focus();
-        }
-
-        function cerrarModalEjercicio() {
-            document.getElementById('modal-ejercicio').style.display = 'none';
-            document.getElementById('input-nombre-ejercicio').value = '';
-        }
-
-        function crearEjercicio() {
-            const inputNombre = document.getElementById('input-nombre-ejercicio');
-            const nombre = inputNombre.value.trim();
-            const musculo = document.getElementById('select-grupo-muscular').value;
-
-            if (!nombre) {
-                alert("Por favor escribe el nombre del ejercicio.");
-                return;
-            }
-
-            const seriesFijas = [
-                { peso: '', reps: '' }, { peso: '', reps: '' },
-                { peso: '', reps: '' }, { peso: '', reps: '' }
-            ];
-
-            db[usuarioSeleccionado].rutinas[diaSeleccionado].push({
-                id: Date.now(),
-                nombre: nombre,
-                musculo: musculo,
-                series: seriesFijas
-            });
-
-            cerrarModalEjercicio();
-            guardarEnAlmacenamiento();
-            renderizarEjerciciosDelDia();
-        }
-
-        function eliminarEjercicio(idEjercicio) {
-            db[usuarioSeleccionado].rutinas[diaSeleccionado] = db[usuarioSeleccionado].
+        document.addEventListener('DOMContentLoaded', () => { if (window.lucide) lucide.createIcons(); });
+    </script>
+</body>
+</html>
