@@ -11,7 +11,7 @@
 
     <div class="space-y-6 w-full">
         <div class="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-            <button type="button" onclick="window.location.href='perfil.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
+            <button type="button" onclick="window.location.href='./perfil.html'" class="text-base font-black text-slate-500 flex items-center gap-2 py-2">
                 <i data-lucide="arrow-left" class="w-6 h-6"></i> Volver al Perfil
             </button>
             <h2 class="text-xl font-black text-slate-800 flex items-center gap-2">
@@ -35,7 +35,7 @@
 
     <script>
         const usuario = localStorage.getItem('powerlog_usuario_actual');
-        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v8')) || [];
+        let logsHistorial = JSON.parse(localStorage.getItem('powerlog_history_v9')) || [];
 
         function construirCalendario() {
             const fechaActual = new Date();
