@@ -21,15 +21,15 @@
             </div>
 
             <div class="space-y-4 pt-6 w-full">
-                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 border-slate-200 text-slate-700 shadow-sm">
+                <button onclick="seleccionarUsuario('Nico V')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
                     <span class="text-lg">Nico V</span>
                     <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 border-slate-200 text-slate-700 shadow-sm">
+                <button onclick="seleccionarUsuario('Nico')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
                     <span class="text-lg">Nico</span>
                     <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
-                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 border-slate-200 text-slate-700 shadow-sm">
+                <button onclick="seleccionarUsuario('Samuel')" class="w-full bg-white border-2 border-slate-200 text-left font-bold py-5 px-6 rounded-2xl flex items-center justify-between transition active:scale-[0.98] active:bg-slate-50 text-slate-700 shadow-sm cursor-pointer">
                     <span class="text-lg">Samuel</span>
                     <i data-lucide="chevron-right" class="w-5 h-5 text-blue-600"></i>
                 </button>
@@ -38,7 +38,7 @@
 
         <div id="view-usuario" class="hidden space-y-6 w-full">
             <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-                <button onclick="mostrarVista('view-inicio')" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2">
+                <button onclick="mostrarVista('view-inicio')" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i> Volver
                 </button>
                 <div class="text-right">
@@ -58,7 +58,7 @@
 
         <div id="view-dia" class="hidden space-y-6 w-full">
             <div class="flex items-center justify-between border-b border-slate-200 pb-4">
-                <button onclick="regresarAPantallaUsuario()" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2">
+                <button onclick="regresarAPantallaUsuario()" class="text-sm font-bold text-slate-400 hover:text-slate-600 flex items-center gap-1.5 py-2 cursor-pointer">
                     <i data-lucide="arrow-left" class="w-5 h-5"></i> Volver a días
                 </button>
                 <div class="text-right">
@@ -67,70 +67,109 @@
                 </div>
             </div>
 
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
-                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <i data-lucide="activity" class="w-4 h-4 text-blue-500"></i> Balance de series esta semana
-                </h4>
-                
-                <div class="space-y-1.5">
-                    <div class="flex justify-between text-xs font-medium">
-                        <span class="text-slate-700 font-bold">Pecho</span>
-                        <span id="conteo-pecho" class="text-slate-500 font-semibold">Quedan 12 series</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div id="bar-pecho" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="space-y-1.5">
-                    <div class="flex justify-between text-xs font-medium">
-                        <span class="text-slate-700 font-bold">Espalda</span>
-                        <span id="conteo-espalda" class="text-slate-500 font-semibold">Quedan 12 series</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div id="bar-espalda" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="space-y-1.5">
-                    <div class="flex justify-between text-xs font-medium">
-                        <span class="text-slate-700 font-bold">Piernas</span>
-                        <span id="conteo-piernas" class="text-slate-500 font-semibold">Quedan 12 series</span>
-                    </div>
-                    <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                        <div id="bar-piernas" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <p class="text-[11px] text-slate-400 leading-normal pt-2 border-t border-slate-100">
-                    * Se recomienda realizar de 10 a 12 series semanales por grupo muscular principal para hipertrofia. Las series se descuentan automáticamente al registrar pesos o repeticiones.
-                </p>
-            </div>
-
-            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
-                <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Agregar Ejercicio</span>
-                <div class="grid grid-cols-12 gap-2">
-                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca" class="col-span-7 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500">
-                    
-                    <select id="select-grupo-muscular" class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2.5 text-sm font-bold text-slate-600 focus:outline-none focus:border-blue-500">
-                        <option value="Pecho">Pecho</option>
-                        <option value="Espalda">Espalda</option>
-                        <option value="Piernas">Piernas</option>
-                    </select>
-                </div>
-                <button onclick="crearEjercicio()" class="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Guardar Ejercicio
-                </button>
-            </div>
+            <button onclick="abrirModalEjercicio()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 px-6 rounded-2xl text-base flex items-center justify-center gap-2 transition active:scale-[0.98] shadow-md shadow-emerald-600/10 cursor-pointer">
+                <i data-lucide="plus-circle" class="w-5 h-5"></i> Agregar Ejercicio
+            </button>
 
             <div class="space-y-4 w-full" id="bloque-ejercicios-lista">
                 </div>
+
+            <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm space-y-4">
+                
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i data-lucide="target" class="w-4 h-4 text-emerald-500"></i> Repeticiones por Serie
+                    </h4>
+                    <div class="grid grid-cols-3 gap-2 text-center text-[11px] font-bold">
+                        <div class="bg-amber-50 text-amber-700 p-2 rounded-xl border border-amber-100">
+                            <span class="block text-slate-400 font-normal">Mínimo</span>
+                            5-6 reps
+                        </div>
+                        <div class="bg-emerald-50 text-emerald-700 p-2 rounded-xl border border-emerald-100">
+                            <span class="block text-slate-400 font-normal">Ideal</span>
+                            6-15 reps
+                        </div>
+                        <div class="bg-rose-50 text-rose-700 p-2 rounded-xl border border-rose-100">
+                            <span class="block text-slate-400 font-normal">Máximo</span>
+                            20-30 reps
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 leading-normal italic text-center pt-1">
+                        "Lo más importante no es el número exacto, sino que termines cerca del fallo muscular."
+                    </p>
+                </div>
+
+                <hr class="border-slate-100">
+
+                <div class="space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i data-lucide="activity" class="w-4 h-4 text-blue-500"></i> Volumen de Series Semanales Completadas
+                    </h4>
+                    
+                    <div id="panel-barras-musculos" class="space-y-3.5">
+                        </div>
+                </div>
+
+                <p class="text-[11px] text-slate-400 leading-normal pt-2 border-t border-slate-100">
+                    * El sistema descuenta las series automáticamente al registrar datos. Los rangos objetivos se basan en recomendaciones óptimas para hipertrofia.
+                </p>
+            </div>
         </div>
 
     </div>
 
+    <div id="modal-ejercicio" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl w-full max-w-sm p-6 space-y-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-black text-slate-800">Nuevo Ejercicio</h3>
+                <button onclick="cerrarModalEjercicio()" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="space-y-4">
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Nombre del ejercicio</label>
+                    <input type="text" id="input-nombre-ejercicio" placeholder="Ej. Press de Banca Inclinado" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-medium text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="space-y-1.5">
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider">Grupo Muscular</label>
+                    <select id="select-grupo-muscular" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-sm font-bold text-slate-600 focus:outline-none focus:border-blue-500">
+                        <option value="Pecho">Pecho (10-20 series)</option>
+                        <option value="Espalda">Espalda (10-20 series)</option>
+                        <option value="Hombros">Hombros (10-20 series)</option>
+                        <option value="Bíceps">Bíceps (8-15 series)</option>
+                        <option value="Tríceps">Tríceps (8-15 series)</option>
+                        <option value="Cuádriceps">Cuádriceps (10-20 series)</option>
+                        <option value="Femorales">Femorales (8-15 series)</option>
+                        <option value="Gemelos">Gemelos (8-20 series)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="cerrarModalEjercicio()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl text-sm transition cursor-pointer">
+                    Cancelar
+                </button>
+                <button onclick="crearEjercicio()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition shadow-md shadow-blue-600/10 cursor-pointer">
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        const METAS = { "Pecho": 12, "Espalda": 12, "Piernas": 12 };
+        const METAS = { 
+            "Pecho": 20, "Espalda": 20, "Hombros": 20, "Bíceps": 15, 
+            "Tríceps": 15, "Cuádriceps": 20, "Femorales": 15, "Gemelos": 20 
+        };
+
+        const RANGOS_TEXTO = {
+            "Pecho": "10-20", "Espalda": "10-20", "Hombros": "10-20",
+            "Bíceps": "8-15", "Tríceps": "8-15", "Cuádriceps": "10-20",
+            "Femorales": "8-15", "Gemelos": "8-20"
+        };
 
         function inicializarDatosUsuario() {
             return {
@@ -158,12 +197,19 @@
             document.getElementById('view-dia').classList.add('hidden');
 
             document.getElementById(idVista).classList.remove('hidden');
-            if (window.lucide) {
-                lucide.createIcons();
-            }
+            if (window.lucide) lucide.createIcons();
         }
 
-        // --- ACCIONES PANTALLA 1: SELECCIONAR USUARIO ---
+        function abrirModalEjercicio() {
+            document.getElementById('modal-ejercicio').classList.remove('hidden');
+            document.getElementById('input-nombre-ejercicio').focus();
+        }
+
+        function cerrarModalEjercicio() {
+            document.getElementById('modal-ejercicio').classList.add('hidden');
+            document.getElementById('input-nombre-ejercicio').value = '';
+        }
+
         function seleccionarUsuario(nombre) {
             usuarioSeleccionado = nombre;
             document.getElementById('nombre-perfil-activo').innerText = usuarioSeleccionado;
@@ -173,7 +219,7 @@
 
             for (let i = 1; i <= 6; i++) {
                 const btnDia = document.createElement('button');
-                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-base text-slate-700 mb-2 shadow-sm active:bg-slate-50";
+                btnDia.className = "w-full bg-white border border-slate-200 text-left font-bold py-4 px-5 rounded-xl flex items-center justify-between hover:border-slate-300 transition text-base text-slate-700 mb-2 shadow-sm active:bg-slate-50 cursor-pointer";
                 
                 if (!db[usuarioSeleccionado].rutinas[i]) {
                     db[usuarioSeleccionado].rutinas[i] = [];
@@ -191,9 +237,7 @@
                 `;
                 
                 btnDia.onclick = (function(diaActual) {
-                    return function() {
-                        abrirDia(diaActual);
-                    };
+                    return function() { abrirDia(diaActual); };
                 })(i);
 
                 containerDias.appendChild(btnDia);
@@ -202,12 +246,12 @@
             mostrarVista('view-usuario');
         }
 
-        // --- ACCIONES PANTALLA 2: ABRIR DÍA ---
         function abrirDia(numeroDia) {
             diaSeleccionado = numeroDia;
             document.getElementById('txt-perfil-en-dia').innerText = usuarioSeleccionado;
             document.getElementById('txt-dia-activo').innerText = `Día ${numeroDia}`;
             
+            construirEstructuraBarras();
             renderizarEjerciciosDelDia();
             mostrarVista('view-dia');
         }
@@ -216,7 +260,26 @@
             seleccionarUsuario(usuarioSeleccionado);
         }
 
-        // --- ACCIONES PANTALLA 3: MANEJO DE EJERCICIOS ---
+        function construirEstructuraBarras() {
+            const container = document.getElementById('panel-barras-musculos');
+            container.innerHTML = '';
+
+            Object.keys(METAS).forEach(m => {
+                const lower = m.toLowerCase().replace('í', 'i').replace('é', 'e');
+                container.innerHTML += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-slate-700 font-bold">${m} <span class="text-[10px] text-slate-400 font-normal">(${RANGOS_TEXTO[m]} sem)</span></span>
+                            <span id="conteo-${lower}" class="text-slate-500 font-semibold text-xs">Calculando...</span>
+                        </div>
+                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div id="bar-${lower}" class="bg-blue-600 h-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
         function crearEjercicio() {
             const inputNombre = document.getElementById('input-nombre-ejercicio');
             const nombre = inputNombre.value.trim();
@@ -234,10 +297,6 @@
                 { peso: '', reps: '' }
             ];
 
-            if (!db[usuarioSeleccionado].rutinas[diaSeleccionado]) {
-                db[usuarioSeleccionado].rutinas[diaSeleccionado] = [];
-            }
-
             db[usuarioSeleccionado].rutinas[diaSeleccionado].push({
                 id: Date.now(),
                 nombre: nombre,
@@ -245,7 +304,7 @@
                 series: seriesFijas
             });
 
-            inputNombre.value = '';
+            cerrarModalEjercicio();
             guardarEnAlmacenamiento();
             renderizarEjerciciosDelDia();
         }
@@ -256,11 +315,29 @@
             renderizarEjerciciosDelDia();
         }
 
+        // --- CALCULAR SÍMBOLO DINÁMICO DE REPETICIONES ---
+        function obtenerEtiquetaReps(reps) {
+            if (!reps || isNaN(reps) || String(reps).trim() === '') return '';
+            const r = parseInt(reps);
+            if (r < 6) return '<span class="text-[10px] text-amber-600 font-black flex items-center justify-center gap-0.5 bg-amber-50 px-1 py-1 rounded-lg border border-amber-200 leading-none">🔴 Pesado</span>';
+            if (r >= 6 && r <= 12) return '<span class="text-[10px] text-emerald-600 font-black flex items-center justify-center gap-0.5 bg-emerald-50 px-1 py-1 rounded-lg border border-emerald-200 leading-none">🟢 Ideal</span>';
+            if (r > 12) return '<span class="text-[10px] text-blue-600 font-black flex items-center justify-center gap-0.5 bg-blue-50 px-1 py-1 rounded-lg border border-blue-200 leading-none">🟡 Liviano</span>';
+            return '';
+        }
+
         function actualizarDatoSerie(idEjercicio, indexSerie, propiedad, valor) {
             const ejercicio = db[usuarioSeleccionado].rutinas[diaSeleccionado].find(e => e.id === idEjercicio);
             if (ejercicio) {
                 ejercicio.series[indexSerie][propiedad] = valor;
                 localStorage.setItem('gym_step_by_step_db', JSON.stringify(db));
+                
+                // Si cambiamos reps, actualizamos el símbolo flotante en esa celda sin recargar toda la lista
+                if (propiedad === 'reps') {
+                    const contenedorEtiqueta = document.getElementById(`tag-${idEjercicio}-${indexSerie}`);
+                    if (contenedorEtiqueta) {
+                        contenedorEtiqueta.innerHTML = obtenerEtiquetaReps(valor);
+                    }
+                }
                 calcularYActualizarSeriesRestantes();
             }
         }
@@ -288,91 +365,9 @@
                 let htmlSeries = '';
                 ej.series.forEach((serie, index) => {
                     htmlSeries += `
-                        <div class="grid grid-cols-12 gap-2 items-center">
-                            <span class="col-span-2 text-xs font-bold text-slate-400 text-center">#${index + 1}</span>
+                        <div class="grid grid-cols-12 gap-1.5 items-center">
+                            <span class="col-span-1 text-xs font-bold text-slate-400 text-center">#${index + 1}</span>
+                            
                             <input type="text" placeholder="Peso" value="${serie.peso}"
                                 oninput="actualizarDatoSerie(${ej.id}, ${index}, 'peso', this.value)"
-                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center text-sm text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
-                            <input type="number" placeholder="Reps" value="${serie.reps}"
-                                oninput="actualizarDatoSerie(${ej.id}, ${index}, 'reps', this.value)"
-                                class="col-span-5 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center text-sm text-slate-800 focus:outline-none focus:border-blue-500 font-semibold">
-                        </div>
-                    `;
-                });
-
-                tarjeta.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-slate-100 pb-2.5">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-800 tracking-tight">${ej.nombre}</h4>
-                            <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider">${ej.musculo}</span>
-                        </div>
-                        <button onclick="eliminarEjercicio(${ej.id})" class="text-slate-300 hover:text-rose-500 transition p-1.5">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
-                    </div>
-                    <div class="space-y-2">
-                        <div class="grid grid-cols-12 gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider text-center">
-                            <span class="col-span-2 text-left text-slate-300">Serie</span>
-                            <span class="col-span-5">Peso</span>
-                            <span class="col-span-5">Reps</span>
-                        </div>
-                        ${htmlSeries}
-                    </div>
-                `;
-
-                container.appendChild(tarjeta);
-            });
-
-            calcularYActualizarSeriesRestantes();
-            if (window.lucide) lucide.createIcons();
-        }
-
-        // --- CÁLCULO DE SERIES RESTANTES ---
-        function calcularYActualizarSeriesRestantes() {
-            if (!usuarioSeleccionado) return;
-
-            let seriesHechas = { "Pecho": 0, "Espalda": 0, "Piernas": 0 };
-
-            for (let d = 1; d <= 6; d++) {
-                const ejerciciosDelDia = db[usuarioSeleccionado].rutinas[d] || [];
-                ejerciciosDelDia.forEach(ej => {
-                    if (seriesHechas.hasOwnProperty(ej.musculo)) {
-                        ej.series.forEach(s => {
-                            if (String(s.peso).trim() !== '' || String(s.reps).trim() !== '') {
-                                seriesHechas[ej.musculo]++;
-                            }
-                        });
-                    }
-                });
-            }
-
-            Object.keys(METAS).forEach(m => {
-                const metaDelMusculo = METAS[m];
-                const completadas = seriesHechas[m];
-                const quedan = Math.max(0, metaDelMusculo - completadas);
-
-                const textoConteo = document.getElementById(`conteo-${m.toLowerCase()}`);
-                const barraProgreso = document.getElementById(`bar-${m.toLowerCase()}`);
-
-                if (textoConteo && barraProgreso) {
-                    if (quedan === 0) {
-                        textoConteo.innerText = "¡Meta cumplida! 🎉";
-                        textoConteo.className = "text-emerald-600 font-black text-xs";
-                        barraProgreso.className = "bg-emerald-500 h-full transition-all duration-300";
-                    } else {
-                        textoConteo.innerText = `Quedan ${quedan} series`;
-                        textoConteo.className = "text-slate-500 font-semibold text-xs";
-                        barraProgreso.className = "bg-blue-600 h-full transition-all duration-300";
-                    }
-                    const porcentaje = Math.min(100, (completadas / metaDelMusculo) * 100);
-                    barraProgreso.style.width = `${porcentaje}%`;
-                }
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.lucide) lucide.createIcons();
-        });
-    </script>
-</body>
-</html>
+                                class="col-span-3 bg-slate-50 border border-slate-200 rounded-xl py-2 text-center text-sm text-slate-800 focus:outline-none focus:border-
