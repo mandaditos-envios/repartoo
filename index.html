@@ -2,278 +2,391 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Tracker - Rutina Semanal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gym Track Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #0f172a;
-            --bg-card: #1e293b;
-            --bg-input: #334155;
-            --accent: #6366f1;
-            --accent-hover: #4f46e5;
+            --bg: #090d16;
+            --surface: #131b2e;
+            --surface-card: #182238;
+            --primary: #6366f1;
+            --primary-glow: rgba(99, 102, 241, 0.35);
+            --accent: #22c55e;
+            --accent-glow: rgba(34, 197, 94, 0.3);
             --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --border: #334155;
+            --text-muted: #64748b;
+            --border: #23314d;
+            --radius: 16px;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-primary);
+            background-color: var(--bg);
             color: var(--text);
             padding: 16px;
-            max-width: 1200px;
+            padding-bottom: 90px;
+            max-width: 500px;
             margin: 0 auto;
         }
 
         header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .actions {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
-            gap: 10px;
-            flex-wrap: wrap;
         }
 
-        .btn {
-            background-color: var(--accent);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
+        .brand-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .btn:hover {
-            background-color: var(--accent-hover);
-        }
-
-        .btn-outline {
-            background: transparent;
+        .overall-progress-card {
+            background: var(--surface);
             border: 1px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
             color: var(--text-muted);
-        }
-
-        .btn-outline:hover {
-            background: var(--bg-card);
-            color: var(--text);
-        }
-
-        .table-container {
-            width: 100%;
-            overflow-x: auto;
-            background: var(--bg-card);
-            border-radius: 12px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--border);
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
-        }
-
-        th, td {
-            padding: 12px 14px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        th {
-            background-color: #111827;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        td {
-            font-size: 0.9rem;
-        }
-
-        .muscle-name {
             font-weight: 600;
-            color: #fff;
-        }
-
-        .badge {
-            background: var(--bg-input);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            display: inline-block;
-        }
-
-        input[type="number"] {
-            width: 60px;
-            padding: 6px 8px;
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            color: white;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        input[type="number"]:focus {
-            outline: 2px solid var(--accent);
-            border-color: transparent;
+            margin-bottom: 8px;
         }
 
         .progress-bar-bg {
             width: 100%;
-            height: 8px;
-            background: var(--bg-input);
-            border-radius: 4px;
+            height: 10px;
+            background: var(--bg);
+            border-radius: 20px;
             overflow: hidden;
-            margin-top: 4px;
         }
 
         .progress-bar-fill {
             height: 100%;
-            background: var(--accent);
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.4s ease;
+            border-radius: 20px;
         }
 
-        .progress-bar-fill.complete {
-            background: var(--success);
+        .day-tabs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            background: var(--surface);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
         }
 
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            h1 { font-size: 1.4rem; }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card {
+            background: var(--surface-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: border-color 0.2s;
+        }
+
+        .card.completed {
+            border-color: rgba(34, 197, 94, 0.4);
+            background: linear-gradient(180deg, var(--surface-card), rgba(34, 197, 94, 0.05));
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .muscle-info h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .muscle-info p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .badge-target {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #a5b4fc;
+        }
+
+        .card-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: 12px;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-counter {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: var(--surface);
+            color: var(--text);
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid var(--border);
+        }
+
+        .btn-counter:active {
+            transform: scale(0.95);
+        }
+
+        .counter-val {
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .weight-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: var(--surface);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .weight-input-wrapper input {
+            width: 45px;
+            background: transparent;
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            text-align: right;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .weight-input-wrapper span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .reset-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Control de Rutina Semanal</h1>
-        <p class="subtitle">Gestiona tus series, cargas y volumen semanal fácilmente</p>
+        <div class="brand-title">GYM TRACKER</div>
+        <span id="save-indicator" style="font-size: 0.75rem; color: var(--accent); font-weight: 600;">● Guardado</span>
     </header>
 
-    <div class="actions">
-        <button class="btn btn-outline" onclick="resetWeek()">Reiniciar Semana</button>
-        <span id="save-status" style="color: var(--success); font-size: 0.85rem;">✓ Guardado automático</span>
+    <div class="overall-progress-card">
+        <div class="progress-header">
+            <span>PROGRESO SEMANAL</span>
+            <span id="overall-percentage">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="overall-bar"></div>
+        </div>
     </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Músculo</th>
-                    <th>Meta Series</th>
-                    <th>Reps Rec.</th>
-                    <th>Lunes</th>
-                    <th>Miércoles</th>
-                    <th>Viernes</th>
-                    <th>Series Totales</th>
-                    <th>Peso (kg)</th>
-                </tr>
-            </thead>
-            <tbody id="routine-body">
-                <!-- Se genera dinámicamente mediante JS -->
-            </tbody>
-        </table>
+    <!-- Pestañas por Día -->
+    <div class="day-tabs">
+        <button class="tab-btn active" onclick="switchDay('lunes')">Lunes</button>
+        <button class="tab-btn" onclick="switchDay('miercoles')">Miércoles</button>
+        <button class="tab-btn" onclick="switchDay('viernes')">Viernes</button>
     </div>
+
+    <!-- Lista de tarjetas -->
+    <div class="cards-list" id="cards-container"></div>
+
+    <button class="reset-btn" onclick="resetWeek()">Reiniciar Semana</button>
 
     <script>
-        const initialData = [
-            { id: 'pecho', name: 'PECHO', targetSeries: 12, reps: '6 - 8' },
-            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, reps: '5 - 8' },
-            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, reps: '8 - 10' },
-            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, reps: '8 - 12' },
-            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, reps: '8 - 12' },
-            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, reps: '5 - 8' },
-            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, reps: '6 - 10' },
-            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, reps: '-' },
-            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, reps: '-' },
-            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, reps: '8 - 15' }
+        const muscleData = [
+            { id: 'pecho', name: 'PECHO', targetSeries: 12, reps: '6-8 reps' },
+            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, reps: '5-8 reps' },
+            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, reps: '8-10 reps' },
+            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, reps: '8-12 reps' },
+            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, reps: '8-12 reps' },
+            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, reps: '5-8 reps' },
+            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, reps: '6-10 reps' },
+            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, reps: 'Libre' },
+            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, reps: 'Libre' },
+            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, reps: '8-15 reps' }
         ];
 
-        function loadState() {
-            const saved = localStorage.getItem('gym_routine_data');
-            return saved ? JSON.parse(saved) : {};
-        }
+        let currentDay = 'lunes';
+        let state = JSON.parse(localStorage.getItem('gym_tracker_v2')) || {};
 
-        function saveState(data) {
-            localStorage.setItem('gym_routine_data', JSON.stringify(data));
-            const status = document.getElementById('save-status');
-            status.style.opacity = '1';
-            setTimeout(() => { status.style.opacity = '0.7'; }, 1000);
-        }
-
-        let state = loadState();
-
-        function render() {
-            const tbody = document.getElementById('routine-body');
-            tbody.innerHTML = '';
-
-            initialData.forEach(item => {
-                const itemData = state[item.id] || { lunes: 0, miercoles: 0, viernes: 0, peso: 0 };
-                const totalSeries = (parseInt(itemData.lunes) || 0) + (parseInt(itemData.miercoles) || 0) + (parseInt(itemData.viernes) || 0);
-                const progressPct = Math.min(100, Math.round((totalSeries / item.targetSeries) * 100));
-                const isComplete = totalSeries >= item.targetSeries;
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="muscle-name">${item.name}</td>
-                    <td><span class="badge">${item.targetSeries} series</span></td>
-                    <td><span class="badge">${item.reps}</span></td>
-                    <td><input type="number" min="0" value="${itemData.lunes || ''}" onchange="updateValue('${item.id}', 'lunes', this.value)"></td>
-                    <td><input type="number" min="0" value="${itemData.miercoles || ''}" onchange="updateValue('${item.id}', 'miercoles', this.value)"></td>
-                    <td><input type="number" min="0" value="${itemData.viernes || ''}" onchange="updateValue('${item.id}', 'viernes', this.value)"></td>
-                    <td>
-                        <strong style="color: ${isComplete ? 'var(--success)' : 'white'}">${totalSeries} / ${item.targetSeries}</strong>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar-fill ${isComplete ? 'complete' : ''}" style="width: ${progressPct}%"></div>
-                        </div>
-                    </td>
-                    <td><input type="number" step="0.5" min="0" value="${itemData.peso || ''}" placeholder="kg" onchange="updateValue('${item.id}', 'peso', this.value)"></td>
-                `;
-                tbody.appendChild(tr);
+        function switchDay(day) {
+            currentDay = day;
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.toLowerCase() === day);
             });
-        }
-
-        function updateValue(id, key, val) {
-            if (!state[id]) state[id] = {};
-            state[id][key] = val === '' ? 0 : parseFloat(val);
-            saveState(state);
             render();
         }
 
+        function updateSeries(id, delta) {
+            if (!state[id]) state[id] = { lunes: 0, miercoles: 0, viernes: 0, peso: 0 };
+            const currentVal = state[id][currentDay] || 0;
+            state[id][currentDay] = Math.max(0, currentVal + delta);
+            save();
+            render();
+        }
+
+        function updateWeight(id, val) {
+            if (!state[id]) state[id] = { lunes: 0, miercoles: 0, viernes: 0, peso: 0 };
+            state[id].peso = val;
+            save();
+        }
+
+        function save() {
+            localStorage.setItem('gym_tracker_v2', JSON.stringify(state));
+        }
+
+        function calculateOverallProgress() {
+            let totalDone = 0;
+            let totalTarget = 0;
+
+            muscleData.forEach(item => {
+                const itemData = state[item.id] || { lunes: 0, miercoles: 0, viernes: 0 };
+                const done = (itemData.lunes || 0) + (itemData.miercoles || 0) + (itemData.viernes || 0);
+                totalDone += done;
+                totalTarget += item.targetSeries;
+            });
+
+            const pct = Math.min(100, Math.round((totalDone / totalTarget) * 100));
+            document.getElementById('overall-percentage').innerText = `${pct}% (${totalDone}/${totalTarget} series)`;
+            document.getElementById('overall-bar').style.width = `${pct}%`;
+        }
+
+        function render() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            muscleData.forEach(item => {
+                const itemData = state[item.id] || { lunes: 0, miercoles: 0, viernes: 0, peso: '' };
+                const daySeries = itemData[currentDay] || 0;
+                
+                // Cálculo total semanal para este músculo
+                const totalWeeklySeries = (itemData.lunes || 0) + (itemData.miercoles || 0) + (itemData.viernes || 0);
+                const isCompleted = totalWeeklySeries >= item.targetSeries;
+
+                const card = document.createElement('div');
+                card.className = `card ${isCompleted ? 'completed' : ''}`;
+                card.innerHTML = `
+                    <div class="card-top">
+                        <div class="muscle-info">
+                            <h3>${item.name}</h3>
+                            <p>${item.reps} • Meta: ${item.targetSeries} series/sem</p>
+                        </div>
+                        <div class="badge-target" style="${isCompleted ? 'color: var(--accent); border-color: rgba(34,197,94,0.3);' : ''}">
+                            ${totalWeeklySeries} / ${item.targetSeries} tot.
+                        </div>
+                    </div>
+
+                    <div class="card-controls">
+                        <div class="control-group">
+                            <button class="btn-counter" onclick="updateSeries('${item.id}', -1)">-</button>
+                            <span class="counter-val">${daySeries} <small style="font-size:0.65rem; color:var(--text-muted)">hoy</small></span>
+                            <button class="btn-counter" onclick="updateSeries('${item.id}', 1)">+</button>
+                        </div>
+
+                        <div class="weight-input-wrapper">
+                            <input type="number" step="0.5" placeholder="0" value="${itemData.peso || ''}" onchange="updateWeight('${item.id}', this.value)">
+                            <span>kg</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            calculateOverallProgress();
+        }
+
         function resetWeek() {
-            if (confirm('¿Quieres reiniciar todas las series semanales?')) {
+            if (confirm('¿Seguro que quieres borrar las series marcadas de esta semana?')) {
                 state = {};
-                saveState(state);
+                save();
                 render();
             }
         }
