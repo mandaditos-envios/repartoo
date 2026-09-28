@@ -327,7 +327,7 @@
     <div class="ai-config-card">
         <div class="ai-config-title">🤖 CONEXIÓN CON GEMINI IA</div>
         <div class="ai-input-group">
-            <input type="password" id="gemini-key-input" class="ai-key-input" placeholder="Pega tu API Key de Google AI Studio...">
+            <input type="text" id="gemini-key-input" class="ai-key-input" placeholder="Pega tu API Key (ej. AIzaSy...)">
             <button class="btn-ai" onclick="saveApiKey()">Guardar Key</button>
         </div>
         <button class="btn-ai-consult" onclick="consultGeminiAI()">✨ ANALIZAR MI RUTINA CON IA</button>
@@ -396,14 +396,14 @@
                 localStorage.setItem('gtp_gemini_key', key);
                 alert('¡API Key guardada correctamente!');
             } else {
-                alert('Ingresa una API Key válida.');
+                alert('Por favor pega una API Key válida.');
             }
         }
 
         async function consultGeminiAI() {
             const currentKey = document.getElementById('gemini-key-input').value.trim() || geminiApiKey;
             if (!currentKey) {
-                alert('Pega y guarda tu API Key de Gemini arriba.');
+                alert('Pega y presiona "Guardar Key" antes de consultar.');
                 return;
             }
 
@@ -425,9 +425,8 @@ Si hay datos, analiza mi progreso brevemente y responde:
 3. Recomendaciones específicas para la próxima semana (pesos/reps).
 Sé directo, motivador y breve para lectura en móvil.`;
 
-            // Probar endpoints de modelos probados
             const models = ['gemini-1.5-flash', 'gemini-2.0-flash'];
-            let success = false;
+            let lastErrorDetails = '';
 
             for (const model of models) {
                 try {
@@ -439,21 +438,18 @@ Sé directo, motivador y breve para lectura en móvil.`;
 
                     const data = await response.json();
 
-                    if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts[0].text) {
                         box.innerText = data.candidates[0].content.parts[0].text;
-                        success = true;
-                        break;
+                        return;
                     } else if (data.error) {
-                        console.error(`Error con ${model}:`, data.error);
+                        lastErrorDetails = data.error.message || JSON.stringify(data.error);
                     }
                 } catch (e) {
-                    console.error(`Excepción con ${model}:`, e);
+                    lastErrorDetails = e.message || 'Error de conexión a internet';
                 }
             }
 
-            if (!success) {
-                box.innerText = '❌ Error al comunicarse con la IA. Verifica que hayas presionado "Guardar Key" y que la clave copiada no tenga espacios extra.';
-            }
+            box.innerText = '❌ Error de respuesta de Gemini:\n' + lastErrorDetails + '\n\n💡 Sugerencia: Revisa que la clave empiece con "AIzaSy..." y no tenga espacios.';
         }
 
         function setDay(day) {
@@ -562,4 +558,4 @@ Sé directo, motivador y breve para lectura en móvil.`;
                 container.appendChild(card);
             });
 
-            const pct = Math.min(100, Math.round((grandT
+            const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTa
