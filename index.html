@@ -11,7 +11,8 @@
             --surface: #151c2c;
             --primary: #6366f1;
             --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.15);
+            --warning: #f59e0b;
+            --danger: #ef4444;
             --text: #f8fafc;
             --text-sub: #94a3b8;
             --border: #26334d;
@@ -29,7 +30,7 @@
         html, body {
             width: 100%;
             max-width: 100vw;
-            overflow-x: hidden; /* Evita cualquier desborde horizontal */
+            overflow-x: hidden;
             background-color: var(--bg);
             color: var(--text);
         }
@@ -56,7 +57,7 @@
             font-size: 0.7rem;
             color: var(--accent);
             font-weight: 600;
-            background: var(--accent-glow);
+            background: rgba(16, 185, 129, 0.15);
             padding: 4px 8px;
             border-radius: 20px;
             border: 1px solid rgba(16, 185, 129, 0.3);
@@ -145,7 +146,6 @@
             border-radius: var(--radius);
             padding: 14px;
             width: 100%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .muscle-card.completed {
@@ -173,17 +173,6 @@
             margin-top: 2px;
         }
 
-        .daily-target-tag {
-            display: inline-block;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #818cf8;
-            background: rgba(99, 102, 241, 0.12);
-            padding: 3px 6px;
-            border-radius: 6px;
-            margin-top: 4px;
-        }
-
         .remaining-badge {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -201,7 +190,6 @@
             border-color: rgba(16, 185, 129, 0.4);
         }
 
-        /* Botón Desplegable */
         .accordion-trigger {
             background: var(--bg);
             border: 1px solid var(--border);
@@ -220,7 +208,7 @@
         .accordion-content {
             display: none;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
             margin-top: 10px;
             padding-top: 10px;
             border-top: 1px dashed var(--border);
@@ -230,24 +218,40 @@
             display: flex;
         }
 
-        /* Formulario de entrada responsive */
+        /* Formulario */
         .input-row {
             display: flex;
             flex-direction: column;
             gap: 8px;
             width: 100%;
+            background: var(--bg);
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+        .select-ex, .input-custom-ex {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            outline: none;
         }
 
         .input-fields {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 6px;
             width: 100%;
         }
 
-        .input-row input {
+        .input-fields input {
             width: 100%;
-            background: var(--bg);
+            background: var(--surface);
             border: 1px solid var(--border);
             color: #fff;
             padding: 8px 10px;
@@ -257,26 +261,22 @@
             outline: none;
         }
 
-        .input-row input:focus {
-            border-color: var(--primary);
-        }
-
         .btn-add-set {
             width: 100%;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 10px;
+            padding: 9px;
             font-weight: 700;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
 
-        /* Chips de series completadas */
+        /* Historial de Series */
         .sets-history {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 6px;
             width: 100%;
         }
@@ -284,28 +284,42 @@
         .set-chip {
             background: var(--bg);
             border: 1px solid var(--border);
-            padding: 6px 8px;
-            border-radius: 6px;
+            padding: 8px;
+            border-radius: 8px;
             font-size: 0.72rem;
-            font-weight: 600;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 8px;
-            width: 100%;
+            gap: 6px;
         }
 
-        .set-chip strong {
-            color: #fff;
+        .set-chip-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
+
+        .advice-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            width: fit-content;
+        }
+
+        .advice-up { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .advice-ok { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        .advice-down { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
         .btn-del-chip {
             background: transparent;
             border: none;
-            color: #f87171;
+            color: var(--danger);
             font-weight: 800;
             cursor: pointer;
             font-size: 0.85rem;
+            padding: 4px;
         }
 
         .reset-btn {
@@ -329,14 +343,13 @@
 <body>
 
     <header>
-        <div class="app-title">GYM TRACKER</div>
+        <div class="app-title">GYM TRACK PRO</div>
         <div class="status-badge">● Guardado</div>
     </header>
 
-    <!-- Resumen -->
     <div class="summary-card">
         <div class="summary-header">
-            <span>AVANCE SEMANAL</span>
+            <span>PROGRESO SEMANAL</span>
             <div class="summary-counter" id="total-summary">0 / 0 Series</div>
         </div>
         <div class="progress-bar">
@@ -344,34 +357,32 @@
         </div>
     </div>
 
-    <!-- Días -->
     <div class="day-selector">
         <button class="day-btn active" onclick="setDay('lunes')">Lunes</button>
         <button class="day-btn" onclick="setDay('miercoles')">Miércoles</button>
         <button class="day-btn" onclick="setDay('viernes')">Viernes</button>
     </div>
 
-    <!-- Lista de Músculos -->
     <div class="muscle-cards-list" id="cards-container"></div>
 
-    <button class="reset-btn" onclick="resetWeek()">Reiniciar Semana</button>
+    <button class="reset-btn" onclick="resetWeek()">Reiniciar Series Semanales</button>
 
     <script>
-        const musclesConfig = [
-            { id: 'pecho', name: 'PECHO', targetSeries: 12, reps: '6-8 reps', dailySuggested: 4 },
-            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, reps: '5-8 reps', dailySuggested: 5 },
-            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, reps: '8-10 reps', dailySuggested: 3 },
-            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, reps: '8-12 reps', dailySuggested: 3 },
-            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, reps: '8-12 reps', dailySuggested: 3 },
-            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, reps: '5-8 reps', dailySuggested: 4 },
-            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, reps: '6-10 reps', dailySuggested: 3.5 },
-            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, reps: 'Libre', dailySuggested: 2 },
-            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, reps: 'Libre', dailySuggested: 2 },
-            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, reps: '8-15 reps', dailySuggested: 3 }
+        const initialConfig = [
+            { id: 'pecho', name: 'PECHO', targetSeries: 12, minReps: 6, maxReps: 8, defaultExercises: ['Banco Plano', 'Inclinado con Mancuernas', 'Fondos en Paralelas', 'Aperturas'] },
+            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, minReps: 5, maxReps: 8, defaultExercises: ['Remo Bajo (Triángulo)', 'Remo en Máquina Inclinado', 'Remo Sentado en Máquina', 'Jalón al Pecho Agarre Abierto'] },
+            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, minReps: 8, maxReps: 10, defaultExercises: ['Press Militar', 'Elevaciones Laterales', 'Pájaro (Hombro Posterior)'] },
+            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Curl Martillo', 'Curl Parado con Barra/Mancuerna', 'Curl Extensión por Detrás (Inclinado)'] },
+            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Press Francés', 'Extensión en Polea con Cuerda', 'Extensión Copa sobre la Cabeza'] },
+            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, minReps: 5, maxReps: 8, defaultExercises: ['Sentadillas en Máquina / Hack', 'Prensa de Piernas', 'Extensión de Cuádriceps'] },
+            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, minReps: 6, maxReps: 10, defaultExercises: ['Peso Muerto Rumano', 'Curl Femoral Acostado', 'Curl Femoral Parado'] },
+            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, minReps: 10, maxReps: 15, defaultExercises: ['Abductores en Máquina'] },
+            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, minReps: 10, maxReps: 15, defaultExercises: ['Aductores en Máquina'] },
+            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, minReps: 8, maxReps: 15, defaultExercises: ['Elevación de Talones Sentado', 'Elevación de Talones Parado'] }
         ];
 
         let activeDay = 'lunes';
-        let store = JSON.parse(localStorage.getItem('gym_tracker_v4')) || {};
+        let store = JSON.parse(localStorage.getItem('gym_tracker_pro_v5')) || {};
         let openAccordions = {};
 
         function setDay(day) {
@@ -387,21 +398,50 @@
             render();
         }
 
-        function addSet(muscleId) {
-            initStore(muscleId);
-            const exName = document.getElementById(`input-ex-${muscleId}`).value.trim() || 'Serie';
-            const reps = document.getElementById(`input-reps-${muscleId}`).value.trim();
-            const weight = document.getElementById(`input-weight-${muscleId}`).value.trim();
+        function handleSelectChange(muscleId) {
+            const select = document.getElementById(`select-ex-${muscleId}`);
+            const customInput = document.getElementById(`input-custom-ex-${muscleId}`);
+            if (select.value === 'CUSTOM') {
+                customInput.style.display = 'block';
+            } else {
+                customInput.style.display = 'none';
+            }
+        }
 
-            if (!reps) {
-                alert('Ingresa la cantidad de reps');
+        function addSet(muscleId, minReps, maxReps) {
+            initStore(muscleId);
+            const select = document.getElementById(`select-ex-${muscleId}`);
+            const customInput = document.getElementById(`input-custom-ex-${muscleId}`);
+            
+            let exName = select.value;
+            if (exName === 'CUSTOM') {
+                exName = customInput.value.trim();
+                if (exName && !store[muscleId].customExercises.includes(exName)) {
+                    store[muscleId].customExercises.push(exName);
+                }
+            }
+
+            const reps = parseInt(document.getElementById(`input-reps-${muscleId}`).value);
+            const weight = parseFloat(document.getElementById(`input-weight-${muscleId}`).value) || 0;
+
+            if (!exName || isNaN(reps)) {
+                alert('Por favor selecciona un ejercicio e ingresa las repeticiones.');
                 return;
+            }
+
+            // Análisis de carga de peso
+            let advice = { text: '🎯 Peso ideal', class: 'advice-ok' };
+            if (reps > maxReps) {
+                advice = { text: '⚡ Sube peso (Hiciste muchas reps)', class: 'advice-up' };
+            } else if (reps < minReps) {
+                advice = { text: '⚠️ Muy pesado (Baja un poco el peso)', class: 'advice-down' };
             }
 
             store[muscleId][activeDay].sets.push({
                 exName,
-                reps: reps,
-                weight: weight || '0'
+                reps,
+                weight,
+                advice
             });
 
             save();
@@ -417,12 +457,13 @@
         }
 
         function initStore(id) {
-            if (!store[id]) store[id] = {};
+            if (!store[id]) store[id] = { customExercises: [] };
+            if (!store[id].customExercises) store[id].customExercises = [];
             if (!store[id][activeDay]) store[id][activeDay] = { sets: [] };
         }
 
         function save() {
-            localStorage.setItem('gym_tracker_v4', JSON.stringify(store));
+            localStorage.setItem('gym_tracker_pro_v5', JSON.stringify(store));
         }
 
         function render() {
@@ -432,8 +473,9 @@
             let grandTotalDone = 0;
             let grandTotalTarget = 0;
 
-            musclesConfig.forEach(item => {
-                const itemStore = store[item.id] || {};
+            initialConfig.forEach(item => {
+                initStore(item.id);
+                const itemStore = store[item.id];
                 
                 const lunesCount = (itemStore.lunes && itemStore.lunes.sets) ? itemStore.lunes.sets.length : 0;
                 const miercolesCount = (itemStore.miercoles && itemStore.miercoles.sets) ? itemStore.miercoles.sets.length : 0;
@@ -449,17 +491,25 @@
                 const daySets = (itemStore[activeDay] && itemStore[activeDay].sets) ? itemStore[activeDay].sets : [];
                 const isOpen = !!openAccordions[item.id];
 
+                // Lista de ejercicios mezclada (por defecto + personalizados guardados)
+                const allExercises = [...item.defaultExercises, ...itemStore.customExercises];
+
                 let setsChipsHTML = '';
                 if (daySets.length > 0) {
                     setsChipsHTML = daySets.map((s, idx) => `
                         <div class="set-chip">
-                            <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</span>
+                            <div class="set-chip-info">
+                                <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight} kg</span>
+                                <span class="advice-tag ${s.advice.class}">${s.advice.text}</span>
+                            </div>
                             <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
                         </div>
                     `).join('');
                 } else {
-                    setsChipsHTML = `<div style="font-size:0.72rem; color:var(--text-sub);">Sin series anotadas hoy</div>`;
+                    setsChipsHTML = `<div style="font-size:0.72rem; color:var(--text-sub);">Sin series registradas hoy</div>`;
                 }
+
+                const optionsHTML = allExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('') + `<option value="CUSTOM">+ Otro ejercicio...</option>`;
 
                 const card = document.createElement('div');
                 card.className = `muscle-card ${isCompleted ? 'completed' : ''}`;
@@ -467,8 +517,7 @@
                     <div class="card-header">
                         <div>
                             <div class="muscle-title">${item.name}</div>
-                            <div class="target-info">${item.reps}</div>
-                            <div class="daily-target-tag">Hoy: ~${Math.ceil(item.dailySuggested)} series</div>
+                            <div class="target-info">Rango rec: ${item.minReps}-${item.maxReps} reps</div>
                         </div>
                         <div class="remaining-badge ${isCompleted ? 'done' : ''}">
                             ${isCompleted ? '✓ COMPLETADO' : `Faltan ${remainingWeek} series`}
@@ -476,18 +525,21 @@
                     </div>
 
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series hoy</span>
+                        <span>${daySets.length} series registradas hoy</span>
                         <span>${isOpen ? '▲ Ocultar' : '▼ Anotar Serie'}</span>
                     </button>
 
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="input-row">
+                            <select class="select-ex" id="select-ex-${item.id}" onchange="handleSelectChange('${item.id}')">
+                                ${optionsHTML}
+                            </select>
+                            <input type="text" class="input-custom-ex" id="input-custom-ex-${item.id}" placeholder="Escribe el nuevo ejercicio..." style="display:none;">
                             <div class="input-fields">
-                                <input type="text" id="input-ex-${item.id}" placeholder="Ej: Press">
                                 <input type="number" id="input-reps-${item.id}" placeholder="Reps">
-                                <input type="number" id="input-weight-${item.id}" placeholder="Kg">
+                                <input type="number" id="input-weight-${item.id}" placeholder="Peso (kg)">
                             </div>
-                            <button class="btn-add-set" onclick="addSet('${item.id}')">+ Agregar Serie</button>
+                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Registrar Serie</button>
                         </div>
                         <div class="sets-history">
                             ${setsChipsHTML}
@@ -503,14 +555,4 @@
         }
 
         function resetWeek() {
-            if (confirm('¿Quieres reiniciar todas las series de esta semana?')) {
-                store = {};
-                save();
-                render();
-            }
-        }
-
-        render();
-    </script>
-</body>
-</html>
+            if (confirm('¿Reiniciar la semana? Se borrarán las series a
