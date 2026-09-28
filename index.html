@@ -45,6 +45,22 @@
             font-weight: 800;
         }
 
+        .btn-reset-week {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reset-week:active {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
         .summary-card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -192,16 +208,16 @@
             background: rgba(99, 102, 241, 0.15);
             border: 1px solid rgba(99, 102, 241, 0.4);
             border-radius: 6px;
-            padding: 8px;
+            padding: 8px 10px;
             font-size: 0.75rem;
             color: #c7d2fe;
-            line-height: 1.3;
+            line-height: 1.35;
         }
 
         .smart-coach-title {
             font-weight: 800;
             color: #a5b4fc;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
         }
 
         .input-fields {
@@ -260,6 +276,7 @@
 
     <header>
         <div class="app-title">GYM TRACK PRO</div>
+        <button class="btn-reset-week" onclick="resetWeek()">🔄 Reiniciar Semana</button>
     </header>
 
     <div class="summary-card">
@@ -300,10 +317,26 @@
         let openAccordions = {};
 
         function initApp() {
+            try {
+                const savedStore = localStorage.getItem('gtp_store');
+                const savedHistory = localStorage.getItem('gtp_history');
+                if (savedStore) store = JSON.parse(savedStore);
+                if (savedHistory) exerciseHistory = JSON.parse(savedHistory);
+            } catch(e) {}
+
             initialConfig.forEach(item => {
-                store[item.id] = { lunes: [], miercoles: [], viernes: [] };
+                if (!store[item.id]) {
+                    store[item.id] = { lunes: [], miercoles: [], viernes: [] };
+                }
             });
             render();
+        }
+
+        function saveData() {
+            try {
+                localStorage.setItem('gtp_store', JSON.stringify(store));
+                localStorage.setItem('gtp_history', JSON.stringify(exerciseHistory));
+            } catch(e) {}
         }
 
         function setDay(day) {
@@ -318,34 +351,57 @@
             render();
         }
 
+        function resetWeek() {
+            if (confirm("¿Comenzar nueva semana? Se limpiarán las repeticiones registradas, pero la memoria de tus pesos quedará guardada para el análisis del Smart Coach.")) {
+                initialConfig.forEach(item => {
+                    store[item.id].lunes = [];
+                    store[item.id].miercoles = [];
+                    store[item.id].viernes = [];
+                });
+                saveData();
+                render();
+            }
+        }
+
         function getSmartAdvice(muscleId, exName) {
             const config = initialConfig.find(c => c.id === muscleId);
             const history = exerciseHistory[exName];
 
             if (!history || history.length === 0) {
-                return `💡 <strong>Inicio:</strong> Elige un peso para hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
+                return `💡 <strong>Inicio:</strong> Sin datos previos. Elige un peso para hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
             }
 
             const last = history[history.length - 1];
 
             if (last.reps > config.maxReps) {
-                const sugg = (last.weight > 0) ? (last.weight * 1.05).toFixed(1) : 0;
-                return `🚀 <strong>Sube carga:</strong> Hiciste ${last.reps} reps con ${last.weight}kg. Hoy busca <strong>${sugg}kg</strong> (${config.minReps}-${config.maxReps} reps).`;
+                const sugg = (last.weight > 0) ? (last.weight * 1.05).toFixed(1) : last.weight;
+                return `📊 <strong>Análisis semanal:</strong> Como la semana pasada superaste el objetivo (${last.reps} reps con ${last.weight}kg), te conviene subir a <strong>${sugg}kg</strong> para tu primera serie (${config.minReps}-${config.maxReps} reps).`;
             } else if (last.reps < config.minReps) {
-                return `⚖️ <strong>Ajuste:</strong> Quedaste corto con ${last.reps} reps (${last.weight}kg). Mantén <strong>${last.weight}kg</strong> o descansa más.`;
+                return `📊 <strong>Análisis semanal:</strong> La semana pasada quedaste exigido (${last.reps} reps con ${last.weight}kg). Te conviene mantener o bajar un poco a <strong>${last.weight}kg</strong> buscando llegar al mínimo de ${config.minReps} reps.`;
             } else {
-                return `🎯 <strong>Consolidación:</strong> Lograste ${last.reps} reps con ${last.weight}kg. Mantén <strong>${last.weight}kg</strong> e intenta 1 rep más.`;
+                return `📊 <strong>Análisis semanal:</strong> La semana pasada completaste ${last.reps} reps con ${last.weight}kg. Te conviene empezar hoy con <strong>${last.weight}kg</strong> e intentar sumar 1 rep más.`;
             }
         }
 
         function updateCoachAdvice(muscleId) {
             const select = document.getElementById('select-' + muscleId);
             const coachBox = document.getElementById('coach-' + muscleId);
+            const weightInput = document.getElementById('weight-' + muscleId);
+
             if (select && coachBox) {
+                const exName = select.value;
                 coachBox.innerHTML = `
-                    <div class="smart-coach-title">🤖 CONSEJO DE ENTRENAMIENTO:</div>
-                    <div>${getSmartAdvice(muscleId, select.value)}</div>
+                    <div class="smart-coach-title">🤖 PLAN DEL SMART COACH:</div>
+                    <div>${getSmartAdvice(muscleId, exName)}</div>
                 `;
+
+                // Auto-sugerir el último peso guardado en el campo de entrada
+                if (weightInput && exerciseHistory[exName] && exerciseHistory[exName].length > 0) {
+                    const lastWeight = exerciseHistory[exName][exerciseHistory[exName].length - 1].weight;
+                    if (!weightInput.value) {
+                        weightInput.value = lastWeight;
+                    }
+                }
             }
         }
 
@@ -358,7 +414,7 @@
             const reps = parseInt(repsInput.value);
             const weight = parseFloat(weightInput.value) || 0;
 
-            if (!reps) return alert('Ingresa repeticiones');
+            if (!reps) return alert('Ingresa las repeticiones logradas');
 
             let tagText = '🎯 Peso Ideal';
             let tagClass = 'advice-ok';
@@ -379,12 +435,13 @@
             exerciseHistory[exName].push(setObj);
 
             repsInput.value = '';
-            weightInput.value = '';
+            saveData();
             render();
         }
 
         function removeSet(muscleId, idx) {
             store[muscleId][activeDay].splice(idx, 1);
+            saveData();
             render();
         }
 
@@ -426,7 +483,7 @@
                         <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek)} series</div>
                     </div>
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series registradas</span>
+                        <span>${daySets.length} series anotadas hoy</span>
                         <span>${isOpen ? '▲ Ocultar' : '▼ Anotar'}</span>
                     </button>
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
