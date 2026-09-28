@@ -9,15 +9,13 @@
         :root {
             --bg: #0b0f19;
             --surface: #151c2c;
-            --surface-hover: #1e293b;
             --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.25);
             --accent: #10b981;
-            --accent-glow: rgba(16, 185, 129, 0.2);
+            --accent-glow: rgba(16, 185, 129, 0.15);
             --text: #f8fafc;
             --text-sub: #94a3b8;
             --border: #26334d;
-            --radius: 16px;
+            --radius: 14px;
         }
 
         * {
@@ -28,64 +26,66 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        body {
+        html, body {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden; /* Evita cualquier desborde horizontal */
             background-color: var(--bg);
             color: var(--text);
-            padding: 16px;
-            padding-bottom: 100px;
-            max-width: 480px;
-            margin: 0 auto;
+        }
+
+        body {
+            padding: 12px;
+            padding-bottom: 90px;
         }
 
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
         .app-title {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: 800;
-            letter-spacing: -0.5px;
             color: #fff;
         }
 
         .status-badge {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--accent);
             font-weight: 600;
             background: var(--accent-glow);
-            padding: 4px 10px;
+            padding: 4px 8px;
             border-radius: 20px;
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        /* Banner de Progreso General */
+        /* Card resumen */
         .summary-card {
             background: linear-gradient(135deg, #1e1b4b, var(--surface));
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 16px;
-            margin-bottom: 20px;
+            padding: 14px;
+            margin-bottom: 16px;
         }
 
         .summary-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .summary-header span {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 700;
             color: var(--text-sub);
-            letter-spacing: 0.5px;
         }
 
         .summary-counter {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             font-weight: 800;
             color: #fff;
         }
@@ -105,24 +105,23 @@
             transition: width 0.3s ease;
         }
 
-        /* Selector de Días */
+        /* Selector Días */
         .day-selector {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 20px;
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
         }
 
         .day-btn {
+            flex: 1;
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-sub);
-            padding: 12px 8px;
+            padding: 10px 4px;
             font-weight: 700;
-            font-size: 0.85rem;
-            border-radius: 12px;
+            font-size: 0.8rem;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
             text-align: center;
         }
 
@@ -130,25 +129,23 @@
             background: var(--primary);
             color: #fff;
             border-color: var(--primary);
-            box-shadow: 0 4px 14px var(--primary-glow);
         }
 
-        /* Lista de Tarjetas */
+        /* Contenedor de Tarjetas */
         .muscle-cards-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
+            width: 100%;
         }
 
         .muscle-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            transition: all 0.2s ease;
+            padding: 14px;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .muscle-card.completed {
@@ -160,30 +157,43 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 8px;
         }
 
         .muscle-title {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 800;
-            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
 
         .target-info {
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             color: var(--text-sub);
-            font-weight: 600;
             margin-top: 2px;
+        }
+
+        .daily-target-tag {
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.12);
+            padding: 3px 6px;
+            border-radius: 6px;
+            margin-top: 4px;
         }
 
         .remaining-badge {
             background: var(--bg);
             border: 1px solid var(--border);
-            padding: 6px 10px;
-            border-radius: 10px;
-            font-size: 0.75rem;
+            padding: 5px 8px;
+            border-radius: 8px;
+            font-size: 0.7rem;
             font-weight: 700;
             color: #a5b4fc;
             text-align: right;
+            white-space: nowrap;
         }
 
         .remaining-badge.done {
@@ -191,26 +201,14 @@
             border-color: rgba(16, 185, 129, 0.4);
         }
 
-        /* Indicador diario */
-        .daily-target-tag {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: #818cf8;
-            background: rgba(99, 102, 241, 0.1);
-            padding: 4px 8px;
-            border-radius: 6px;
-            margin-top: 4px;
-        }
-
-        /* Desplegable limpio */
+        /* Botón Desplegable */
         .accordion-trigger {
             background: var(--bg);
             border: 1px solid var(--border);
             color: var(--text-sub);
-            padding: 10px 14px;
-            border-radius: 10px;
-            font-size: 0.8rem;
+            padding: 10px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
             font-weight: 700;
             display: flex;
             justify-content: space-between;
@@ -222,21 +220,33 @@
         .accordion-content {
             display: none;
             flex-direction: column;
-            gap: 12px;
-            padding-top: 8px;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border);
         }
 
         .accordion-content.open {
             display: flex;
         }
 
+        /* Formulario de entrada responsive */
         .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .input-fields {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
+            grid-template-columns: 2fr 1fr 1fr;
             gap: 6px;
+            width: 100%;
         }
 
         .input-row input {
+            width: 100%;
             background: var(--bg);
             border: 1px solid var(--border);
             color: #fff;
@@ -252,32 +262,37 @@
         }
 
         .btn-add-set {
+            width: 100%;
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
-            padding: 0 12px;
-            font-weight: 800;
-            font-size: 1rem;
+            padding: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
             cursor: pointer;
         }
 
+        /* Chips de series completadas */
         .sets-history {
             display: flex;
             flex-wrap: wrap;
             gap: 6px;
+            width: 100%;
         }
 
         .set-chip {
             background: var(--bg);
             border: 1px solid var(--border);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 0.75rem;
+            padding: 6px 8px;
+            border-radius: 6px;
+            font-size: 0.72rem;
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
         }
 
         .set-chip strong {
@@ -291,23 +306,23 @@
             font-weight: 800;
             cursor: pointer;
             font-size: 0.85rem;
-            margin-left: 2px;
         }
 
         .reset-btn {
             position: fixed;
-            bottom: 20px;
+            bottom: 16px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-sub);
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 0.8rem;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.78rem;
             font-weight: 700;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
             cursor: pointer;
+            z-index: 100;
         }
     </style>
 </head>
@@ -315,10 +330,10 @@
 
     <header>
         <div class="app-title">GYM TRACKER</div>
-        <div class="status-badge">● Auto Guardado</div>
+        <div class="status-badge">● Guardado</div>
     </header>
 
-    <!-- Resumen Semanal -->
+    <!-- Resumen -->
     <div class="summary-card">
         <div class="summary-header">
             <span>AVANCE SEMANAL</span>
@@ -336,7 +351,7 @@
         <button class="day-btn" onclick="setDay('viernes')">Viernes</button>
     </div>
 
-    <!-- Músculos -->
+    <!-- Lista de Músculos -->
     <div class="muscle-cards-list" id="cards-container"></div>
 
     <button class="reset-btn" onclick="resetWeek()">Reiniciar Semana</button>
@@ -356,7 +371,7 @@
         ];
 
         let activeDay = 'lunes';
-        let store = JSON.parse(localStorage.getItem('gym_tracker_clean_v1')) || {};
+        let store = JSON.parse(localStorage.getItem('gym_tracker_v4')) || {};
         let openAccordions = {};
 
         function setDay(day) {
@@ -374,12 +389,12 @@
 
         function addSet(muscleId) {
             initStore(muscleId);
-            const exName = document.getElementById(`input-ex-${muscleId}`).value.trim() || 'Ejercicio';
+            const exName = document.getElementById(`input-ex-${muscleId}`).value.trim() || 'Serie';
             const reps = document.getElementById(`input-reps-${muscleId}`).value.trim();
             const weight = document.getElementById(`input-weight-${muscleId}`).value.trim();
 
             if (!reps) {
-                alert('Ingresa al menos las repeticiones');
+                alert('Ingresa la cantidad de reps');
                 return;
             }
 
@@ -407,7 +422,7 @@
         }
 
         function save() {
-            localStorage.setItem('gym_tracker_clean_v1', JSON.stringify(store));
+            localStorage.setItem('gym_tracker_v4', JSON.stringify(store));
         }
 
         function render() {
@@ -420,7 +435,6 @@
             musclesConfig.forEach(item => {
                 const itemStore = store[item.id] || {};
                 
-                // Contar series completadas en la semana
                 const lunesCount = (itemStore.lunes && itemStore.lunes.sets) ? itemStore.lunes.sets.length : 0;
                 const miercolesCount = (itemStore.miercoles && itemStore.miercoles.sets) ? itemStore.miercoles.sets.length : 0;
                 const viernesCount = (itemStore.viernes && itemStore.viernes.sets) ? itemStore.viernes.sets.length : 0;
@@ -435,7 +449,6 @@
                 const daySets = (itemStore[activeDay] && itemStore[activeDay].sets) ? itemStore[activeDay].sets : [];
                 const isOpen = !!openAccordions[item.id];
 
-                // Renderizar Chips de Series
                 let setsChipsHTML = '';
                 if (daySets.length > 0) {
                     setsChipsHTML = daySets.map((s, idx) => `
@@ -445,7 +458,7 @@
                         </div>
                     `).join('');
                 } else {
-                    setsChipsHTML = `<div style="font-size:0.75rem; color:var(--text-sub);">Sin series registradas para hoy</div>`;
+                    setsChipsHTML = `<div style="font-size:0.72rem; color:var(--text-sub);">Sin series anotadas hoy</div>`;
                 }
 
                 const card = document.createElement('div');
@@ -455,24 +468,26 @@
                         <div>
                             <div class="muscle-title">${item.name}</div>
                             <div class="target-info">${item.reps}</div>
-                            <div class="daily-target-tag">Hoy: ~${Math.ceil(item.dailySuggested)} series recomendadas</div>
+                            <div class="daily-target-tag">Hoy: ~${Math.ceil(item.dailySuggested)} series</div>
                         </div>
                         <div class="remaining-badge ${isCompleted ? 'done' : ''}">
-                            ${isCompleted ? '✓ META ALCANZADA' : `Quedan ${remainingWeek} series`}
+                            ${isCompleted ? '✓ COMPLETADO' : `Faltan ${remainingWeek} series`}
                         </div>
                     </div>
 
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series hechas hoy</span>
-                        <span>${isOpen ? '▲ Ocultar' : '▼ Registrar Serie'}</span>
+                        <span>${daySets.length} series hoy</span>
+                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar Serie'}</span>
                     </button>
 
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="input-row">
-                            <input type="text" id="input-ex-${item.id}" placeholder="Ejercicio">
-                            <input type="number" id="input-reps-${item.id}" placeholder="Reps">
-                            <input type="number" id="input-weight-${item.id}" placeholder="Kg">
-                            <button class="btn-add-set" onclick="addSet('${item.id}')">+</button>
+                            <div class="input-fields">
+                                <input type="text" id="input-ex-${item.id}" placeholder="Ej: Press">
+                                <input type="number" id="input-reps-${item.id}" placeholder="Reps">
+                                <input type="number" id="input-weight-${item.id}" placeholder="Kg">
+                            </div>
+                            <button class="btn-add-set" onclick="addSet('${item.id}')">+ Agregar Serie</button>
                         </div>
                         <div class="sets-history">
                             ${setsChipsHTML}
@@ -482,7 +497,6 @@
                 container.appendChild(card);
             });
 
-            // Actualizar resumen superior
             const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
             document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series (${pct}%)`;
             document.getElementById('total-progress-bar').style.width = `${pct}%`;
