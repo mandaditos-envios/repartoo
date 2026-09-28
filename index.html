@@ -193,7 +193,7 @@
             border-radius: 8px;
         }
 
-        .select-ex, .input-custom-ex, .input-fields input {
+        .select-ex, .input-fields input {
             width: 100%;
             background: var(--surface);
             border: 1px solid var(--border);
@@ -248,17 +248,6 @@
             align-items: center;
             justify-content: space-between;
             margin-top: 4px;
-        }
-
-        .day-tag-badge {
-            background: rgba(99, 102, 241, 0.2);
-            color: #a5b4fc;
-            padding: 1px 5px;
-            border-radius: 4px;
-            font-size: 0.65rem;
-            font-weight: bold;
-            text-transform: uppercase;
-            margin-right: 4px;
         }
 
         .advice-tag {
@@ -363,9 +352,14 @@
         }
 
         function resetWeek() {
-            if (confirm("¿Comenzar nueva semana? Se vaciarán las repeticiones de los días, pero tus ejercicios y el historial del Smart Coach se mantendrán intactos.")) {
+            if (confirm("¿Reiniciar semana? Se limpiarán únicamente las repeticiones anotadas para empezar a registrar de nuevo, manteniendo tus ejercicios y pesos guardados.")) {
                 initialConfig.forEach(item => {
-                    store[item.id] = { lunes: [], miercoles: [], viernes: [] };
+                    if (store[item.id]) {
+                        // Limpiamos las series de los días pero mantenemos la estructura
+                        store[item.id].lunes = [];
+                        store[item.id].miercoles = [];
+                        store[item.id].viernes = [];
+                    }
                 });
                 saveData();
                 render();
@@ -377,18 +371,21 @@
             const history = exerciseHistory[exName];
 
             if (!history || history.length === 0) {
-                return `💡 <strong>Inicio:</strong> Sin datos previos. Elige un peso para hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
+                return `💡 <strong>Inicio:</strong> Sin registros previos. Apunta a <strong>${config.minReps}-${config.maxReps} reps</strong>.`;
             }
 
             const last = history[history.length - 1];
 
             if (last.reps > config.maxReps) {
                 const sugg = (last.weight > 0) ? (last.weight * 1.05).toFixed(1) : last.weight;
-                return `📊 <strong>Análisis semanal:</strong> Como la semana pasada superaste el objetivo (${last.reps} reps con ${last.weight}kg), te conviene subir a <strong>${sugg}kg</strong> para tu primera serie (${config.minReps}-${config.maxReps} reps).`;
+                let prevText = `Último registro: ${last.reps} reps con ${last.weight}kg.`;
+                return `📊 <strong>Coach (${prevText}):</strong> Superaste el objetivo. Prueba subir a <strong>${sugg}kg</strong> (${config.minReps}-${config.maxReps} reps).`;
             } else if (last.reps < config.minReps) {
-                return `📊 <strong>Análisis semanal:</strong> La semana pasada quedaste exigido (${last.reps} reps con ${last.weight}kg). Te conviene mantener o bajar un poco a <strong>${last.weight}kg</strong> buscando llegar al mínimo de ${config.minReps} reps.`;
+                let prevText = `Último registro: ${last.reps} reps con ${last.weight}kg.`;
+                return `📊 <strong>Coach (${prevText}):</strong> Estuvo pesado. Mantén o baja a <strong>${last.weight}kg</strong> buscando llegar al mínimo.`;
             } else {
-                return `📊 <strong>Análisis semanal:</strong> La semana pasada completaste ${last.reps} reps con ${last.weight}kg. Te conviene empezar hoy con <strong>${last.weight}kg</strong> e intentar sumar 1 rep más.`;
+                let prevText = `Último registro: ${last.reps} reps con ${last.weight}kg.`;
+                return `📊 <strong>Coach (${prevText}):</strong> ¡Rango ideal! Empieza con <strong>${last.weight}kg</strong> e intenta sumar 1 rep más.`;
             }
         }
 
@@ -400,7 +397,7 @@
             if (select && coachBox) {
                 const exName = select.value;
                 coachBox.innerHTML = `
-                    <div class="smart-coach-title">🤖 PLAN DEL SMART COACH:</div>
+                    <div class="smart-coach-title">🤖 VISTA PREVIA / SMART COACH:</div>
                     <div>${getSmartAdvice(muscleId, exName)}</div>
                 `;
 
@@ -435,7 +432,7 @@
                 tagClass = 'advice-down';
             }
 
-            const setObj = { exName, reps, weight, tagText, tagClass, day: activeDay };
+            const setObj = { exName, reps, weight, tagText, tagClass };
 
             store[muscleId][activeDay].push(setObj);
 
@@ -447,8 +444,8 @@
             render();
         }
 
-        function removeSet(muscleId, day, idx) {
-            store[muscleId][day].splice(idx, 1);
+        function removeSet(muscleId, idx) {
+            store[muscleId][activeDay].splice(idx, 1);
             saveData();
             render();
         }
@@ -470,26 +467,13 @@
                 const isOpen = !!openAccordions[item.id];
                 const options = item.defaultExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
 
-                // Juntamos todas las series de la semana (Lunes, Miércoles, Viernes) para mostrarlas agrupadas o ver el historial reciente
-                let allWeekSets = [];
-                ['lunes', 'miercoles', 'viernes'].forEach(d => {
-                    if (store[item.id][d]) {
-                        store[item.id][d].forEach((s, idx) => {
-                            allWeekSets.push({ ...s, originalDay: d, originalIdx: idx });
-                        });
-                    }
-                });
-
-                let setsHTML = allWeekSets.map((s) => `
+                let setsHTML = daySets.map((s, idx) => `
                     <div class="set-chip">
                         <div>
-                            <div>
-                                <span class="day-tag-badge">${s.originalDay}</span>
-                                <strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg
-                            </div>
+                            <div><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</div>
                             <span class="advice-tag ${s.tagClass}">${s.tagText}</span>
                         </div>
-                        <button class="btn-del-chip" onclick="removeSet('${item.id}', '${s.originalDay}', ${s.originalIdx})">✕</button>
+                        <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
                     </div>
                 `).join('');
 
@@ -504,8 +488,8 @@
                         <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek)} series</div>
                     </div>
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${allWeekSets.length} series registradas esta semana</span>
-                        <span>${isOpen ? '▲ Ocultar' : '▼ Ver / Anotar'}</span>
+                        <span>${daySets.length} series anotadas hoy</span>
+                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar'}</span>
                     </button>
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="input-row">
@@ -517,9 +501,9 @@
                                 <input type="number" id="reps-${item.id}" placeholder="Reps">
                                 <input type="number" id="weight-${item.id}" placeholder="Kg">
                             </div>
-                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie para (${activeDay.toUpperCase()})</button>
+                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie</button>
                         </div>
-                        <div style="margin-top: 6px;">${setsHTML}</div>
+                        <div>${setsHTML}</div>
                     </div>
                 `;
                 container.appendChild(card);
