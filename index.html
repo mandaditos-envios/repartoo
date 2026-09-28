@@ -382,8 +382,16 @@
         ];
 
         let activeDay = 'lunes';
-        let store = JSON.parse(localStorage.getItem('gym_tracker_pro_v5')) || {};
+        let store = JSON.parse(localStorage.getItem('gym_tracker_pro_v6')) || {};
         let openAccordions = {};
+
+        function initStore(id) {
+            if (!store[id]) store[id] = { customExercises: [], lunes: { sets: [] }, miercoles: { sets: [] }, viernes: { sets: [] } };
+            if (!store[id].customExercises) store[id].customExercises = [];
+            if (!store[id].lunes) store[id].lunes = { sets: [] };
+            if (!store[id].miercoles) store[id].miercoles = { sets: [] };
+            if (!store[id].viernes) store[id].viernes = { sets: [] };
+        }
 
         function setDay(day) {
             activeDay = day;
@@ -401,9 +409,9 @@
         function handleSelectChange(muscleId) {
             const select = document.getElementById(`select-ex-${muscleId}`);
             const customInput = document.getElementById(`input-custom-ex-${muscleId}`);
-            if (select.value === 'CUSTOM') {
+            if (select && select.value === 'CUSTOM') {
                 customInput.style.display = 'block';
-            } else {
+            } else if (customInput) {
                 customInput.style.display = 'none';
             }
         }
@@ -429,12 +437,12 @@
                 return;
             }
 
-            // Análisis de carga de peso
+            // Análisis inteligente de carga
             let advice = { text: '🎯 Peso ideal', class: 'advice-ok' };
             if (reps > maxReps) {
-                advice = { text: '⚡ Sube peso (Hiciste muchas reps)', class: 'advice-up' };
+                advice = { text: '⚡ Sube peso (superaste el rango)', class: 'advice-up' };
             } else if (reps < minReps) {
-                advice = { text: '⚠️ Muy pesado (Baja un poco el peso)', class: 'advice-down' };
+                advice = { text: '⚠️ Muy pesado (baja un poco el peso)', class: 'advice-down' };
             }
 
             store[muscleId][activeDay].sets.push({
@@ -456,14 +464,8 @@
             }
         }
 
-        function initStore(id) {
-            if (!store[id]) store[id] = { customExercises: [] };
-            if (!store[id].customExercises) store[id].customExercises = [];
-            if (!store[id][activeDay]) store[id][activeDay] = { sets: [] };
-        }
-
         function save() {
-            localStorage.setItem('gym_tracker_pro_v5', JSON.stringify(store));
+            localStorage.setItem('gym_tracker_pro_v6', JSON.stringify(store));
         }
 
         function render() {
@@ -491,7 +493,6 @@
                 const daySets = (itemStore[activeDay] && itemStore[activeDay].sets) ? itemStore[activeDay].sets : [];
                 const isOpen = !!openAccordions[item.id];
 
-                // Lista de ejercicios mezclada (por defecto + personalizados guardados)
                 const allExercises = [...item.defaultExercises, ...itemStore.customExercises];
 
                 let setsChipsHTML = '';
@@ -551,8 +552,4 @@
 
             const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
             document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series (${pct}%)`;
-            document.getElementById('total-progress-bar').style.width = `${pct}%`;
-        }
-
-        function resetWeek() {
-            if (confirm('¿Reiniciar la semana? Se borrarán las series a
+            document.getElementById('total-progress-
