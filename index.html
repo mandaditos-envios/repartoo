@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gym Track Pro</title>
+    <title>Gym Track Pro - Auto Progress</title>
     <style>
         :root {
             --bg: #0b0f19;
@@ -188,6 +188,22 @@
             outline: none;
         }
 
+        .smart-coach-box {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.75rem;
+            color: #c7d2fe;
+            line-height: 1.3;
+        }
+
+        .smart-coach-title {
+            font-weight: 800;
+            color: #a5b4fc;
+            margin-bottom: 2px;
+        }
+
         .input-fields {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -215,7 +231,21 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            margin-top: 4px;
         }
+
+        .advice-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .advice-up { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .advice-ok { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        .advice-down { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
         .btn-del-chip {
             background: transparent;
@@ -251,24 +281,22 @@
     <div class="muscle-cards-list" id="cards-container">Cargando...</div>
 
     <script>
-        // Limpiar cualquier residuo de memoria en el dispositivo
-        try { localStorage.clear(); } catch(e){}
-
         const initialConfig = [
-            { id: 'pecho', name: 'PECHO', targetSeries: 12, minReps: 6, maxReps: 8, defaultExercises: ['Banco Plano', 'Inclinado con Mancuernas', 'Fondos'] },
-            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, minReps: 5, maxReps: 8, defaultExercises: ['Remo Bajo', 'Remo Inclinado', 'Jalón al Pecho'] },
-            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, minReps: 8, maxReps: 10, defaultExercises: ['Press Militar', 'Elevaciones Laterales'] },
-            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Curl Martillo', 'Curl Parado'] },
-            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Press Francés', 'Extensión Polea'] },
-            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, minReps: 5, maxReps: 8, defaultExercises: ['Sentadillas', 'Prensa', 'Extensión'] },
-            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, minReps: 6, maxReps: 10, defaultExercises: ['Peso Muerto Rumano', 'Curl Femoral'] },
+            { id: 'pecho', name: 'PECHO', targetSeries: 12, minReps: 6, maxReps: 8, defaultExercises: ['Banco Plano', 'Inclinado con Mancuernas', 'Fondos', 'Aperturas'] },
+            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, minReps: 5, maxReps: 8, defaultExercises: ['Remo Bajo (Triángulo)', 'Remo en Máquina Inclinado', 'Remo Sentado', 'Jalón al Pecho'] },
+            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, minReps: 8, maxReps: 10, defaultExercises: ['Press Militar', 'Elevaciones Laterales', 'Pájaro'] },
+            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Curl Martillo', 'Curl Parado con Barra/Mancuerna', 'Curl Inclinado'] },
+            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Press Francés', 'Extensión Polea con Cuerda', 'Extensión Copa'] },
+            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, minReps: 5, maxReps: 8, defaultExercises: ['Sentadillas / Hack', 'Prensa de Piernas', 'Extensión de Cuádriceps'] },
+            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, minReps: 6, maxReps: 10, defaultExercises: ['Peso Muerto Rumano', 'Curl Femoral Acostado'] },
             { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, minReps: 10, maxReps: 15, defaultExercises: ['Abductores Máquina'] },
             { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, minReps: 10, maxReps: 15, defaultExercises: ['Aductores Máquina'] },
-            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, minReps: 8, maxReps: 15, defaultExercises: ['Elevación Talones'] }
+            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, minReps: 8, maxReps: 15, defaultExercises: ['Elevación Talones Sentado', 'Elevación Talones Parado'] }
         ];
 
         let activeDay = 'lunes';
         let store = {};
+        let exerciseHistory = {};
         let openAccordions = {};
 
         function initApp() {
@@ -290,17 +318,66 @@
             render();
         }
 
-        function addSet(muscleId) {
+        function getSmartAdvice(muscleId, exName) {
+            const config = initialConfig.find(c => c.id === muscleId);
+            const history = exerciseHistory[exName];
+
+            if (!history || history.length === 0) {
+                return `💡 <strong>Inicio:</strong> Elige un peso para hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
+            }
+
+            const last = history[history.length - 1];
+
+            if (last.reps > config.maxReps) {
+                const sugg = (last.weight > 0) ? (last.weight * 1.05).toFixed(1) : 0;
+                return `🚀 <strong>Sube carga:</strong> Hiciste ${last.reps} reps con ${last.weight}kg. Hoy busca <strong>${sugg}kg</strong> (${config.minReps}-${config.maxReps} reps).`;
+            } else if (last.reps < config.minReps) {
+                return `⚖️ <strong>Ajuste:</strong> Quedaste corto con ${last.reps} reps (${last.weight}kg). Mantén <strong>${last.weight}kg</strong> o descansa más.`;
+            } else {
+                return `🎯 <strong>Consolidación:</strong> Lograste ${last.reps} reps con ${last.weight}kg. Mantén <strong>${last.weight}kg</strong> e intenta 1 rep más.`;
+            }
+        }
+
+        function updateCoachAdvice(muscleId) {
+            const select = document.getElementById('select-' + muscleId);
+            const coachBox = document.getElementById('coach-' + muscleId);
+            if (select && coachBox) {
+                coachBox.innerHTML = `
+                    <div class="smart-coach-title">🤖 CONSEJO DE ENTRENAMIENTO:</div>
+                    <div>${getSmartAdvice(muscleId, select.value)}</div>
+                `;
+            }
+        }
+
+        function addSet(muscleId, minReps, maxReps) {
             const select = document.getElementById('select-' + muscleId);
             const repsInput = document.getElementById('reps-' + muscleId);
             const weightInput = document.getElementById('weight-' + muscleId);
 
+            const exName = select.value;
             const reps = parseInt(repsInput.value);
             const weight = parseFloat(weightInput.value) || 0;
 
             if (!reps) return alert('Ingresa repeticiones');
 
-            store[muscleId][activeDay].push({ exName: select.value, reps: reps, weight: weight });
+            let tagText = '🎯 Peso Ideal';
+            let tagClass = 'advice-ok';
+
+            if (reps > maxReps) {
+                tagText = '⚡ Sube peso';
+                tagClass = 'advice-up';
+            } else if (reps < minReps) {
+                tagText = '⚠️ Muy pesado';
+                tagClass = 'advice-down';
+            }
+
+            const setObj = { exName, reps, weight, tagText, tagClass };
+
+            store[muscleId][activeDay].push(setObj);
+
+            if (!exerciseHistory[exName]) exerciseHistory[exName] = [];
+            exerciseHistory[exName].push(setObj);
+
             repsInput.value = '';
             weightInput.value = '';
             render();
@@ -330,7 +407,10 @@
 
                 let setsHTML = daySets.map((s, idx) => `
                     <div class="set-chip">
-                        <span>${s.exName}: ${s.reps} reps @ ${s.weight}kg</span>
+                        <div>
+                            <div><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</div>
+                            <span class="advice-tag ${s.tagClass}">${s.tagText}</span>
+                        </div>
                         <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
                     </div>
                 `).join('');
@@ -341,27 +421,31 @@
                     <div class="card-header">
                         <div>
                             <div class="muscle-title">${item.name}</div>
-                            <div class="target-info">Rec: ${item.minReps}-${item.maxReps} reps</div>
+                            <div class="target-info">Rango: ${item.minReps}-${item.maxReps} reps</div>
                         </div>
                         <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek)} series</div>
                     </div>
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
                         <span>${daySets.length} series registradas</span>
-                        <span>${isOpen ? '▲' : '▼'}</span>
+                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar'}</span>
                     </button>
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="input-row">
-                            <select id="select-${item.id}" class="select-ex">${options}</select>
+                            <select id="select-${item.id}" class="select-ex" onchange="updateCoachAdvice('${item.id}')">${options}</select>
+                            
+                            <div class="smart-coach-box" id="coach-${item.id}"></div>
+
                             <div class="input-fields">
                                 <input type="number" id="reps-${item.id}" placeholder="Reps">
                                 <input type="number" id="weight-${item.id}" placeholder="Kg">
                             </div>
-                            <button class="btn-add-set" onclick="addSet('${item.id}')">+ Anotar</button>
+                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie</button>
                         </div>
                         <div>${setsHTML}</div>
                     </div>
                 `;
                 container.appendChild(card);
+                updateCoachAdvice(item.id);
             });
 
             const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
