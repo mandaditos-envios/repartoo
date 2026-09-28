@@ -88,7 +88,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Sección de configuración de IA */
         .ai-config-card {
             background: rgba(99, 102, 241, 0.1);
             border: 1px solid rgba(99, 102, 241, 0.3);
@@ -325,7 +324,6 @@
         </div>
     </div>
 
-    <!-- Módulo de integración con Gemini IA -->
     <div class="ai-config-card">
         <div class="ai-config-title">🤖 CONEXIÓN CON GEMINI IA</div>
         <div class="ai-input-group">
@@ -403,44 +401,58 @@
         }
 
         async function consultGeminiAI() {
-            if (!geminiApiKey) {
-                alert('Primero debes pegar y guardar tu API Key de Gemini arriba.');
+            const currentKey = document.getElementById('gemini-key-input').value.trim() || geminiApiKey;
+            if (!currentKey) {
+                alert('Pega y guarda tu API Key de Gemini arriba.');
                 return;
             }
 
+            geminiApiKey = currentKey;
+            localStorage.setItem('gtp_gemini_key', currentKey);
+
             const box = document.getElementById('ai-response');
             box.style.display = 'block';
-            box.innerText = '🤖 Analizando todos tus datos de entrenamiento con Gemini IA...';
+            box.innerText = '🤖 Conectando con Gemini IA...';
 
-            // Preparar el resumen de la rutina
             const prompt = `Actúa como un entrenador personal experto en sobrecarga progresiva e hipertrofia.
-Aquí está el historial completo de mi entrenamiento de la semana registrado en mi app:
+Aquí está el historial de mi entrenamiento registrado en mi app:
 ${JSON.stringify(exerciseHistory, null, 2)}
 
-Analiza mi progreso brevemente y responde:
-1. Resumen de mi rendimiento actual.
-2. ¿Qué músculos o ejercicios tuvieron el mejor avance?
-3. Recomendaciones específicas para la próxima semana (pesos sugeridos o ajustes de repeticiones).
-Sé directo, motivador y usa un formato fácil de leer en pantalla móvil.`;
+Si no hay datos registrados todavía, dame un consejo general para arrancar con fuerza la semana.
+Si hay datos, analiza mi progreso brevemente y responde:
+1. Resumen de mi rendimiento.
+2. Músculos o ejercicios con mejor avance.
+3. Recomendaciones específicas para la próxima semana (pesos/reps).
+Sé directo, motivador y breve para lectura en móvil.`;
 
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${geminiApiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
+            // Probar endpoints de modelos probados
+            const models = ['gemini-1.5-flash', 'gemini-2.0-flash'];
+            let success = false;
 
-                const data = await response.json();
+            for (const model of models) {
+                try {
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
 
-                if (data.candidates && data.candidates[0].content.parts[0].text) {
-                    box.innerText = data.candidates[0].content.parts[0].text;
-                } else {
-                    box.innerText = '❌ Error al comunicarse con Gemini. Revisa que tu API Key sea correcta.';
+                    const data = await response.json();
+
+                    if (data.candidates && data.candidates[0].content.parts[0].text) {
+                        box.innerText = data.candidates[0].content.parts[0].text;
+                        success = true;
+                        break;
+                    } else if (data.error) {
+                        console.error(`Error con ${model}:`, data.error);
+                    }
+                } catch (e) {
+                    console.error(`Excepción con ${model}:`, e);
                 }
-            } catch (error) {
-                box.innerText = '❌ Error de conexión con la IA: ' + error.message;
+            }
+
+            if (!success) {
+                box.innerText = '❌ Error al comunicarse con la IA. Verifica que hayas presionado "Guardar Key" y que la clave copiada no tenga espacios extra.';
             }
         }
 
@@ -457,7 +469,7 @@ Sé directo, motivador y usa un formato fácil de leer en pantalla móvil.`;
         }
 
         function resetWeek() {
-            if (confirm("¿Comenzar nueva semana? Se limpiarán las repeticiones registradas, pero tus registros de peso quedarán guardados para el análisis de la IA.")) {
+            if (confirm("¿Comenzar nueva semana? Se limpiarán las repeticiones registradas, pero tus registros de peso quedarán guardados.")) {
                 initialConfig.forEach(item => {
                     store[item.id].lunes = [];
                     store[item.id].miercoles = [];
@@ -550,12 +562,4 @@ Sé directo, motivador y usa un formato fácil de leer en pantalla móvil.`;
                 container.appendChild(card);
             });
 
-            const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
-            document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series`;
-            document.getElementById('total-progress-bar').style.width = pct + '%';
-        }
-
-        window.onload = initApp;
-    </script>
-</body>
-</html>
+            const pct = Math.min(100, Math.round((grandT
