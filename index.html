@@ -3,223 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Coach Pro</title>
+    <title>Gym Track Pro</title>
     <style>
-        :root {
-            --bg: #090d16;
-            --card: #131b2e;
-            --primary: #4f46e5;
-            --accent: #10b981;
-            --text: #f1f5f9;
-            --sub: #94a3b8;
-            --border: #1e293b;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, sans-serif; }
-        body { background: var(--bg); color: var(--text); padding: 16px; max-width: 600px; margin: 0 auto; }
-        
-        header { text-align: center; margin-bottom: 20px; }
-        h1 { font-size: 1.4rem; color: #fff; }
-        p.subtitle { font-size: 0.8rem; color: var(--sub); }
-
-        .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 16px; }
-        .card-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 10px; color: #a5b4fc; }
-
-        input, textarea, select {
-            width: 100%; background: var(--bg); border: 1px solid var(--border);
-            color: #fff; padding: 10px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 10px;
-            outline: none;
-        }
-
-        button {
-            width: 100%; background: var(--primary); color: white; border: none;
-            padding: 12px; border-radius: 8px; font-weight: 700; font-size: 0.9rem;
-            cursor: pointer; transition: opacity 0.2s;
-        }
-        button:active { opacity: 0.8; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-        .workout-log { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        .log-item { background: var(--bg); padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; display: flex; justify-content: space-between; align-items: center; }
-
-        #ai-response {
-            display: none; background: #064e3b; border: 1px solid var(--accent);
-            padding: 12px; border-radius: 8px; font-size: 0.85rem; line-height: 1.5; margin-top: 10px; white-space: pre-wrap;
-        }
+        :root { --bg: #0b0f19; --surf: #151c2c; --pri: #6366f1; --txt: #f8fafc; --sub: #94a3b8; --brd: #26334d; --accent: #10b981; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--txt); padding: 12px; max-width: 600px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card { background: var(--surf); border: 1px solid var(--brd); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
+        .bar-bg { background: rgba(255,255,255,0.1); border-radius: 6px; height: 8px; margin-top: 6px; }
+        .bar-fill { background: var(--pri); height: 100%; width: 0%; transition: width 0.3s; }
+        .row { display: flex; gap: 6px; }
+        input, select { background: var(--bg); border: 1px solid var(--brd); color: #fff; padding: 8px; border-radius: 6px; width: 100%; font-size: 0.8rem; outline: none; }
+        button { background: var(--pri); color: #fff; border: none; border-radius: 6px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
+        .btn-day { flex: 1; background: var(--surf); border: 1px solid var(--brd); color: var(--sub); }
+        .btn-day.active { background: var(--pri); color: #fff; }
+        .chip { display: flex; justify-content: space-between; background: var(--bg); padding: 6px 8px; border-radius: 4px; margin-top: 4px; font-size: 0.75rem; align-items: center; }
+        .acc { display: none; flex-direction: column; gap: 6px; margin-top: 8px; border-top: 1px dashed var(--brd); padding-top: 8px; }
+        .acc.open { display: flex; }
+        .advice { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); color: #34d399; font-size: 0.75rem; padding: 6px; border-radius: 4px; margin-top: 6px; }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>🏋️ AI COACH PRO</h1>
-        <p class="subtitle">Entrenador personal inteligente</p>
+        <h3>GYM TRACK PRO</h3>
+        <button style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;" onclick="resetWeek()">🔄 Reiniciar</button>
     </header>
 
-    <!-- Configuración Key -->
     <div class="card">
-        <div class="card-title">🔑 Configuración de IA</div>
-        <input type="password" id="api-key" placeholder="Pega tu API Key de Gemini aquí">
-        <button id="btn-save-key">Guardar API Key</button>
-    </div>
-
-    <!-- Registro de Ejercicio -->
-    <div class="card">
-        <div class="card-title">📝 Anotar Serie</div>
-        <select id="muscle">
-            <option value="Pecho">Pecho</option>
-            <option value="Espalda">Espalda</option>
-            <option value="Hombros">Hombros</option>
-            <option value="Piernas">Piernas</option>
-            <option value="Brazos">Brazos</option>
-        </select>
-        <input type="text" id="exercise" placeholder="Ejercicio (ej. Press Plano)">
-        <div style="display: flex; gap: 8px;">
-            <input type="number" id="reps" placeholder="Reps">
-            <input type="number" id="weight" placeholder="Kg">
+        <div class="row" style="justify-content:space-between; font-size:0.8rem;">
+            <span>PROGRESO SEMANAL</span><span id="tot-sum">0/0 Series</span>
         </div>
-        <button id="btn-add-log">+ Añadir Serie</button>
+        <div class="bar-bg"><div id="bar" class="bar-fill"></div></div>
     </div>
 
-    <!-- Historial del Día -->
-    <div class="card">
-        <div class="card-title">📊 Entrenamiento de Hoy</div>
-        <div id="logs-container" class="workout-log">
-            <span style="font-size: 0.8rem; color: var(--sub);">No hay series registradas aún.</span>
-        </div>
+    <div class="row" style="margin-bottom:12px;">
+        <button class="btn-day active" id="btn-lunes" onclick="setDay('lunes')">Lun (Pecho/Espalda)</button>
+        <button class="btn-day" id="btn-miercoles" onclick="setDay('miercoles')">Mié (Piernas)</button>
+        <button class="btn-day" id="btn-viernes" onclick="setDay('viernes')">Vie (Hombro/Brazos)</button>
     </div>
 
-    <!-- Analizador IA -->
-    <div class="card" style="border-color: var(--primary);">
-        <div class="card-title">🤖 Entrenador IA</div>
-        <button id="btn-consult-ai">✨ Analizar mi Entrenamiento con IA</button>
-        <div id="ai-response"></div>
-    </div>
+    <div id="list"></div>
 
     <script>
-        let logs = [];
+        const cfg = [
+            { id: 'pecho', n: 'PECHO', t: 12, minR: 6, maxR: 8, ex: ['Banco Plano', 'Inclinado Mancuernas', 'Fondos'] },
+            { id: 'espalda', n: 'ESPALDA', t: 15, minR: 5, maxR: 8, ex: ['Remo Bajo', 'Remo Máquina', 'Jalón Pecho'] },
+            { id: 'hombros', n: 'HOMBROS', t: 9, minR: 8, maxR: 10, ex: ['Press Militar', 'Elevaciones Laterales'] },
+            { id: 'biceps', n: 'BÍCEPS', t: 9, minR: 8, maxR: 12, ex: ['Curl Martillo', 'Curl Barra'] },
+            { id: 'triceps', n: 'TRÍCEPS', t: 9, minR: 8, maxR: 12, ex: ['Press Francés', 'Polea Cuerda'] },
+            { id: 'cuadriceps', n: 'CUÁDRICEPS', t: 12, minR: 5, maxR: 8, ex: ['Sentadilla', 'Prensa', 'Extensión'] },
+            { id: 'isquios', n: 'ISQUIOS', t: 10, minR: 6, maxR: 10, ex: ['Peso Muerto Rumano', 'Curl Acostado'] },
+            { id: 'pantorrillas', n: 'PANTORRILLAS', t: 9, minR: 8, maxR: 15, ex: ['Elevación Sentado', 'Elevación Parado'] }
+        ];
 
-        document.addEventListener("DOMContentLoaded", function() {
-            
-            // Cargar clave guardada
-            const savedKey = localStorage.getItem('coach_gemini_key');
-            if (savedKey) {
-                document.getElementById('api-key').value = savedKey;
-            }
+        let day = 'lunes', store = {}, openAcc = {};
 
-            // Guardar API Key
-            document.getElementById('btn-save-key').addEventListener('click', function() {
-                const key = document.getElementById('api-key').value.trim();
-                if (key) {
-                    localStorage.setItem('coach_gemini_key', key);
-                    alert('¡API Key guardada con éxito!');
-                } else {
-                    alert('Ingresa una API Key válida.');
-                }
-            });
-
-            // Registrar serie
-            document.getElementById('btn-add-log').addEventListener('click', function() {
-                const muscle = document.getElementById('muscle').value;
-                const exercise = document.getElementById('exercise').value.trim() || 'Ejercicio';
-                const reps = document.getElementById('reps').value;
-                const weight = document.getElementById('weight').value || 0;
-
-                if (!reps) {
-                    alert('Ingresa las repeticiones.');
-                    return;
-                }
-
-                logs.push({ muscle, exercise, reps, weight });
-                document.getElementById('reps').value = '';
-                document.getElementById('weight').value = '';
-                
-                renderLogs();
-            });
-
-            // Consultar IA con autodetección de modelo
-            document.getElementById('btn-consult-ai').addEventListener('click', async function() {
-                const apiKey = localStorage.getItem('coach_gemini_key') || document.getElementById('api-key').value.trim();
-                
-                if (!apiKey) {
-                    alert('Guarda tu API Key primero.');
-                    return;
-                }
-
-                const aiBtn = document.getElementById('btn-consult-ai');
-                const resBox = document.getElementById('ai-response');
-                
-                aiBtn.disabled = true;
-                aiBtn.innerText = 'Buscando modelo disponible...';
-                resBox.style.display = 'block';
-                resBox.innerText = 'Verificando modelos activos en tu cuenta...';
-
-                try {
-                    // 1. Obtener la lista de modelos soportados por la API Key
-                    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                    const listData = await listRes.json();
-
-                    if (!listData.models) {
-                        throw new Error(listData.error?.message || "No se pudo consultar la lista de modelos.");
-                    }
-
-                    // Filtrar modelos válidos para generar contenido
-                    const validModel = listData.models.find(m => 
-                        m.supportedGenerationMethods?.includes("generateContent") &&
-                        (m.name.includes("flash") || m.name.includes("pro"))
-                    );
-
-                    if (!validModel) {
-                        throw new Error("No hay modelos de generación de texto disponibles para esta clave API.");
-                    }
-
-                    const modelName = validModel.name; 
-                    aiBtn.innerText = 'Analizando entrenamiento...';
-                    resBox.innerText = `Consultando a ${modelName.replace('models/', '')}...`;
-
-                    const prompt = "Actúa como un entrenador experto. Analiza las siguientes series y dame 2 consejos breves de sobrecarga progresiva:\n" + JSON.stringify(logs, null, 2);
-
-                    // 2. Ejecutar la petición al modelo detectado
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }]
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                        resBox.innerText = data.candidates[0].content.parts[0].text;
-                    } else if (data.error) {
-                        resBox.innerText = '❌ Error del modelo:\n' + data.error.message;
-                    } else {
-                        resBox.innerText = '❌ Sin respuesta del servidor.';
-                    }
-
-                } catch (err) {
-                    resBox.innerText = '❌ Error:\n' + err.message;
-                } finally {
-                    aiBtn.disabled = false;
-                    aiBtn.innerText = '✨ Analizar mi Entrenamiento con IA';
-                }
-            });
-        });
-
-        function renderLogs() {
-            const container = document.getElementById('logs-container');
-            if (logs.length === 0) {
-                container.innerHTML = '<span style="font-size: 0.8rem; color: var(--sub);">No hay series registradas aún.</span>';
-                return;
-            }
-
-            container.innerHTML = logs.map(l => `
-                <div class="log-item">
-                    <span><strong>${l.muscle}</strong> (${l.exercise})</span>
-                    <span>${l.reps} reps @ ${l.weight} kg</span>
-                </div>
-            `).join('');
+        function init() {
+            store = JSON.parse(localStorage.getItem('gtp_s_local') || '{}');
+            cfg.forEach(i => { if (!store[i.id]) store[i.id] = { lunes: [], miercoles: [], viernes: [] }; });
+            render();
         }
+
+        function save() {
+            localStorage.setItem('gtp_s_local', JSON.stringify(store));
+        }
+
+        function setDay(d) {
+            day = d;
+            document.querySelectorAll('.btn-day').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + d).classList.add('active');
+            render();
+        }
+
+        function toggleAcc(id) { openAcc[id] = !openAcc[id]; render(); }
+
+        function addSet(mId, minR, maxR) {
+            const ex = document.getElementById(`ex-${mId}`).value;
+            const reps = parseInt(document.getElementById(`rp-${mId}`).value);
+            const w = parseFloat(document.getElementById(`wg-${mId}`).value) || 0;
+            
+            if (!reps) return alert('Ingresa las repeticiones realizadas');
+
+            // Lógica automática de sobrecarga progresiva local
+            let advice = "";
+            if (reps >= maxR) {
+                advice = `🔥 ¡Llegaste al tope (${maxR} reps)! Sube el peso la próxima.`;
+            } else if (reps < minR) {
+                advice = `⚠️ Estás por debajo del rango mínimo (${minR} reps). Mantén el peso o baja un poco.`;
+            } else {
+                advice = `✅ Buen rango. Intenta sacar 1 rep más la próxima.`;
+            }
+
+            const item = { ex, reps, w, advice };
+            store[mId][day].push(item);
+            
+            document.getElementById(`rp-${mId}`).value = '';
+            save(); 
+            render();
+        }
+
+        function delSet(mId, idx) { 
+            store[mId][day].splice(idx, 1); 
+            save(); 
+            render(); 
+        }
+
+        function resetWeek() {
+            if (confirm('¿Reiniciar todas las series de la semana?')) {
+                cfg.forEach(i => store[i.id] = { lunes: [], miercoles: [], viernes: [] });
+                save(); 
+                render();
+            }
+        }
+
+        function render() {
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+            let done = 0, target = 0;
+
+            cfg.forEach(i => {
+                const dSets = store[i.id][day] || [];
+                const tot = (store[i.id].lunes.length) + (store[i.id].miercoles.length) + (store[i.id].viernes.length);
+                done += tot; target += i.t;
+                const isOpen = openAcc[i.id];
+
+                // Obtener el consejo de la última serie registrada para este grupo muscular hoy
+                const lastSet = dSets.length > 0 ? dSets[dSets.length - 1] : null;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="row" style="justify-content:space-between;">
+                        <div><strong>${i.n}</strong> <small style="color:var(--sub)">(${i.minR}-${i.maxR} reps)</small></div>
+                        <small style="color:#a5b4fc">Faltan ${Math.max(0, i.t - tot)}</small>
+                    </div>
+                    <button style="width:100%; margin-top:6px; background:var(--bg); border:1px solid var(--brd); color:var(--sub);" onclick="toggleAcc('${i.id}')">
+                        ${dSets.length} series registradas hoy ${isOpen ? '▲' : '▼'}
+                    </button>
+                    <div class="acc ${isOpen ? 'open' : ''}">
+                        <select id="ex-${i.id}">${i.ex.map(e=>`<option>${e}</option>`).join('')}</select>
+                        <div class="row">
+                            <input type="number" id="rp-${i.id}" placeholder="Reps hechas">
+                            <input type="number" id="wg-${i.id}" placeholder="Kg usados">
+                        </div>
+                        <button onclick="addSet('${i.id}', ${i.minR}, ${i.maxR})">+ Anotar Serie</button>
+                        
+                        ${lastSet ? `<div class="advice">${lastSet.advice}</div>` : ''}
+
+                        ${dSets.map((s, idx) => `
+                            <div class="chip">
+                                <span><strong>${s.ex}</strong>: ${s.reps} reps @ ${s.w}kg</span>
+                                <span style="color:#ef4444; cursor:pointer; font-weight:bold; padding:0 4px;" onclick="delSet('${i.id}',${idx})">✕</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+
+            document.getElementById('tot-sum').innerText = `${done}/${target} Series`;
+            document.getElementById('bar').style.width = (target > 0 ? Math.min(100, Math.round((done/target)*100)) : 0) + '%';
+        }
+
+        window.onload = init;
     </script>
 </body>
 </html>
