@@ -1,187 +1,43 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Track Pro AI</title>
-    <style>
-        :root { --bg: #0b0f19; --surf: #151c2c; --pri: #6366f1; --txt: #f8fafc; --sub: #94a3b8; --brd: #26334d; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--txt); padding: 12px; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card { background: var(--surf); border: 1px solid var(--brd); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
-        .bar-bg { background: rgba(255,255,255,0.1); border-radius: 6px; height: 8px; margin-top: 6px; }
-        .bar-fill { background: var(--pri); height: 100%; width: 0%; transition: width 0.3s; }
-        .row { display: flex; gap: 6px; }
-        input, select { background: var(--bg); border: 1px solid var(--brd); color: #fff; padding: 8px; border-radius: 6px; width: 100%; font-size: 0.8rem; }
-        button { background: var(--pri); color: #fff; border: none; border-radius: 6px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
-        .btn-day { flex: 1; background: var(--surf); border: 1px solid var(--brd); color: var(--sub); }
-        .btn-day.active { background: var(--pri); color: #fff; }
-        .ai-box { display: none; background: var(--bg); border: 1px solid #10b981; padding: 8px; border-radius: 6px; margin-top: 8px; font-size: 0.8rem; white-space: pre-line; }
-        .chip { display: flex; justify-content: space-between; background: var(--bg); padding: 6px; border-radius: 4px; margin-top: 4px; font-size: 0.75rem; }
-        .acc { display: none; flex-direction: column; gap: 6px; margin-top: 8px; border-top: 1px dashed var(--brd); padding-top: 8px; }
-        .acc.open { display: flex; }
-    </style>
-</head>
-<body>
+async function askAI() {
+    if (!apiKey) return alert('Guarda tu API Key primero');
+    const box = document.getElementById('ai-res');
+    box.style.display = 'block'; 
+    box.innerText = '🤖 Analizando con Gemini...';
 
-    <header>
-        <h3>GYM TRACK PRO</h3>
-        <button style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;" onclick="resetWeek()">🔄 Reiniciar</button>
-    </header>
+    const prompt = `Analiza mi entrenamiento y da consejos breves de sobrecarga progresiva:\n${JSON.stringify(history)}`;
+    
+    // Lista de endpoints a probar (v1 y v1beta con modelos compatibles)
+    const endpoints = [
+        `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro:generateContent`
+    ];
 
-    <div class="card">
-        <div class="row" style="justify-content:space-between; font-size:0.8rem;">
-            <span>PROGRESO SEMANAL</span><span id="tot-sum">0/0 Series</span>
-        </div>
-        <div class="bar-bg"><div id="bar" class="bar-fill"></div></div>
-    </div>
+    let lastError = '';
 
-    <div class="card" style="border-color: rgba(99,102,241,0.4);">
-        <div class="row">
-            <input type="text" id="key-in" placeholder="Pega tu API Key de Gemini">
-            <button onclick="saveKey()">Guardar</button>
-        </div>
-        <button style="width:100%; margin-top:6px; background: linear-gradient(135deg, #6366f1, #8b5cf6);" onclick="askAI()">✨ ANALIZAR CON IA</button>
-        <div id="ai-res" class="ai-box"></div>
-    </div>
-
-    <div class="row" style="margin-bottom:12px;">
-        <button class="btn-day active" id="btn-lunes" onclick="setDay('lunes')">Lun</button>
-        <button class="btn-day" id="btn-miercoles" onclick="setDay('miercoles')">Mié</button>
-        <button class="btn-day" id="btn-viernes" onclick="setDay('viernes')">Vie</button>
-    </div>
-
-    <div id="list"></div>
-
-    <script>
-        const cfg = [
-            { id: 'pecho', n: 'PECHO', t: 12, r: '6-8', ex: ['Banco Plano', 'Inclinado Mancuernas', 'Fondos'] },
-            { id: 'espalda', n: 'ESPALDA', t: 15, r: '5-8', ex: ['Remo Bajo', 'Remo Máquina', 'Jalón Pecho'] },
-            { id: 'hombros', n: 'HOMBROS', t: 9, r: '8-10', ex: ['Press Militar', 'Elevaciones Laterales'] },
-            { id: 'biceps', n: 'BÍCEPS', t: 9, r: '8-12', ex: ['Curl Martillo', 'Curl Barra'] },
-            { id: 'triceps', n: 'TRÍCEPS', t: 9, r: '8-12', ex: ['Press Francés', 'Polea Cuerda'] },
-            { id: 'cuadriceps', n: 'CUÁDRICEPS', t: 12, r: '5-8', ex: ['Sentadilla', 'Prensa', 'Extensión'] },
-            { id: 'isquios', n: 'ISQUIOS', t: 10, r: '6-10', ex: ['Peso Muerto Rumano', 'Curl Acostado'] },
-            { id: 'pantorrillas', n: 'PANTORRILLAS', t: 9, r: '8-15', ex: ['Elevación Sentado', 'Elevación Parado'] }
-        ];
-
-        let day = 'lunes', store = {}, history = {}, openAcc = {}, apiKey = '';
-
-        function init() {
-            store = JSON.parse(localStorage.getItem('gtp_s') || '{}');
-            history = JSON.parse(localStorage.getItem('gtp_h') || '{}');
-            apiKey = localStorage.getItem('gtp_k') || '';
-            if (apiKey) document.getElementById('key-in').value = apiKey;
-            cfg.forEach(i => { if (!store[i.id]) store[i.id] = { lunes: [], miercoles: [], viernes: [] }; });
-            render();
-        }
-
-        function save() {
-            localStorage.setItem('gtp_s', JSON.stringify(store));
-            localStorage.setItem('gtp_h', JSON.stringify(history));
-        }
-
-        function saveKey() {
-            apiKey = document.getElementById('key-in').value.trim();
-            localStorage.setItem('gtp_k', apiKey);
-            alert('Key guardada');
-        }
-
-        async function askAI() {
-            if (!apiKey) return alert('Guarda tu API Key primero');
-            const box = document.getElementById('ai-res');
-            box.style.display = 'block'; box.innerText = '🤖 Analizando con Gemini...';
-            const prompt = `Analiza mi entrenamiento y da consejos breves de sobrecarga progresiva:\n${JSON.stringify(history)}`;
-            
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                });
-                const data = await res.json();
-                box.innerText = data.candidates?.[0]?.content?.parts?.[0]?.text || data.error?.message || 'Error al conectar.';
-            } catch(e) { box.innerText = 'Error de red o clave inválida.'; }
-        }
-
-        function setDay(d) {
-            day = d;
-            document.querySelectorAll('.btn-day').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + d).classList.add('active');
-            render();
-        }
-
-        function toggleAcc(id) { openAcc[id] = !openAcc[id]; render(); }
-
-        function addSet(mId) {
-            const ex = document.getElementById(`ex-${mId}`).value;
-            const reps = parseInt(document.getElementById(`rp-${mId}`).value);
-            const w = document.getElementById(`wg-${mId}`).value || 0;
-            if (!reps) return alert('Ingresa repeticiones');
-
-            const item = { ex, reps, w, f: new Date().toLocaleDateString() };
-            store[mId][day].push(item);
-            if (!history[ex]) history[ex] = [];
-            history[ex].push(item);
-            
-            document.getElementById(`rp-${mId}`).value = '';
-            save(); render();
-        }
-
-        function delSet(mId, idx) { store[mId][day].splice(idx, 1); save(); render(); }
-
-        function resetWeek() {
-            if (confirm('¿Reiniciar series semanales?')) {
-                cfg.forEach(i => store[i.id] = { lunes: [], miercoles: [], viernes: [] });
-                save(); render();
-            }
-        }
-
-        function render() {
-            const list = document.getElementById('list');
-            list.innerHTML = '';
-            let done = 0, target = 0;
-
-            cfg.forEach(i => {
-                const dSets = store[i.id][day] || [];
-                const tot = (store[i.id].lunes.length) + (store[i.id].miercoles.length) + (store[i.id].viernes.length);
-                done += tot; target += i.t;
-                const isOpen = openAcc[i.id];
-
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="row" style="justify-content:space-between;">
-                        <div><strong>${i.n}</strong> <small style="color:var(--sub)">(${i.r} reps)</small></div>
-                        <small style="color:#a5b4fc">Faltan ${Math.max(0, i.t - tot)}</small>
-                    </div>
-                    <button style="width:100%; margin-top:6px; background:var(--bg); border:1px solid var(--brd); color:var(--sub);" onclick="toggleAcc('${i.id}')">
-                        ${dSets.length} series hoy ${isOpen ? '▲' : '▼'}
-                    </button>
-                    <div class="acc ${isOpen ? 'open' : ''}">
-                        <select id="ex-${i.id}">${i.ex.map(e=>`<option>${e}</option>`).join('')}</select>
-                        <div class="row">
-                            <input type="number" id="rp-${i.id}" placeholder="Reps">
-                            <input type="number" id="wg-${i.id}" placeholder="Kg">
-                        </div>
-                        <button onclick="addSet('${i.id}')">+ Anotar</button>
-                        ${dSets.map((s, idx) => `
-                            <div class="chip">
-                                <span>${s.ex}: ${s.reps} reps @ ${s.w}kg</span>
-                                <span style="color:#ef4444; cursor:pointer;" onclick="delSet('${i.id}',${idx})">✕</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                list.appendChild(card);
+    for (const url of endpoints) {
+        try {
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': apiKey // Soporte nativo para las nuevas llaves AQ.
+                },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
             });
 
-            document.getElementById('tot-sum').innerText = `${done}/${target} Series`;
-            document.getElementById('bar').style.width = (target > 0 ? Math.min(100, Math.round((done/target)*100)) : 0) + '%';
-        }
+            const data = await res.json();
 
-        window.onload = init;
-    </script>
-</body>
-</html>
+            if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                box.innerText = data.candidates[0].content.parts[0].text;
+                return; // Éxito, salir de la función
+            } else if (data.error) {
+                lastError = data.error.message || JSON.stringify(data.error);
+            }
+        } catch(e) {
+            lastError = e.message;
+        }
+    }
+
+    box.innerText = '❌ Error al conectar:\n' + lastError;
+}
