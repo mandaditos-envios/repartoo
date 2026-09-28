@@ -250,6 +250,17 @@
             margin-top: 4px;
         }
 
+        .day-tag-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 1px 5px;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
         .advice-tag {
             font-size: 0.65rem;
             font-weight: 700;
@@ -352,13 +363,10 @@
         }
 
         function resetWeek() {
-            if (confirm("¿Comenzar nueva semana? Se limpiarán las series registradas, pero el historial de tus pesos guardados se mantendrá intacto para el Smart Coach.")) {
+            if (confirm("¿Comenzar nueva semana? Se vaciarán las repeticiones de los días, pero tus ejercicios y el historial del Smart Coach se mantendrán intactos.")) {
                 initialConfig.forEach(item => {
-                    store[item.id].lunes = [];
-                    store[item.id].miercoles = [];
-                    store[item.id].viernes = [];
+                    store[item.id] = { lunes: [], miercoles: [], viernes: [] };
                 });
-                // Nota: exerciseHistory NO se borra aquí, por lo que el Smart Coach recordará los pesos anteriores.
                 saveData();
                 render();
             }
@@ -427,7 +435,7 @@
                 tagClass = 'advice-down';
             }
 
-            const setObj = { exName, reps, weight, tagText, tagClass };
+            const setObj = { exName, reps, weight, tagText, tagClass, day: activeDay };
 
             store[muscleId][activeDay].push(setObj);
 
@@ -439,8 +447,8 @@
             render();
         }
 
-        function removeSet(muscleId, idx) {
-            store[muscleId][activeDay].splice(idx, 1);
+        function removeSet(muscleId, day, idx) {
+            store[muscleId][day].splice(idx, 1);
             saveData();
             render();
         }
@@ -453,8 +461,8 @@
             let grandTotalTarget = 0;
 
             initialConfig.forEach(item => {
-                const daySets = store[item.id][activeDay];
-                const totalDoneWeek = store[item.id].lunes.length + store[item.id].miercoles.length + store[item.id].viernes.length;
+                const daySets = store[item.id][activeDay] || [];
+                const totalDoneWeek = (store[item.id].lunes?.length || 0) + (store[item.id].miercoles?.length || 0) + (store[item.id].viernes?.length || 0);
                 
                 grandTotalDone += totalDoneWeek;
                 grandTotalTarget += item.targetSeries;
@@ -462,13 +470,26 @@
                 const isOpen = !!openAccordions[item.id];
                 const options = item.defaultExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
 
-                let setsHTML = daySets.map((s, idx) => `
+                // Juntamos todas las series de la semana (Lunes, Miércoles, Viernes) para mostrarlas agrupadas o ver el historial reciente
+                let allWeekSets = [];
+                ['lunes', 'miercoles', 'viernes'].forEach(d => {
+                    if (store[item.id][d]) {
+                        store[item.id][d].forEach((s, idx) => {
+                            allWeekSets.push({ ...s, originalDay: d, originalIdx: idx });
+                        });
+                    }
+                });
+
+                let setsHTML = allWeekSets.map((s) => `
                     <div class="set-chip">
                         <div>
-                            <div><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</div>
+                            <div>
+                                <span class="day-tag-badge">${s.originalDay}</span>
+                                <strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg
+                            </div>
                             <span class="advice-tag ${s.tagClass}">${s.tagText}</span>
                         </div>
-                        <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
+                        <button class="btn-del-chip" onclick="removeSet('${item.id}', '${s.originalDay}', ${s.originalIdx})">✕</button>
                     </div>
                 `).join('');
 
@@ -483,8 +504,8 @@
                         <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek)} series</div>
                     </div>
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series anotadas hoy</span>
-                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar'}</span>
+                        <span>${allWeekSets.length} series registradas esta semana</span>
+                        <span>${isOpen ? '▲ Ocultar' : '▼ Ver / Anotar'}</span>
                     </button>
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="input-row">
@@ -496,9 +517,9 @@
                                 <input type="number" id="reps-${item.id}" placeholder="Reps">
                                 <input type="number" id="weight-${item.id}" placeholder="Kg">
                             </div>
-                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie</button>
+                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie para (${activeDay.toUpperCase()})</button>
                         </div>
-                        <div>${setsHTML}</div>
+                        <div style="margin-top: 6px;">${setsHTML}</div>
                     </div>
                 `;
                 container.appendChild(card);
