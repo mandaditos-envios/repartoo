@@ -13,7 +13,6 @@
             --primary: #6366f1;
             --primary-glow: rgba(99, 102, 241, 0.35);
             --accent: #22c55e;
-            --accent-glow: rgba(34, 197, 94, 0.3);
             --text: #f8fafc;
             --text-muted: #64748b;
             --border: #23314d;
@@ -207,31 +206,95 @@
             text-align: center;
         }
 
-        .weight-input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: var(--surface);
-            padding: 4px 8px;
-            border-radius: 8px;
-            border: 1px solid var(--border);
-        }
-
-        .weight-input-wrapper input {
-            width: 45px;
+        /* Seccion Desplegable */
+        .toggle-details-btn {
             background: transparent;
             border: none;
-            color: #fff;
+            color: var(--primary);
+            font-size: 0.8rem;
             font-weight: 700;
-            text-align: right;
-            font-size: 0.9rem;
+            cursor: pointer;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding-top: 4px;
+        }
+
+        .details-container {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .details-container.open {
+            display: flex;
+        }
+
+        .exercise-form {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 6px;
+        }
+
+        .exercise-form input {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             outline: none;
         }
 
-        .weight-input-wrapper span {
-            font-size: 0.75rem;
-            color: var(--text-muted);
+        .exercise-form input:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-add-ex {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .exercise-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        .exercise-item span.name {
             font-weight: 600;
+            color: #fff;
+        }
+
+        .exercise-item span.meta {
+            color: var(--text-muted);
+        }
+
+        .btn-del-ex {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-left: 8px;
         }
 
         .reset-btn {
@@ -295,7 +358,8 @@
         ];
 
         let currentDay = 'lunes';
-        let state = JSON.parse(localStorage.getItem('gym_tracker_v2')) || {};
+        let state = JSON.parse(localStorage.getItem('gym_tracker_v3')) || {};
+        let openAccordions = {};
 
         function switchDay(day) {
             currentDay = day;
@@ -305,22 +369,55 @@
             render();
         }
 
+        function toggleAccordion(id) {
+            openAccordions[id] = !openAccordions[id];
+            render();
+        }
+
         function updateSeries(id, delta) {
-            if (!state[id]) state[id] = { lunes: 0, miercoles: 0, viernes: 0, peso: 0 };
-            const currentVal = state[id][currentDay] || 0;
-            state[id][currentDay] = Math.max(0, currentVal + delta);
+            initMuscleState(id);
+            const currentVal = state[id][currentDay].series || 0;
+            state[id][currentDay].series = Math.max(0, currentVal + delta);
             save();
             render();
         }
 
-        function updateWeight(id, val) {
-            if (!state[id]) state[id] = { lunes: 0, miercoles: 0, viernes: 0, peso: 0 };
-            state[id].peso = val;
+        function addExercise(id) {
+            initMuscleState(id);
+            const nameInput = document.getElementById(`ex-name-${id}`);
+            const repsInput = document.getElementById(`ex-reps-${id}`);
+            const weightInput = document.getElementById(`ex-weight-${id}`);
+
+            const name = nameInput.value.trim();
+            const reps = repsInput.value.trim();
+            const weight = weightInput.value.trim();
+
+            if (!name) return;
+
+            if (!state[id][currentDay].exercises) {
+                state[id][currentDay].exercises = [];
+            }
+
+            state[id][currentDay].exercises.push({ name, reps: reps || '0', weight: weight || '0' });
             save();
+            render();
+        }
+
+        function deleteExercise(id, index) {
+            if (state[id] && state[id][currentDay] && state[id][currentDay].exercises) {
+                state[id][currentDay].exercises.splice(index, 1);
+                save();
+                render();
+            }
+        }
+
+        function initMuscleState(id) {
+            if (!state[id]) state[id] = {};
+            if (!state[id][currentDay]) state[id][currentDay] = { series: 0, exercises: [] };
         }
 
         function save() {
-            localStorage.setItem('gym_tracker_v2', JSON.stringify(state));
+            localStorage.setItem('gym_tracker_v3', JSON.stringify(state));
         }
 
         function calculateOverallProgress() {
@@ -328,9 +425,12 @@
             let totalTarget = 0;
 
             muscleData.forEach(item => {
-                const itemData = state[item.id] || { lunes: 0, miercoles: 0, viernes: 0 };
-                const done = (itemData.lunes || 0) + (itemData.miercoles || 0) + (itemData.viernes || 0);
-                totalDone += done;
+                const itemData = state[item.id] || {};
+                const lunes = (itemData.lunes && itemData.lunes.series) || 0;
+                const miercoles = (itemData.miercoles && itemData.miercoles.series) || 0;
+                const viernes = (itemData.viernes && itemData.viernes.series) || 0;
+
+                totalDone += lunes + miercoles + viernes;
                 totalTarget += item.targetSeries;
             });
 
@@ -344,15 +444,35 @@
             container.innerHTML = '';
 
             muscleData.forEach(item => {
-                const itemData = state[item.id] || { lunes: 0, miercoles: 0, viernes: 0, peso: '' };
-                const daySeries = itemData[currentDay] || 0;
+                const itemData = state[item.id] || {};
+                const dayData = (itemData[currentDay]) || { series: 0, exercises: [] };
                 
-                // Cálculo total semanal para este músculo
-                const totalWeeklySeries = (itemData.lunes || 0) + (itemData.miercoles || 0) + (itemData.viernes || 0);
+                const lunesSeries = (itemData.lunes && itemData.lunes.series) || 0;
+                const miercolesSeries = (itemData.miercoles && itemData.miercoles.series) || 0;
+                const viernesSeries = (itemData.viernes && itemData.viernes.series) || 0;
+
+                const totalWeeklySeries = lunesSeries + miercolesSeries + viernesSeries;
                 const isCompleted = totalWeeklySeries >= item.targetSeries;
+                const isOpen = !!openAccordions[item.id];
 
                 const card = document.createElement('div');
                 card.className = `card ${isCompleted ? 'completed' : ''}`;
+                
+                let exercisesHTML = '';
+                if (dayData.exercises && dayData.exercises.length > 0) {
+                    exercisesHTML = dayData.exercises.map((ex, idx) => `
+                        <div class="exercise-item">
+                            <span class="name">${ex.name}</span>
+                            <div>
+                                <span class="meta">${ex.reps} reps | ${ex.weight} kg</span>
+                                <button class="btn-del-ex" onclick="deleteExercise('${item.id}', ${idx})">✕</button>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    exercisesHTML = `<div style="font-size:0.75rem; color:var(--text-muted); text-align:center;">Sin ejercicios guardados hoy</div>`;
+                }
+
                 card.innerHTML = `
                     <div class="card-top">
                         <div class="muscle-info">
@@ -367,13 +487,23 @@
                     <div class="card-controls">
                         <div class="control-group">
                             <button class="btn-counter" onclick="updateSeries('${item.id}', -1)">-</button>
-                            <span class="counter-val">${daySeries} <small style="font-size:0.65rem; color:var(--text-muted)">hoy</small></span>
+                            <span class="counter-val">${dayData.series} <small style="font-size:0.65rem; color:var(--text-muted)">hoy</small></span>
                             <button class="btn-counter" onclick="updateSeries('${item.id}', 1)">+</button>
                         </div>
+                        <button class="toggle-details-btn" onclick="toggleAccordion('${item.id}')">
+                            ${isOpen ? '▼ Esconder Ejercicios' : '▶ Detalle Ejercicios'}
+                        </button>
+                    </div>
 
-                        <div class="weight-input-wrapper">
-                            <input type="number" step="0.5" placeholder="0" value="${itemData.peso || ''}" onchange="updateWeight('${item.id}', this.value)">
-                            <span>kg</span>
+                    <div class="details-container ${isOpen ? 'open' : ''}">
+                        <div class="exercise-form">
+                            <input type="text" id="ex-name-${item.id}" placeholder="Ejercicio (Ej: Press)">
+                            <input type="number" id="ex-reps-${item.id}" placeholder="Reps">
+                            <input type="number" id="ex-weight-${item.id}" placeholder="Kg">
+                            <button class="btn-add-ex" onclick="addExercise('${item.id}')">+</button>
+                        </div>
+                        <div class="exercise-list">
+                            ${exercisesHTML}
                         </div>
                     </div>
                 `;
@@ -384,7 +514,7 @@
         }
 
         function resetWeek() {
-            if (confirm('¿Seguro que quieres borrar las series marcadas de esta semana?')) {
+            if (confirm('¿Seguro que quieres borrar los registros de esta semana?')) {
                 state = {};
                 save();
                 render();
