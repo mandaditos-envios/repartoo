@@ -392,18 +392,8 @@
         let exerciseHistory = {};
         let openAccordions = {};
 
-        function getWeekKey() {
-            const now = new Date();
-            const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-            const dayNum = d.getUTCDay() || 7;
-            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
-            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
-            return `${d.getUTCFullYear()}-W${weekNo}`;
-        }
-
         function ensureStore(id) {
-            if (!store[id]) store[id] = {};
+            if (!store[id] || typeof store[id] !== 'object') store[id] = {};
             if (!Array.isArray(store[id].customExercises)) store[id].customExercises = [];
             if (!Array.isArray(store[id].lunes)) store[id].lunes = [];
             if (!Array.isArray(store[id].miercoles)) store[id].miercoles = [];
@@ -411,25 +401,18 @@
         }
 
         function initApp() {
+            // Limpieza forzada de versiones viejas corruptas
+            if (!localStorage.getItem('gym_v4_clean')) {
+                localStorage.clear();
+                localStorage.setItem('gym_v4_clean', 'true');
+            }
+
             try {
-                const savedStore = localStorage.getItem('gym_tracker_v3_store');
-                const savedHistory = localStorage.getItem('gym_tracker_v3_history');
-                const savedWeek = localStorage.getItem('gym_tracker_v3_week');
+                const savedStore = localStorage.getItem('gym_tracker_v4_store');
+                const savedHistory = localStorage.getItem('gym_tracker_v4_history');
 
                 if (savedStore) store = JSON.parse(savedStore);
                 if (savedHistory) exerciseHistory = JSON.parse(savedHistory);
-
-                const currentWeek = getWeekKey();
-                if (savedWeek && savedWeek !== currentWeek) {
-                    initialConfig.forEach(item => {
-                        if (store[item.id]) {
-                            store[item.id].lunes = [];
-                            store[item.id].miercoles = [];
-                            store[item.id].viernes = [];
-                        }
-                    });
-                }
-                localStorage.setItem('gym_tracker_v3_week', currentWeek);
             } catch (e) {
                 store = {};
                 exerciseHistory = {};
@@ -441,8 +424,8 @@
 
         function save() {
             try {
-                localStorage.setItem('gym_tracker_v3_store', JSON.stringify(store));
-                localStorage.setItem('gym_tracker_v3_history', JSON.stringify(exerciseHistory));
+                localStorage.setItem('gym_tracker_v4_store', JSON.stringify(store));
+                localStorage.setItem('gym_tracker_v4_history', JSON.stringify(exerciseHistory));
             } catch (e) {}
         }
 
@@ -472,18 +455,18 @@
             const history = exerciseHistory[selectedEx];
 
             if (!history || !history.sets || history.sets.length === 0) {
-                return `💡 <strong>Inicio:</strong> Selecciona un peso buscando realizar entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
+                return `💡 <strong>Inicio:</strong> Elige un peso para hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
             }
 
             const lastSet = history.sets[history.sets.length - 1];
 
             if (lastSet.reps > config.maxReps) {
                 const nextWeight = (lastSet.weight > 0) ? (lastSet.weight * 1.05).toFixed(1) : 0;
-                return `🚀 <strong>Sube de carga:</strong> La última vez realizaste ${lastSet.reps} reps con ${lastSet.weight}kg. Hoy intenta <strong>${nextWeight}kg</strong> para ${config.minReps}-${config.maxReps} reps.`;
+                return `🚀 <strong>Sube de carga:</strong> La última vez hiciste ${lastSet.reps} reps con ${lastSet.weight}kg. Hoy intenta <strong>${nextWeight}kg</strong> para ${config.minReps}-${config.maxReps} reps.`;
             } 
             
             if (lastSet.reps < config.minReps) {
-                return `⚖️ <strong>Ajuste:</strong> Caíste a ${lastSet.reps} reps con ${lastSet.weight}kg. Hoy mantén <strong>${lastSet.weight}kg</strong> y descansa 45s más.`;
+                return `⚖️ <strong>Ajuste:</strong> Caíste a ${lastSet.reps} reps con ${lastSet.weight}kg. Mantén <strong>${lastSet.weight}kg</strong> y descansa un poco más.`;
             }
 
             return `🎯 <strong>Consolidación:</strong> Hiciste ${lastSet.reps} reps con ${lastSet.weight}kg. Mantén <strong>${lastSet.weight}kg</strong> e intenta 1 rep extra.`;
@@ -565,6 +548,7 @@
 
         function render() {
             const container = document.getElementById('cards-container');
+            if (!container) return;
             container.innerHTML = '';
 
             let grandTotalDone = 0;
@@ -574,7 +558,7 @@
                 ensureStore(item.id);
                 const itemData = store[item.id];
 
-                const totalDoneWeek = (itemData.lunes.length || 0) + (itemData.miercoles.length || 0) + (itemData.viernes.length || 0);
+                const totalDoneWeek = (itemData.lunes?.length || 0) + (itemData.miercoles?.length || 0) + (itemData.viernes?.length || 0);
                 const remainingWeek = Math.max(0, item.targetSeries - totalDoneWeek);
                 const isCompleted = remainingWeek === 0;
 
@@ -582,4 +566,17 @@
                 grandTotalTarget += item.targetSeries;
 
                 const daySets = itemData[activeDay] || [];
-   
+                const isOpen = !!openAccordions[item.id];
+                const allExercises = [...item.defaultExercises, ...(itemData.customExercises || [])];
+
+                let setsHTML = '';
+                if (daySets.length > 0) {
+                    setsHTML = daySets.map((s, idx) => `
+                        <div class="set-chip">
+                            <div class="set-chip-info">
+                                <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight} kg</span>
+                                <span class="advice-tag ${s.adviceClass}">${s.adviceText}</span>
+                            </div>
+                            <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
+                        </div>
+               
