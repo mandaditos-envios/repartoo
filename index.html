@@ -352,12 +352,13 @@
         }
 
         function resetWeek() {
-            if (confirm("¿Comenzar nueva semana? Se limpiarán las repeticiones registradas, pero la memoria de tus pesos quedará guardada para el análisis del Smart Coach.")) {
+            if (confirm("¿Comenzar nueva semana? Se limpiarán las series registradas, pero el historial de tus pesos guardados se mantendrá intacto para el Smart Coach.")) {
                 initialConfig.forEach(item => {
                     store[item.id].lunes = [];
                     store[item.id].miercoles = [];
                     store[item.id].viernes = [];
                 });
+                // Nota: exerciseHistory NO se borra aquí, por lo que el Smart Coach recordará los pesos anteriores.
                 saveData();
                 render();
             }
@@ -395,7 +396,6 @@
                     <div>${getSmartAdvice(muscleId, exName)}</div>
                 `;
 
-                // Auto-sugerir el último peso guardado en el campo de entrada
                 if (weightInput && exerciseHistory[exName] && exerciseHistory[exName].length > 0) {
                     const lastWeight = exerciseHistory[exName][exerciseHistory[exName].length - 1].weight;
                     if (!weightInput.value) {
