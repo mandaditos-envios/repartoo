@@ -2,171 +2,515 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gym Track Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Gym Track Pro - Auto Progress</title>
     <style>
-        :root { --bg: #0b0f19; --surf: #151c2c; --pri: #6366f1; --txt: #f8fafc; --sub: #94a3b8; --brd: #26334d; --accent: #10b981; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, sans-serif; }
-        body { background: var(--bg); color: var(--txt); padding: 12px; max-width: 600px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card { background: var(--surf); border: 1px solid var(--brd); border-radius: 10px; padding: 12px; margin-bottom: 12px; }
-        .bar-bg { background: rgba(255,255,255,0.1); border-radius: 6px; height: 8px; margin-top: 6px; }
-        .bar-fill { background: var(--pri); height: 100%; width: 0%; transition: width 0.3s; }
-        .row { display: flex; gap: 6px; }
-        input, select { background: var(--bg); border: 1px solid var(--brd); color: #fff; padding: 8px; border-radius: 6px; width: 100%; font-size: 0.8rem; outline: none; }
-        button { background: var(--pri); color: #fff; border: none; border-radius: 6px; padding: 8px 12px; font-weight: 700; cursor: pointer; }
-        .btn-day { flex: 1; background: var(--surf); border: 1px solid var(--brd); color: var(--sub); }
-        .btn-day.active { background: var(--pri); color: #fff; }
-        .chip { display: flex; justify-content: space-between; background: var(--bg); padding: 6px 8px; border-radius: 4px; margin-top: 4px; font-size: 0.75rem; align-items: center; }
-        .acc { display: none; flex-direction: column; gap: 6px; margin-top: 8px; border-top: 1px dashed var(--brd); padding-top: 8px; }
-        .acc.open { display: flex; }
-        .advice { background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent); color: #34d399; font-size: 0.75rem; padding: 6px; border-radius: 4px; margin-top: 6px; }
+        :root {
+            --bg: #0b0f19;
+            --surface: #151c2c;
+            --primary: #6366f1;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: #26334d;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 12px;
+            padding-bottom: 80px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .app-title {
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+
+        .btn-reset-week {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 6px 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-reset-week:active {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .summary-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .day-selector {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .day-btn {
+            flex: 1;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 10px 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .day-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .muscle-cards-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .muscle-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .muscle-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+        }
+
+        .target-info {
+            font-size: 0.72rem;
+            color: var(--text-sub);
+        }
+
+        .remaining-badge {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #a5b4fc;
+        }
+
+        .accordion-trigger {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .accordion-content {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--border);
+        }
+
+        .accordion-content.open {
+            display: flex;
+        }
+
+        .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            background: var(--bg);
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .select-ex, .input-custom-ex, .input-fields input {
+            width: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            outline: none;
+        }
+
+        .smart-coach-box {
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            border-radius: 6px;
+            padding: 8px 10px;
+            font-size: 0.75rem;
+            color: #c7d2fe;
+            line-height: 1.35;
+        }
+
+        .smart-coach-title {
+            font-weight: 800;
+            color: #a5b4fc;
+            margin-bottom: 3px;
+        }
+
+        .input-fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn-add-set {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .set-chip {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 4px;
+        }
+
+        .advice-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .advice-up { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+        .advice-ok { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
+        .advice-down { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .btn-del-chip {
+            background: transparent;
+            border: none;
+            color: var(--danger);
+            font-weight: 800;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h3>GYM TRACK PRO</h3>
-        <button style="background: rgba(239, 68, 68, 0.2); color: #fca5a5;" onclick="resetWeek()">🔄 Reiniciar</button>
+        <div class="app-title">GYM TRACK PRO</div>
+        <button class="btn-reset-week" onclick="resetWeek()">🔄 Reiniciar Semana</button>
     </header>
 
-    <div class="card">
-        <div class="row" style="justify-content:space-between; font-size:0.8rem;">
-            <span>PROGRESO SEMANAL</span><span id="tot-sum">0/0 Series</span>
+    <div class="summary-card">
+        <div class="summary-header">
+            <span>PROGRESO SEMANAL</span>
+            <span id="total-summary">0 / 0 Series</span>
         </div>
-        <div class="bar-bg"><div id="bar" class="bar-fill"></div></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="total-progress-bar"></div>
+        </div>
     </div>
 
-    <div class="row" style="margin-bottom:12px;">
-        <button class="btn-day active" id="btn-lunes" onclick="setDay('lunes')">Lun (Pecho/Espalda)</button>
-        <button class="btn-day" id="btn-miercoles" onclick="setDay('miercoles')">Mié (Piernas)</button>
-        <button class="btn-day" id="btn-viernes" onclick="setDay('viernes')">Vie (Hombro/Brazos)</button>
+    <div class="day-selector">
+        <button class="day-btn active" id="btn-lunes" onclick="setDay('lunes')">Lunes</button>
+        <button class="day-btn" id="btn-miercoles" onclick="setDay('miercoles')">Miércoles</button>
+        <button class="day-btn" id="btn-viernes" onclick="setDay('viernes')">Viernes</button>
     </div>
 
-    <div id="list"></div>
+    <div class="muscle-cards-list" id="cards-container">Cargando...</div>
 
     <script>
-        const cfg = [
-            { id: 'pecho', n: 'PECHO', t: 12, minR: 6, maxR: 8, ex: ['Banco Plano', 'Inclinado Mancuernas', 'Fondos'] },
-            { id: 'espalda', n: 'ESPALDA', t: 15, minR: 5, maxR: 8, ex: ['Remo Bajo', 'Remo Máquina', 'Jalón Pecho'] },
-            { id: 'hombros', n: 'HOMBROS', t: 9, minR: 8, maxR: 10, ex: ['Press Militar', 'Elevaciones Laterales'] },
-            { id: 'biceps', n: 'BÍCEPS', t: 9, minR: 8, maxR: 12, ex: ['Curl Martillo', 'Curl Barra'] },
-            { id: 'triceps', n: 'TRÍCEPS', t: 9, minR: 8, maxR: 12, ex: ['Press Francés', 'Polea Cuerda'] },
-            { id: 'cuadriceps', n: 'CUÁDRICEPS', t: 12, minR: 5, maxR: 8, ex: ['Sentadilla', 'Prensa', 'Extensión'] },
-            { id: 'isquios', n: 'ISQUIOS', t: 10, minR: 6, maxR: 10, ex: ['Peso Muerto Rumano', 'Curl Acostado'] },
-            { id: 'pantorrillas', n: 'PANTORRILLAS', t: 9, minR: 8, maxR: 15, ex: ['Elevación Sentado', 'Elevación Parado'] }
+        const initialConfig = [
+            { id: 'pecho', name: 'PECHO', targetSeries: 12, minReps: 6, maxReps: 8, defaultExercises: ['Banco Plano', 'Inclinado con Mancuernas', 'Fondos', 'Aperturas'] },
+            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, minReps: 5, maxReps: 8, defaultExercises: ['Remo Bajo (Triángulo)', 'Remo en Máquina Inclinado', 'Remo Sentado', 'Jalón al Pecho'] },
+            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, minReps: 8, maxReps: 10, defaultExercises: ['Press Militar', 'Elevaciones Laterales', 'Pájaro'] },
+            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Curl Martillo', 'Curl Parado con Barra/Mancuerna', 'Curl Inclinado'] },
+            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, minReps: 8, maxReps: 12, defaultExercises: ['Press Francés', 'Extensión Polea con Cuerda', 'Extensión Copa'] },
+            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, minReps: 5, maxReps: 8, defaultExercises: ['Sentadillas / Hack', 'Prensa de Piernas', 'Extensión de Cuádriceps'] },
+            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, minReps: 6, maxReps: 10, defaultExercises: ['Peso Muerto Rumano', 'Curl Femoral Acostado'] },
+            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, minReps: 10, maxReps: 15, defaultExercises: ['Abductores Máquina'] },
+            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, minReps: 10, maxReps: 15, defaultExercises: ['Aductores Máquina'] },
+            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, minReps: 8, maxReps: 15, defaultExercises: ['Elevación Talones Sentado', 'Elevación Talones Parado'] }
         ];
 
-        let day = 'lunes', store = {}, openAcc = {};
+        let activeDay = 'lunes';
+        let store = {};
+        let exerciseHistory = {};
+        let openAccordions = {};
 
-        function init() {
-            store = JSON.parse(localStorage.getItem('gtp_s_local') || '{}');
-            cfg.forEach(i => { if (!store[i.id]) store[i.id] = { lunes: [], miercoles: [], viernes: [] }; });
+        function initApp() {
+            try {
+                const savedStore = localStorage.getItem('gtp_store');
+                const savedHistory = localStorage.getItem('gtp_history');
+                if (savedStore) store = JSON.parse(savedStore);
+                if (savedHistory) exerciseHistory = JSON.parse(savedHistory);
+            } catch(e) {}
+
+            initialConfig.forEach(item => {
+                if (!store[item.id]) {
+                    store[item.id] = { lunes: [], miercoles: [], viernes: [] };
+                }
+            });
             render();
         }
 
-        function save() {
-            localStorage.setItem('gtp_s_local', JSON.stringify(store));
+        function saveData() {
+            try {
+                localStorage.setItem('gtp_store', JSON.stringify(store));
+                localStorage.setItem('gtp_history', JSON.stringify(exerciseHistory));
+            } catch(e) {}
         }
 
-        function setDay(d) {
-            day = d;
-            document.querySelectorAll('.btn-day').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + d).classList.add('active');
+        function setDay(day) {
+            activeDay = day;
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-' + day).classList.add('active');
             render();
         }
 
-        function toggleAcc(id) { openAcc[id] = !openAcc[id]; render(); }
-
-        function addSet(mId, minR, maxR) {
-            const ex = document.getElementById(`ex-${mId}`).value;
-            const reps = parseInt(document.getElementById(`rp-${mId}`).value);
-            const w = parseFloat(document.getElementById(`wg-${mId}`).value) || 0;
-            
-            if (!reps) return alert('Ingresa las repeticiones realizadas');
-
-            // Lógica automática de sobrecarga progresiva local
-            let advice = "";
-            if (reps >= maxR) {
-                advice = `🔥 ¡Llegaste al tope (${maxR} reps)! Sube el peso la próxima.`;
-            } else if (reps < minR) {
-                advice = `⚠️ Estás por debajo del rango mínimo (${minR} reps). Mantén el peso o baja un poco.`;
-            } else {
-                advice = `✅ Buen rango. Intenta sacar 1 rep más la próxima.`;
-            }
-
-            const item = { ex, reps, w, advice };
-            store[mId][day].push(item);
-            
-            document.getElementById(`rp-${mId}`).value = '';
-            save(); 
+        function toggleAccordion(id) {
+            openAccordions[id] = !openAccordions[id];
             render();
-        }
-
-        function delSet(mId, idx) { 
-            store[mId][day].splice(idx, 1); 
-            save(); 
-            render(); 
         }
 
         function resetWeek() {
-            if (confirm('¿Reiniciar todas las series de la semana?')) {
-                cfg.forEach(i => store[i.id] = { lunes: [], miercoles: [], viernes: [] });
-                save(); 
+            if (confirm("¿Comenzar nueva semana? Se limpiarán las repeticiones registradas, pero la memoria de tus pesos quedará guardada para el análisis del Smart Coach.")) {
+                initialConfig.forEach(item => {
+                    store[item.id].lunes = [];
+                    store[item.id].miercoles = [];
+                    store[item.id].viernes = [];
+                });
+                saveData();
                 render();
             }
         }
 
-        function render() {
-            const list = document.getElementById('list');
-            list.innerHTML = '';
-            let done = 0, target = 0;
+        function getSmartAdvice(muscleId, exName) {
+            const config = initialConfig.find(c => c.id === muscleId);
+            const history = exerciseHistory[exName];
 
-            cfg.forEach(i => {
-                const dSets = store[i.id][day] || [];
-                const tot = (store[i.id].lunes.length) + (store[i.id].miercoles.length) + (store[i.id].viernes.length);
-                done += tot; target += i.t;
-                const isOpen = openAcc[i.id];
+            if (!history || history.length === 0) {
+                return `💡 <strong>Inicio:</strong> Sin datos previos. Elige un peso para hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
+            }
 
-                // Obtener el consejo de la última serie registrada para este grupo muscular hoy
-                const lastSet = dSets.length > 0 ? dSets[dSets.length - 1] : null;
+            const last = history[history.length - 1];
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                    <div class="row" style="justify-content:space-between;">
-                        <div><strong>${i.n}</strong> <small style="color:var(--sub)">(${i.minR}-${i.maxR} reps)</small></div>
-                        <small style="color:#a5b4fc">Faltan ${Math.max(0, i.t - tot)}</small>
-                    </div>
-                    <button style="width:100%; margin-top:6px; background:var(--bg); border:1px solid var(--brd); color:var(--sub);" onclick="toggleAcc('${i.id}')">
-                        ${dSets.length} series registradas hoy ${isOpen ? '▲' : '▼'}
-                    </button>
-                    <div class="acc ${isOpen ? 'open' : ''}">
-                        <select id="ex-${i.id}">${i.ex.map(e=>`<option>${e}</option>`).join('')}</select>
-                        <div class="row">
-                            <input type="number" id="rp-${i.id}" placeholder="Reps hechas">
-                            <input type="number" id="wg-${i.id}" placeholder="Kg usados">
-                        </div>
-                        <button onclick="addSet('${i.id}', ${i.minR}, ${i.maxR})">+ Anotar Serie</button>
-                        
-                        ${lastSet ? `<div class="advice">${lastSet.advice}</div>` : ''}
-
-                        ${dSets.map((s, idx) => `
-                            <div class="chip">
-                                <span><strong>${s.ex}</strong>: ${s.reps} reps @ ${s.w}kg</span>
-                                <span style="color:#ef4444; cursor:pointer; font-weight:bold; padding:0 4px;" onclick="delSet('${i.id}',${idx})">✕</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-
-            document.getElementById('tot-sum').innerText = `${done}/${target} Series`;
-            document.getElementById('bar').style.width = (target > 0 ? Math.min(100, Math.round((done/target)*100)) : 0) + '%';
+            if (last.reps > config.maxReps) {
+                const sugg = (last.weight > 0) ? (last.weight * 1.05).toFixed(1) : last.weight;
+                return `📊 <strong>Análisis semanal:</strong> Como la semana pasada superaste el objetivo (${last.reps} reps con ${last.weight}kg), te conviene subir a <strong>${sugg}kg</strong> para tu primera serie (${config.minReps}-${config.maxReps} reps).`;
+            } else if (last.reps < config.minReps) {
+                return `📊 <strong>Análisis semanal:</strong> La semana pasada quedaste exigido (${last.reps} reps con ${last.weight}kg). Te conviene mantener o bajar un poco a <strong>${last.weight}kg</strong> buscando llegar al mínimo de ${config.minReps} reps.`;
+            } else {
+                return `📊 <strong>Análisis semanal:</strong> La semana pasada completaste ${last.reps} reps con ${last.weight}kg. Te conviene empezar hoy con <strong>${last.weight}kg</strong> e intentar sumar 1 rep más.`;
+            }
         }
 
-        window.onload = init;
+        function updateCoachAdvice(muscleId) {
+            const select = document.getElementById('select-' + muscleId);
+            const coachBox = document.getElementById('coach-' + muscleId);
+            const weightInput = document.getElementById('weight-' + muscleId);
+
+            if (select && coachBox) {
+                const exName = select.value;
+                coachBox.innerHTML = `
+                    <div class="smart-coach-title">🤖 PLAN DEL SMART COACH:</div>
+                    <div>${getSmartAdvice(muscleId, exName)}</div>
+                `;
+
+                // Auto-sugerir el último peso guardado en el campo de entrada
+                if (weightInput && exerciseHistory[exName] && exerciseHistory[exName].length > 0) {
+                    const lastWeight = exerciseHistory[exName][exerciseHistory[exName].length - 1].weight;
+                    if (!weightInput.value) {
+                        weightInput.value = lastWeight;
+                    }
+                }
+            }
+        }
+
+        function addSet(muscleId, minReps, maxReps) {
+            const select = document.getElementById('select-' + muscleId);
+            const repsInput = document.getElementById('reps-' + muscleId);
+            const weightInput = document.getElementById('weight-' + muscleId);
+
+            const exName = select.value;
+            const reps = parseInt(repsInput.value);
+            const weight = parseFloat(weightInput.value) || 0;
+
+            if (!reps) return alert('Ingresa las repeticiones logradas');
+
+            let tagText = '🎯 Peso Ideal';
+            let tagClass = 'advice-ok';
+
+            if (reps > maxReps) {
+                tagText = '⚡ Sube peso';
+                tagClass = 'advice-up';
+            } else if (reps < minReps) {
+                tagText = '⚠️ Muy pesado';
+                tagClass = 'advice-down';
+            }
+
+            const setObj = { exName, reps, weight, tagText, tagClass };
+
+            store[muscleId][activeDay].push(setObj);
+
+            if (!exerciseHistory[exName]) exerciseHistory[exName] = [];
+            exerciseHistory[exName].push(setObj);
+
+            repsInput.value = '';
+            saveData();
+            render();
+        }
+
+        function removeSet(muscleId, idx) {
+            store[muscleId][activeDay].splice(idx, 1);
+            saveData();
+            render();
+        }
+
+        function render() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            let grandTotalDone = 0;
+            let grandTotalTarget = 0;
+
+            initialConfig.forEach(item => {
+                const daySets = store[item.id][activeDay];
+                const totalDoneWeek = store[item.id].lunes.length + store[item.id].miercoles.length + store[item.id].viernes.length;
+                
+                grandTotalDone += totalDoneWeek;
+                grandTotalTarget += item.targetSeries;
+
+                const isOpen = !!openAccordions[item.id];
+                const options = item.defaultExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+
+                let setsHTML = daySets.map((s, idx) => `
+                    <div class="set-chip">
+                        <div>
+                            <div><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</div>
+                            <span class="advice-tag ${s.tagClass}">${s.tagText}</span>
+                        </div>
+                        <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
+                    </div>
+                `).join('');
+
+                const card = document.createElement('div');
+                card.className = 'muscle-card';
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="muscle-title">${item.name}</div>
+                            <div class="target-info">Rango: ${item.minReps}-${item.maxReps} reps</div>
+                        </div>
+                        <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek)} series</div>
+                    </div>
+                    <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
+                        <span>${daySets.length} series anotadas hoy</span>
+                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar'}</span>
+                    </button>
+                    <div class="accordion-content ${isOpen ? 'open' : ''}">
+                        <div class="input-row">
+                            <select id="select-${item.id}" class="select-ex" onchange="updateCoachAdvice('${item.id}')">${options}</select>
+                            
+                            <div class="smart-coach-box" id="coach-${item.id}"></div>
+
+                            <div class="input-fields">
+                                <input type="number" id="reps-${item.id}" placeholder="Reps">
+                                <input type="number" id="weight-${item.id}" placeholder="Kg">
+                            </div>
+                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie</button>
+                        </div>
+                        <div>${setsHTML}</div>
+                    </div>
+                `;
+                container.appendChild(card);
+                updateCoachAdvice(item.id);
+            });
+
+            const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
+            document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series`;
+            document.getElementById('total-progress-bar').style.width = pct + '%';
+        }
+
+        window.onload = initApp;
     </script>
 </body>
 </html>
