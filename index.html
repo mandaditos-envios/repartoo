@@ -374,11 +374,21 @@
                     geminiApiKey = savedKey;
                     document.getElementById('gemini-key-input').value = savedKey;
                 }
-            } catch(e) {}
+            } catch(e) {
+                store = {};
+                exerciseHistory = {};
+            }
 
             initialConfig.forEach(item => {
-                if (!store[item.id]) store[item.id] = { lunes: [], miercoles: [], viernes: [] };
+                if (!store[item.id] || typeof store[item.id] !== 'object') {
+                    store[item.id] = { lunes: [], miercoles: [], viernes: [] };
+                } else {
+                    if (!Array.isArray(store[item.id].lunes)) store[item.id].lunes = [];
+                    if (!Array.isArray(store[item.id].miercoles)) store[item.id].miercoles = [];
+                    if (!Array.isArray(store[item.id].viernes)) store[item.id].viernes = [];
+                }
             });
+
             render();
         }
 
@@ -467,9 +477,11 @@ Sé directo, motivador y breve para lectura en móvil.`;
         function resetWeek() {
             if (confirm("¿Comenzar nueva semana? Se limpiarán las repeticiones registradas, pero tus registros de peso quedarán guardados.")) {
                 initialConfig.forEach(item => {
-                    store[item.id].lunes = [];
-                    store[item.id].miercoles = [];
-                    store[item.id].viernes = [];
+                    if (store[item.id]) {
+                        store[item.id].lunes = [];
+                        store[item.id].miercoles = [];
+                        store[item.id].viernes = [];
+                    }
                 });
                 saveData();
                 render();
@@ -489,6 +501,9 @@ Sé directo, motivador y breve para lectura en móvil.`;
 
             const setObj = { exName, reps, weight, fecha: new Date().toLocaleDateString() };
 
+            if (!store[muscleId]) store[muscleId] = { lunes: [], miercoles: [], viernes: [] };
+            if (!store[muscleId][activeDay]) store[muscleId][activeDay] = [];
+
             store[muscleId][activeDay].push(setObj);
 
             if (!exerciseHistory[exName]) exerciseHistory[exName] = [];
@@ -500,62 +515,48 @@ Sé directo, motivador y breve para lectura en móvil.`;
         }
 
         function removeSet(muscleId, idx) {
-            store[muscleId][activeDay].splice(idx, 1);
-            saveData();
-            render();
+            if (store[muscleId] && store[muscleId][activeDay]) {
+                store[muscleId][activeDay].splice(idx, 1);
+                saveData();
+                render();
+            }
         }
 
         function render() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
+            try {
+                const container = document.getElementById('cards-container');
+                if (!container) return;
+                container.innerHTML = '';
 
-            let grandTotalDone = 0;
-            let grandTotalTarget = 0;
+                let grandTotalDone = 0;
+                let grandTotalTarget = 0;
 
-            initialConfig.forEach(item => {
-                const daySets = store[item.id][activeDay];
-                const totalDoneWeek = store[item.id].lunes.length + store[item.id].miercoles.length + store[item.id].viernes.length;
-                
-                grandTotalDone += totalDoneWeek;
-                grandTotalTarget += item.targetSeries;
+                initialConfig.forEach(item => {
+                    const muscleData = store[item.id] || { lunes: [], miercoles: [], viernes: [] };
+                    const daySets = muscleData[activeDay] || [];
+                    const totalDoneWeek = (muscleData.lunes ? muscleData.lunes.length : 0) + 
+                                          (muscleData.miercoles ? muscleData.miercoles.length : 0) + 
+                                          (muscleData.viernes ? muscleData.viernes.length : 0);
+                    
+                    grandTotalDone += totalDoneWeek;
+                    grandTotalTarget += item.targetSeries;
 
-                const isOpen = !!openAccordions[item.id];
-                const options = item.defaultExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
+                    const isOpen = !!openAccordions[item.id];
+                    const options = item.defaultExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('');
 
-                let setsHTML = daySets.map((s, idx) => `
-                    <div class="set-chip">
-                        <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</span>
-                        <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
-                    </div>
-                `).join('');
-
-                const card = document.createElement('div');
-                card.className = 'muscle-card';
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div>
-                            <div class="muscle-title">${item.name}</div>
-                            <div class="target-info">Rango: ${item.minReps}-${item.maxReps} reps</div>
+                    let setsHTML = daySets.map((s, idx) => `
+                        <div class="set-chip">
+                            <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</span>
+                            <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
                         </div>
-                        <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek)} series</div>
-                    </div>
-                    <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series anotadas hoy</span>
-                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar'}</span>
-                    </button>
-                    <div class="accordion-content ${isOpen ? 'open' : ''}">
-                        <div class="input-row">
-                            <select id="select-${item.id}" class="select-ex">${options}</select>
-                            <div class="input-fields">
-                                <input type="number" id="reps-${item.id}" placeholder="Reps">
-                                <input type="number" id="weight-${item.id}" placeholder="Kg">
+                    `).join('');
+
+                    const card = document.createElement('div');
+                    card.className = 'muscle-card';
+                    card.innerHTML = `
+                        <div class="card-header">
+                            <div>
+                                <div class="muscle-title">${item.name}</div>
+                                <div class="target-info">Rango: ${item.minReps}-${item.maxReps} reps</div>
                             </div>
-                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Anotar Serie</button>
-                        </div>
-                        <div>${setsHTML}</div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTa
+                            <div class="remaining-badge">Faltan ${Math.max(0, item.targetSeries - totalDoneWeek
