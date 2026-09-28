@@ -99,38 +99,31 @@
 
             const prompt = `Analiza mi entrenamiento y da consejos breves de sobrecarga progresiva:\n${JSON.stringify(history)}`;
             
-            const endpoints = [
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
-                `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`
-            ];
+            // Endpoint estándar compatible con Gemini 1.5 Flash
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`;
 
-            let lastError = '';
+            try {
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey
+                    },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
 
-            for (const url of endpoints) {
-                try {
-                    const res = await fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-goog-api-key': apiKey
-                        },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                    });
+                const data = await res.json();
 
-                    const data = await res.json();
-
-                    if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                        box.innerText = data.candidates[0].content.parts[0].text;
-                        return;
-                    } else if (data.error) {
-                        lastError = data.error.message || JSON.stringify(data.error);
-                    }
-                } catch(e) {
-                    lastError = e.message;
+                if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                    box.innerText = data.candidates[0].content.parts[0].text;
+                } else if (data.error) {
+                    box.innerText = '❌ Error de API: ' + (data.error.message || JSON.stringify(data.error));
+                } else {
+                    box.innerText = '❌ Respuesta inesperada del servidor.';
                 }
+            } catch(e) {
+                box.innerText = '❌ Error de conexión: ' + e.message;
             }
-
-            box.innerText = '❌ Error de respuesta:\n' + lastError;
         }
 
         function setDay(d) {
