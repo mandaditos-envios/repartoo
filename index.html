@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gym Track Pro</title>
+    <title>Gym Track Pro - Auto Progress</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -302,6 +302,25 @@
         .advice-ok { background: rgba(16, 185, 129, 0.2); color: var(--accent); }
         .advice-down { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
 
+        .smart-coach-box {
+            background: rgba(99, 102, 241, 0.12);
+            border: 1px solid rgba(99, 102, 241, 0.35);
+            border-radius: 8px;
+            padding: 8px 10px;
+            font-size: 0.73rem;
+            color: #c7d2fe;
+            line-height: 1.35;
+        }
+
+        .smart-coach-title {
+            font-weight: 800;
+            color: #a5b4fc;
+            margin-bottom: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
         .btn-del-chip {
             background: transparent;
             border: none;
@@ -312,21 +331,21 @@
             padding: 4px;
         }
 
-        .reset-btn {
+        .auto-reset-info {
             position: fixed;
-            bottom: 16px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text-sub);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 20px;
-            font-size: 0.78rem;
-            font-weight: 700;
+            font-size: 0.72rem;
+            font-weight: 600;
             box-shadow: 0 10px 20px rgba(0,0,0,0.6);
-            cursor: pointer;
             z-index: 100;
+            white-space: nowrap;
         }
     </style>
 </head>
@@ -334,7 +353,7 @@
 
     <header>
         <div class="app-title">GYM TRACK PRO</div>
-        <div class="status-badge">● Listo</div>
+        <div class="status-badge">● Carga Progresiva</div>
     </header>
 
     <div class="summary-card">
@@ -355,7 +374,7 @@
 
     <div class="muscle-cards-list" id="cards-container"></div>
 
-    <button class="reset-btn" onclick="resetWeek()">Reiniciar Series Semanales</button>
+    <div class="auto-reset-info">🔄 Reinicio automático todos los Domingos 00:00</div>
 
     <script>
         const initialConfig = [
@@ -373,14 +392,44 @@
 
         let activeDay = 'lunes';
         let store = {};
+        let exerciseHistory = {};
         let openAccordions = {};
 
-        // Cargar almacenamiento limpio
+        // Función para obtener la clave única de la semana actual (Año - Semana)
+        function getWeekKey() {
+            const now = new Date();
+            const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+            const dayNum = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+            const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+            const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+            return `${d.getUTCFullYear()}-W${weekNo}`;
+        }
+
+        // Cargar almacenamiento
         try {
-            const saved = localStorage.getItem('gym_tracker_final_v1');
-            if (saved) store = JSON.parse(saved);
+            const savedStore = localStorage.getItem('gym_tracker_v3_store');
+            const savedHistory = localStorage.getItem('gym_tracker_v3_history');
+            const savedWeek = localStorage.getItem('gym_tracker_v3_week');
+
+            if (savedStore) store = JSON.parse(savedStore);
+            if (savedHistory) exerciseHistory = JSON.parse(savedHistory);
+
+            const currentWeek = getWeekKey();
+            // Si la semana guardada es diferente a la actual, reiniciamos las series de la semana
+            if (savedWeek && savedWeek !== currentWeek) {
+                initialConfig.forEach(item => {
+                    if (store[item.id]) {
+                        store[item.id].lunes = [];
+                        store[item.id].miercoles = [];
+                        store[item.id].viernes = [];
+                    }
+                });
+            }
+            localStorage.setItem('gym_tracker_v3_week', currentWeek);
         } catch (e) {
             store = {};
+            exerciseHistory = {};
         }
 
         function ensureStore(id) {
@@ -393,7 +442,8 @@
 
         function save() {
             try {
-                localStorage.setItem('gym_tracker_final_v1', JSON.stringify(store));
+                localStorage.setItem('gym_tracker_v3_store', JSON.stringify(store));
+                localStorage.setItem('gym_tracker_v3_history', JSON.stringify(exerciseHistory));
             } catch (e) {}
         }
 
@@ -414,6 +464,55 @@
             const customInput = document.getElementById(`custom-${muscleId}`);
             if (select && customInput) {
                 customInput.style.display = (select.value === 'CUSTOM') ? 'block' : 'none';
+            }
+            renderCoachAdvice(muscleId);
+        }
+
+        function getSmartCoachAdvice(muscleId, selectedEx) {
+            const config = initialConfig.find(c => c.id === muscleId);
+            const history = exerciseHistory[selectedEx];
+
+            // 1. Si no hay historial previo registrado
+            if (!history || !history.sets || history.sets.length === 0) {
+                return `💡 <strong>Inicio:</strong> Selecciona tu peso inicial buscando hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong> con esfuerzo moderado.`;
+            }
+
+            const firstSet = history.sets[0];
+            const lastSet = history.sets[history.sets.length - 1];
+            const recWeight = firstSet.weight;
+
+            // 2. Si en la primera serie superó las reps máximas -> Toca subir peso (Carga progresiva)
+            if (firstSet.reps > config.maxReps) {
+                const nextWeight = (firstSet.weight > 0) ? (firstSet.weight * 1.05).toFixed(1) : 0;
+                return `🚀 <strong>Sube de carga:</strong> La sesión pasada hiciste ${firstSet.reps} reps con ${firstSet.weight}kg. Hoy arranca tu 1ª serie con <strong>${nextWeight}kg</strong> para 6-8 reps.`;
+            } 
+            
+            // 3. Si en la última serie cayó por debajo del rango por fatiga
+            if (lastSet.reps < config.minReps) {
+                return `⚖️ <strong>Ajuste por fatiga:</strong> La sesión pasada caíste a ${lastSet.reps} reps con ${lastSet.weight}kg al final. Hoy empieza con <strong>${firstSet.weight}kg</strong> y descansa 45 seg extra antes de las últimas series.`;
+            }
+
+            // 4. Si estuvo en el rango perfecto
+            return `🎯 <strong>Consolidación:</strong> La sesión pasada hiciste ${firstSet.reps} reps con ${firstSet.weight}kg. Hoy mantén <strong>${firstSet.weight}kg</strong> e intenta hacer 1 rep más en tus primeras series.`;
+        }
+
+        function renderCoachAdvice(muscleId) {
+            const select = document.getElementById(`select-${muscleId}`);
+            const coachBox = document.getElementById(`coach-${muscleId}`);
+            const repsInput = document.getElementById(`reps-${muscleId}`);
+            const weightInput = document.getElementById(`weight-${muscleId}`);
+
+            if (select && coachBox) {
+                const exName = select.value === 'CUSTOM' ? '' : select.value;
+                if (exName && exerciseHistory[exName] && exerciseHistory[exName].sets.length > 0) {
+                    const lastFirstSet = exerciseHistory[exName].sets[0];
+                    if (repsInput && !repsInput.value) repsInput.placeholder = `Reps (${lastFirstSet.reps})`;
+                    if (weightInput && !weightInput.value) weightInput.placeholder = `Peso (${lastFirstSet.weight}kg)`;
+                }
+                coachBox.innerHTML = `
+                    <div class="smart-coach-title">🤖 PLAN DE HOY:</div>
+                    <div>${getSmartCoachAdvice(muscleId, exName)}</div>
+                `;
             }
         }
 
@@ -451,121 +550,15 @@
                 adviceClass = 'advice-down';
             }
 
-            store[muscleId][activeDay].push({
+            const setObj = {
                 exName: exName,
                 reps: reps,
                 weight: weight,
                 adviceText: adviceText,
                 adviceClass: adviceClass
-            });
+            };
 
-            save();
-            render();
-        }
+            store[muscleId][activeDay].push(setObj);
 
-        function removeSet(muscleId, index) {
-            ensureStore(muscleId);
-            store[muscleId][activeDay].splice(index, 1);
-            save();
-            render();
-        }
-
-        function render() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
-
-            let grandTotalDone = 0;
-            let grandTotalTarget = 0;
-
-            initialConfig.forEach(item => {
-                ensureStore(item.id);
-                const itemData = store[item.id];
-
-                const totalDoneWeek = itemData.lunes.length + itemData.miercoles.length + itemData.viernes.length;
-                const remainingWeek = Math.max(0, item.targetSeries - totalDoneWeek);
-                const isCompleted = remainingWeek === 0;
-
-                grandTotalDone += totalDoneWeek;
-                grandTotalTarget += item.targetSeries;
-
-                const daySets = itemData[activeDay] || [];
-                const isOpen = !!openAccordions[item.id];
-                const allExercises = [...item.defaultExercises, ...itemData.customExercises];
-
-                let setsHTML = '';
-                if (daySets.length > 0) {
-                    setsHTML = daySets.map((s, idx) => `
-                        <div class="set-chip">
-                            <div class="set-chip-info">
-                                <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight} kg</span>
-                                <span class="advice-tag ${s.adviceClass}">${s.adviceText}</span>
-                            </div>
-                            <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
-                        </div>
-                    `).join('');
-                } else {
-                    setsHTML = `<div style="font-size:0.72rem; color:var(--text-sub);">Sin series registradas hoy</div>`;
-                }
-
-                const optionsHTML = allExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('') + `<option value="CUSTOM">+ Otro ejercicio...</option>`;
-
-                const card = document.createElement('div');
-                card.className = `muscle-card`;
-                card.innerHTML = `
-                    <div class="card-header">
-                        <div>
-                            <div class="muscle-title">${item.name}</div>
-                            <div class="target-info">Rango rec: ${item.minReps}-${item.maxReps} reps</div>
-                        </div>
-                        <div class="remaining-badge ${isCompleted ? 'done' : ''}">
-                            ${isCompleted ? '✓ COMPLETADO' : `Faltan ${remainingWeek} series`}
-                        </div>
-                    </div>
-
-                    <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series anotadas hoy</span>
-                        <span>${isOpen ? '▲ Ocultar' : '▼ Anotar Serie'}</span>
-                    </button>
-
-                    <div class="accordion-content ${isOpen ? 'open' : ''}">
-                        <div class="input-row">
-                            <select class="select-ex" id="select-${item.id}" onchange="handleSelectChange('${item.id}')">
-                                ${optionsHTML}
-                            </select>
-                            <input type="text" class="input-custom-ex" id="custom-${item.id}" placeholder="Escribe el nuevo ejercicio..." style="display:none;">
-                            <div class="input-fields">
-                                <input type="number" id="reps-${item.id}" placeholder="Reps">
-                                <input type="number" id="weight-${item.id}" placeholder="Peso (kg)">
-                            </div>
-                            <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Registrar Serie</button>
-                        </div>
-                        <div class="sets-history">
-                            ${setsHTML}
-                        </div>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
-            document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series (${pct}%)`;
-            document.getElementById('total-progress-bar').style.width = `${pct}%`;
-        }
-
-        function resetWeek() {
-            if (confirm('¿Reiniciar todas las series guardadas esta semana?')) {
-                initialConfig.forEach(item => {
-                    ensureStore(item.id);
-                    store[item.id].lunes = [];
-                    store[item.id].miercoles = [];
-                    store[item.id].viernes = [];
-                });
-                save();
-                render();
-            }
-        }
-
-        render();
-    </script>
-</body>
-</html>
+            // Actualizar Historial Permanente del Ejercicio
+            if (!exer
