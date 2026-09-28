@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Gym Track Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #090d16;
-            --surface: #131b2e;
-            --surface-card: #182238;
+            --bg: #0b0f19;
+            --surface: #151c2c;
+            --surface-hover: #1e293b;
             --primary: #6366f1;
-            --primary-glow: rgba(99, 102, 241, 0.35);
-            --accent: #22c55e;
+            --primary-glow: rgba(99, 102, 241, 0.25);
+            --accent: #10b981;
+            --accent-glow: rgba(16, 185, 129, 0.2);
             --text: #f8fafc;
-            --text-muted: #64748b;
-            --border: #23314d;
+            --text-sub: #94a3b8;
+            --border: #26334d;
             --radius: 16px;
         }
 
@@ -23,7 +24,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -31,8 +32,8 @@
             background-color: var(--bg);
             color: var(--text);
             padding: 16px;
-            padding-bottom: 90px;
-            max-width: 500px;
+            padding-bottom: 100px;
+            max-width: 480px;
             margin: 0 auto;
         }
 
@@ -43,258 +44,254 @@
             margin-bottom: 20px;
         }
 
-        .brand-title {
-            font-size: 1.4rem;
+        .app-title {
+            font-size: 1.3rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #a5b4fc, #6366f1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+            color: #fff;
         }
 
-        .overall-progress-card {
-            background: var(--surface);
+        .status-badge {
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 600;
+            background: var(--accent-glow);
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* Banner de Progreso General */
+        .summary-card {
+            background: linear-gradient(135deg, #1e1b4b, var(--surface));
             border: 1px solid var(--border);
-            padding: 16px;
             border-radius: var(--radius);
+            padding: 16px;
             margin-bottom: 20px;
         }
 
-        .progress-header {
+        .summary-header {
             display: flex;
             justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 8px;
+            align-items: center;
+            margin-bottom: 10px;
         }
 
-        .progress-bar-bg {
+        .summary-header span {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            letter-spacing: 0.5px;
+        }
+
+        .summary-counter {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .progress-bar {
             width: 100%;
-            height: 10px;
-            background: var(--bg);
-            border-radius: 20px;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
             overflow: hidden;
         }
 
-        .progress-bar-fill {
+        .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary), var(--accent));
             width: 0%;
-            transition: width 0.4s ease;
-            border-radius: 20px;
+            transition: width 0.3s ease;
         }
 
-        .day-tabs {
+        /* Selector de Días */
+        .day-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 8px;
             margin-bottom: 20px;
-            background: var(--surface);
-            padding: 6px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
         }
 
-        .tab-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            padding: 10px;
+        .day-btn {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 12px 8px;
             font-weight: 700;
             font-size: 0.85rem;
-            border-radius: 8px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
+            text-align: center;
         }
 
-        .tab-btn.active {
+        .day-btn.active {
             background: var(--primary);
             color: #fff;
-            box-shadow: 0 4px 12px var(--primary-glow);
+            border-color: var(--primary);
+            box-shadow: 0 4px 14px var(--primary-glow);
         }
 
-        .cards-list {
+        /* Lista de Tarjetas */
+        .muscle-cards-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .card {
-            background: var(--surface-card);
+        .muscle-card {
+            background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px;
             display: flex;
             flex-direction: column;
             gap: 12px;
-            transition: border-color 0.2s;
+            transition: all 0.2s ease;
         }
 
-        .card.completed {
-            border-color: rgba(34, 197, 94, 0.4);
-            background: linear-gradient(180deg, var(--surface-card), rgba(34, 197, 94, 0.05));
+        .muscle-card.completed {
+            border-color: var(--accent);
+            background: linear-gradient(180deg, var(--surface), rgba(16, 185, 129, 0.05));
         }
 
-        .card-top {
+        .card-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
         }
 
-        .muscle-info h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+        .muscle-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.3px;
         }
 
-        .muscle-info p {
+        .target-info {
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: var(--text-sub);
             font-weight: 600;
             margin-top: 2px;
         }
 
-        .badge-target {
+        .remaining-badge {
             background: var(--bg);
             border: 1px solid var(--border);
-            padding: 4px 10px;
-            border-radius: 20px;
+            padding: 6px 10px;
+            border-radius: 10px;
             font-size: 0.75rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #a5b4fc;
+            text-align: right;
         }
 
-        .card-controls {
+        .remaining-badge.done {
+            color: var(--accent);
+            border-color: rgba(16, 185, 129, 0.4);
+        }
+
+        /* Indicador diario */
+        .daily-target-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #818cf8;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+
+        /* Desplegable limpio */
+        .accordion-trigger {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text-sub);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: var(--bg);
-            padding: 8px 12px;
-            border-radius: 12px;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-counter {
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            border: none;
-            background: var(--surface);
-            color: var(--text);
-            font-size: 1.2rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            border: 1px solid var(--border);
+            width: 100%;
         }
 
-        .btn-counter:active {
-            transform: scale(0.95);
-        }
-
-        .counter-val {
-            font-size: 1rem;
-            font-weight: 700;
-            min-width: 24px;
-            text-align: center;
-        }
-
-        /* Seccion Desplegable */
-        .toggle-details-btn {
-            background: transparent;
-            border: none;
-            color: var(--primary);
-            font-size: 0.8rem;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: left;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding-top: 4px;
-        }
-
-        .details-container {
+        .accordion-content {
             display: none;
             flex-direction: column;
-            gap: 10px;
-            padding-top: 10px;
-            border-top: 1px dashed var(--border);
+            gap: 12px;
+            padding-top: 8px;
         }
 
-        .details-container.open {
+        .accordion-content.open {
             display: flex;
         }
 
-        .exercise-form {
+        .input-row {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto;
             gap: 6px;
         }
 
-        .exercise-form input {
+        .input-row input {
             background: var(--bg);
             border: 1px solid var(--border);
             color: #fff;
-            padding: 8px;
+            padding: 8px 10px;
             border-radius: 8px;
             font-size: 0.8rem;
+            font-weight: 600;
             outline: none;
         }
 
-        .exercise-form input:focus {
+        .input-row input:focus {
             border-color: var(--primary);
         }
 
-        .btn-add-ex {
+        .btn-add-set {
             background: var(--primary);
             color: white;
             border: none;
             border-radius: 8px;
             padding: 0 12px;
-            font-weight: 700;
+            font-weight: 800;
+            font-size: 1rem;
             cursor: pointer;
         }
 
-        .exercise-list {
+        .sets-history {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 6px;
         }
 
-        .exercise-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .set-chip {
             background: var(--bg);
-            padding: 8px 12px;
+            border: 1px solid var(--border);
+            padding: 6px 10px;
             border-radius: 8px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
 
-        .exercise-item span.name {
-            font-weight: 600;
+        .set-chip strong {
             color: #fff;
         }
 
-        .exercise-item span.meta {
-            color: var(--text-muted);
-        }
-
-        .btn-del-ex {
+        .btn-del-chip {
             background: transparent;
             border: none;
-            color: #ef4444;
-            font-size: 0.9rem;
+            color: #f87171;
+            font-weight: 800;
             cursor: pointer;
-            margin-left: 8px;
+            font-size: 0.85rem;
+            margin-left: 2px;
         }
 
         .reset-btn {
@@ -304,12 +301,12 @@
             transform: translateX(-50%);
             background: var(--surface);
             border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 10px 20px;
+            color: var(--text-sub);
+            padding: 12px 24px;
             border-radius: 30px;
             font-size: 0.8rem;
-            font-weight: 600;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
             cursor: pointer;
         }
     </style>
@@ -317,53 +314,54 @@
 <body>
 
     <header>
-        <div class="brand-title">GYM TRACKER</div>
-        <span id="save-indicator" style="font-size: 0.75rem; color: var(--accent); font-weight: 600;">● Guardado</span>
+        <div class="app-title">GYM TRACKER</div>
+        <div class="status-badge">● Auto Guardado</div>
     </header>
 
-    <div class="overall-progress-card">
-        <div class="progress-header">
-            <span>PROGRESO SEMANAL</span>
-            <span id="overall-percentage">0%</span>
+    <!-- Resumen Semanal -->
+    <div class="summary-card">
+        <div class="summary-header">
+            <span>AVANCE SEMANAL</span>
+            <div class="summary-counter" id="total-summary">0 / 0 Series</div>
         </div>
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="overall-bar"></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="total-progress-bar"></div>
         </div>
     </div>
 
-    <!-- Pestañas por Día -->
-    <div class="day-tabs">
-        <button class="tab-btn active" onclick="switchDay('lunes')">Lunes</button>
-        <button class="tab-btn" onclick="switchDay('miercoles')">Miércoles</button>
-        <button class="tab-btn" onclick="switchDay('viernes')">Viernes</button>
+    <!-- Días -->
+    <div class="day-selector">
+        <button class="day-btn active" onclick="setDay('lunes')">Lunes</button>
+        <button class="day-btn" onclick="setDay('miercoles')">Miércoles</button>
+        <button class="day-btn" onclick="setDay('viernes')">Viernes</button>
     </div>
 
-    <!-- Lista de tarjetas -->
-    <div class="cards-list" id="cards-container"></div>
+    <!-- Músculos -->
+    <div class="muscle-cards-list" id="cards-container"></div>
 
     <button class="reset-btn" onclick="resetWeek()">Reiniciar Semana</button>
 
     <script>
-        const muscleData = [
-            { id: 'pecho', name: 'PECHO', targetSeries: 12, reps: '6-8 reps' },
-            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, reps: '5-8 reps' },
-            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, reps: '8-10 reps' },
-            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, reps: '8-12 reps' },
-            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, reps: '8-12 reps' },
-            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, reps: '5-8 reps' },
-            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, reps: '6-10 reps' },
-            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, reps: 'Libre' },
-            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, reps: 'Libre' },
-            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, reps: '8-15 reps' }
+        const musclesConfig = [
+            { id: 'pecho', name: 'PECHO', targetSeries: 12, reps: '6-8 reps', dailySuggested: 4 },
+            { id: 'espalda', name: 'ESPALDA', targetSeries: 15, reps: '5-8 reps', dailySuggested: 5 },
+            { id: 'hombros', name: 'HOMBROS', targetSeries: 9, reps: '8-10 reps', dailySuggested: 3 },
+            { id: 'biceps', name: 'BÍCEPS', targetSeries: 9, reps: '8-12 reps', dailySuggested: 3 },
+            { id: 'triceps', name: 'TRÍCEPS', targetSeries: 9, reps: '8-12 reps', dailySuggested: 3 },
+            { id: 'cuadriceps', name: 'CUÁDRICEPS', targetSeries: 12, reps: '5-8 reps', dailySuggested: 4 },
+            { id: 'isquios', name: 'ISQUIOS', targetSeries: 10, reps: '6-10 reps', dailySuggested: 3.5 },
+            { id: 'abductores', name: 'ABDUCTORES', targetSeries: 4, reps: 'Libre', dailySuggested: 2 },
+            { id: 'aductores', name: 'ADUCTORES', targetSeries: 4, reps: 'Libre', dailySuggested: 2 },
+            { id: 'pantorrillas', name: 'PANTORRILLAS', targetSeries: 9, reps: '8-15 reps', dailySuggested: 3 }
         ];
 
-        let currentDay = 'lunes';
-        let state = JSON.parse(localStorage.getItem('gym_tracker_v3')) || {};
+        let activeDay = 'lunes';
+        let store = JSON.parse(localStorage.getItem('gym_tracker_clean_v1')) || {};
         let openAccordions = {};
 
-        function switchDay(day) {
-            currentDay = day;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
+        function setDay(day) {
+            activeDay = day;
+            document.querySelectorAll('.day-btn').forEach(btn => {
                 btn.classList.toggle('active', btn.innerText.toLowerCase() === day);
             });
             render();
@@ -374,148 +372,125 @@
             render();
         }
 
-        function updateSeries(id, delta) {
-            initMuscleState(id);
-            const currentVal = state[id][currentDay].series || 0;
-            state[id][currentDay].series = Math.max(0, currentVal + delta);
-            save();
-            render();
-        }
+        function addSet(muscleId) {
+            initStore(muscleId);
+            const exName = document.getElementById(`input-ex-${muscleId}`).value.trim() || 'Ejercicio';
+            const reps = document.getElementById(`input-reps-${muscleId}`).value.trim();
+            const weight = document.getElementById(`input-weight-${muscleId}`).value.trim();
 
-        function addExercise(id) {
-            initMuscleState(id);
-            const nameInput = document.getElementById(`ex-name-${id}`);
-            const repsInput = document.getElementById(`ex-reps-${id}`);
-            const weightInput = document.getElementById(`ex-weight-${id}`);
-
-            const name = nameInput.value.trim();
-            const reps = repsInput.value.trim();
-            const weight = weightInput.value.trim();
-
-            if (!name) return;
-
-            if (!state[id][currentDay].exercises) {
-                state[id][currentDay].exercises = [];
+            if (!reps) {
+                alert('Ingresa al menos las repeticiones');
+                return;
             }
 
-            state[id][currentDay].exercises.push({ name, reps: reps || '0', weight: weight || '0' });
+            store[muscleId][activeDay].sets.push({
+                exName,
+                reps: reps,
+                weight: weight || '0'
+            });
+
             save();
             render();
         }
 
-        function deleteExercise(id, index) {
-            if (state[id] && state[id][currentDay] && state[id][currentDay].exercises) {
-                state[id][currentDay].exercises.splice(index, 1);
+        function removeSet(muscleId, setIndex) {
+            if (store[muscleId] && store[muscleId][activeDay]) {
+                store[muscleId][activeDay].sets.splice(setIndex, 1);
                 save();
                 render();
             }
         }
 
-        function initMuscleState(id) {
-            if (!state[id]) state[id] = {};
-            if (!state[id][currentDay]) state[id][currentDay] = { series: 0, exercises: [] };
+        function initStore(id) {
+            if (!store[id]) store[id] = {};
+            if (!store[id][activeDay]) store[id][activeDay] = { sets: [] };
         }
 
         function save() {
-            localStorage.setItem('gym_tracker_v3', JSON.stringify(state));
-        }
-
-        function calculateOverallProgress() {
-            let totalDone = 0;
-            let totalTarget = 0;
-
-            muscleData.forEach(item => {
-                const itemData = state[item.id] || {};
-                const lunes = (itemData.lunes && itemData.lunes.series) || 0;
-                const miercoles = (itemData.miercoles && itemData.miercoles.series) || 0;
-                const viernes = (itemData.viernes && itemData.viernes.series) || 0;
-
-                totalDone += lunes + miercoles + viernes;
-                totalTarget += item.targetSeries;
-            });
-
-            const pct = Math.min(100, Math.round((totalDone / totalTarget) * 100));
-            document.getElementById('overall-percentage').innerText = `${pct}% (${totalDone}/${totalTarget} series)`;
-            document.getElementById('overall-bar').style.width = `${pct}%`;
+            localStorage.setItem('gym_tracker_clean_v1', JSON.stringify(store));
         }
 
         function render() {
             const container = document.getElementById('cards-container');
             container.innerHTML = '';
 
-            muscleData.forEach(item => {
-                const itemData = state[item.id] || {};
-                const dayData = (itemData[currentDay]) || { series: 0, exercises: [] };
-                
-                const lunesSeries = (itemData.lunes && itemData.lunes.series) || 0;
-                const miercolesSeries = (itemData.miercoles && itemData.miercoles.series) || 0;
-                const viernesSeries = (itemData.viernes && itemData.viernes.series) || 0;
+            let grandTotalDone = 0;
+            let grandTotalTarget = 0;
 
-                const totalWeeklySeries = lunesSeries + miercolesSeries + viernesSeries;
-                const isCompleted = totalWeeklySeries >= item.targetSeries;
+            musclesConfig.forEach(item => {
+                const itemStore = store[item.id] || {};
+                
+                // Contar series completadas en la semana
+                const lunesCount = (itemStore.lunes && itemStore.lunes.sets) ? itemStore.lunes.sets.length : 0;
+                const miercolesCount = (itemStore.miercoles && itemStore.miercoles.sets) ? itemStore.miercoles.sets.length : 0;
+                const viernesCount = (itemStore.viernes && itemStore.viernes.sets) ? itemStore.viernes.sets.length : 0;
+
+                const totalDoneWeek = lunesCount + miercolesCount + viernesCount;
+                const remainingWeek = Math.max(0, item.targetSeries - totalDoneWeek);
+                const isCompleted = remainingWeek === 0;
+
+                grandTotalDone += totalDoneWeek;
+                grandTotalTarget += item.targetSeries;
+
+                const daySets = (itemStore[activeDay] && itemStore[activeDay].sets) ? itemStore[activeDay].sets : [];
                 const isOpen = !!openAccordions[item.id];
 
-                const card = document.createElement('div');
-                card.className = `card ${isCompleted ? 'completed' : ''}`;
-                
-                let exercisesHTML = '';
-                if (dayData.exercises && dayData.exercises.length > 0) {
-                    exercisesHTML = dayData.exercises.map((ex, idx) => `
-                        <div class="exercise-item">
-                            <span class="name">${ex.name}</span>
-                            <div>
-                                <span class="meta">${ex.reps} reps | ${ex.weight} kg</span>
-                                <button class="btn-del-ex" onclick="deleteExercise('${item.id}', ${idx})">✕</button>
-                            </div>
+                // Renderizar Chips de Series
+                let setsChipsHTML = '';
+                if (daySets.length > 0) {
+                    setsChipsHTML = daySets.map((s, idx) => `
+                        <div class="set-chip">
+                            <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight}kg</span>
+                            <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
                         </div>
                     `).join('');
                 } else {
-                    exercisesHTML = `<div style="font-size:0.75rem; color:var(--text-muted); text-align:center;">Sin ejercicios guardados hoy</div>`;
+                    setsChipsHTML = `<div style="font-size:0.75rem; color:var(--text-sub);">Sin series registradas para hoy</div>`;
                 }
 
+                const card = document.createElement('div');
+                card.className = `muscle-card ${isCompleted ? 'completed' : ''}`;
                 card.innerHTML = `
-                    <div class="card-top">
-                        <div class="muscle-info">
-                            <h3>${item.name}</h3>
-                            <p>${item.reps} • Meta: ${item.targetSeries} series/sem</p>
+                    <div class="card-header">
+                        <div>
+                            <div class="muscle-title">${item.name}</div>
+                            <div class="target-info">${item.reps}</div>
+                            <div class="daily-target-tag">Hoy: ~${Math.ceil(item.dailySuggested)} series recomendadas</div>
                         </div>
-                        <div class="badge-target" style="${isCompleted ? 'color: var(--accent); border-color: rgba(34,197,94,0.3);' : ''}">
-                            ${totalWeeklySeries} / ${item.targetSeries} tot.
+                        <div class="remaining-badge ${isCompleted ? 'done' : ''}">
+                            ${isCompleted ? '✓ META ALCANZADA' : `Quedan ${remainingWeek} series`}
                         </div>
                     </div>
 
-                    <div class="card-controls">
-                        <div class="control-group">
-                            <button class="btn-counter" onclick="updateSeries('${item.id}', -1)">-</button>
-                            <span class="counter-val">${dayData.series} <small style="font-size:0.65rem; color:var(--text-muted)">hoy</small></span>
-                            <button class="btn-counter" onclick="updateSeries('${item.id}', 1)">+</button>
-                        </div>
-                        <button class="toggle-details-btn" onclick="toggleAccordion('${item.id}')">
-                            ${isOpen ? '▼ Esconder Ejercicios' : '▶ Detalle Ejercicios'}
-                        </button>
-                    </div>
+                    <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
+                        <span>${daySets.length} series hechas hoy</span>
+                        <span>${isOpen ? '▲ Ocultar' : '▼ Registrar Serie'}</span>
+                    </button>
 
-                    <div class="details-container ${isOpen ? 'open' : ''}">
-                        <div class="exercise-form">
-                            <input type="text" id="ex-name-${item.id}" placeholder="Ejercicio (Ej: Press)">
-                            <input type="number" id="ex-reps-${item.id}" placeholder="Reps">
-                            <input type="number" id="ex-weight-${item.id}" placeholder="Kg">
-                            <button class="btn-add-ex" onclick="addExercise('${item.id}')">+</button>
+                    <div class="accordion-content ${isOpen ? 'open' : ''}">
+                        <div class="input-row">
+                            <input type="text" id="input-ex-${item.id}" placeholder="Ejercicio">
+                            <input type="number" id="input-reps-${item.id}" placeholder="Reps">
+                            <input type="number" id="input-weight-${item.id}" placeholder="Kg">
+                            <button class="btn-add-set" onclick="addSet('${item.id}')">+</button>
                         </div>
-                        <div class="exercise-list">
-                            ${exercisesHTML}
+                        <div class="sets-history">
+                            ${setsChipsHTML}
                         </div>
                     </div>
                 `;
                 container.appendChild(card);
             });
 
-            calculateOverallProgress();
+            // Actualizar resumen superior
+            const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
+            document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series (${pct}%)`;
+            document.getElementById('total-progress-bar').style.width = `${pct}%`;
         }
 
         function resetWeek() {
-            if (confirm('¿Seguro que quieres borrar los registros de esta semana?')) {
-                state = {};
+            if (confirm('¿Quieres reiniciar todas las series de esta semana?')) {
+                store = {};
                 save();
                 render();
             }
