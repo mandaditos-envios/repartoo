@@ -63,7 +63,6 @@
             border: 1px solid rgba(16, 185, 129, 0.3);
         }
 
-        /* Card resumen */
         .summary-card {
             background: linear-gradient(135deg, #1e1b4b, var(--surface));
             border: 1px solid var(--border);
@@ -106,7 +105,6 @@
             transition: width 0.3s ease;
         }
 
-        /* Selector Días */
         .day-selector {
             display: flex;
             gap: 6px;
@@ -132,7 +130,6 @@
             border-color: var(--primary);
         }
 
-        /* Contenedor de Tarjetas */
         .muscle-cards-list {
             display: flex;
             flex-direction: column;
@@ -146,11 +143,6 @@
             border-radius: var(--radius);
             padding: 14px;
             width: 100%;
-        }
-
-        .muscle-card.completed {
-            border-color: var(--accent);
-            background: linear-gradient(180deg, var(--surface), rgba(16, 185, 129, 0.05));
         }
 
         .card-header {
@@ -218,7 +210,6 @@
             display: flex;
         }
 
-        /* Formulario */
         .input-row {
             display: flex;
             flex-direction: column;
@@ -273,7 +264,6 @@
             cursor: pointer;
         }
 
-        /* Historial de Series */
         .sets-history {
             display: flex;
             flex-direction: column;
@@ -344,7 +334,7 @@
 
     <header>
         <div class="app-title">GYM TRACK PRO</div>
-        <div class="status-badge">● Guardado</div>
+        <div class="status-badge">● Listo</div>
     </header>
 
     <div class="summary-card">
@@ -358,9 +348,9 @@
     </div>
 
     <div class="day-selector">
-        <button class="day-btn active" onclick="setDay('lunes')">Lunes</button>
-        <button class="day-btn" onclick="setDay('miercoles')">Miércoles</button>
-        <button class="day-btn" onclick="setDay('viernes')">Viernes</button>
+        <button class="day-btn active" id="btn-lunes" onclick="setDay('lunes')">Lunes</button>
+        <button class="day-btn" id="btn-miercoles" onclick="setDay('miercoles')">Miércoles</button>
+        <button class="day-btn" id="btn-viernes" onclick="setDay('viernes')">Viernes</button>
     </div>
 
     <div class="muscle-cards-list" id="cards-container"></div>
@@ -382,22 +372,35 @@
         ];
 
         let activeDay = 'lunes';
-        let store = JSON.parse(localStorage.getItem('gym_tracker_pro_v6')) || {};
+        let store = {};
         let openAccordions = {};
 
-        function initStore(id) {
-            if (!store[id]) store[id] = { customExercises: [], lunes: { sets: [] }, miercoles: { sets: [] }, viernes: { sets: [] } };
+        // Cargar almacenamiento limpio
+        try {
+            const saved = localStorage.getItem('gym_tracker_final_v1');
+            if (saved) store = JSON.parse(saved);
+        } catch (e) {
+            store = {};
+        }
+
+        function ensureStore(id) {
+            if (!store[id]) store[id] = {};
             if (!store[id].customExercises) store[id].customExercises = [];
-            if (!store[id].lunes) store[id].lunes = { sets: [] };
-            if (!store[id].miercoles) store[id].miercoles = { sets: [] };
-            if (!store[id].viernes) store[id].viernes = { sets: [] };
+            if (!store[id].lunes) store[id].lunes = [];
+            if (!store[id].miercoles) store[id].miercoles = [];
+            if (!store[id].viernes) store[id].viernes = [];
+        }
+
+        function save() {
+            try {
+                localStorage.setItem('gym_tracker_final_v1', JSON.stringify(store));
+            } catch (e) {}
         }
 
         function setDay(day) {
             activeDay = day;
-            document.querySelectorAll('.day-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.toLowerCase() === day);
-            });
+            document.querySelectorAll('.day-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${day}`).classList.add('active');
             render();
         }
 
@@ -407,21 +410,21 @@
         }
 
         function handleSelectChange(muscleId) {
-            const select = document.getElementById(`select-ex-${muscleId}`);
-            const customInput = document.getElementById(`input-custom-ex-${muscleId}`);
-            if (select && select.value === 'CUSTOM') {
-                customInput.style.display = 'block';
-            } else if (customInput) {
-                customInput.style.display = 'none';
+            const select = document.getElementById(`select-${muscleId}`);
+            const customInput = document.getElementById(`custom-${muscleId}`);
+            if (select && customInput) {
+                customInput.style.display = (select.value === 'CUSTOM') ? 'block' : 'none';
             }
         }
 
         function addSet(muscleId, minReps, maxReps) {
-            initStore(muscleId);
-            const select = document.getElementById(`select-ex-${muscleId}`);
-            const customInput = document.getElementById(`input-custom-ex-${muscleId}`);
-            
-            let exName = select.value;
+            ensureStore(muscleId);
+            const select = document.getElementById(`select-${muscleId}`);
+            const customInput = document.getElementById(`custom-${muscleId}`);
+            const repsInput = document.getElementById(`reps-${muscleId}`);
+            const weightInput = document.getElementById(`weight-${muscleId}`);
+
+            let exName = select ? select.value : '';
             if (exName === 'CUSTOM') {
                 exName = customInput.value.trim();
                 if (exName && !store[muscleId].customExercises.includes(exName)) {
@@ -429,43 +432,42 @@
                 }
             }
 
-            const reps = parseInt(document.getElementById(`input-reps-${muscleId}`).value);
-            const weight = parseFloat(document.getElementById(`input-weight-${muscleId}`).value) || 0;
+            const reps = parseInt(repsInput.value);
+            const weight = parseFloat(weightInput.value) || 0;
 
             if (!exName || isNaN(reps)) {
-                alert('Por favor selecciona un ejercicio e ingresa las repeticiones.');
+                alert('Ingresa las repeticiones y elige un ejercicio.');
                 return;
             }
 
-            // Análisis inteligente de carga
-            let advice = { text: '🎯 Peso ideal', class: 'advice-ok' };
+            let adviceText = '🎯 Peso ideal';
+            let adviceClass = 'advice-ok';
+
             if (reps > maxReps) {
-                advice = { text: '⚡ Sube peso (superaste el rango)', class: 'advice-up' };
+                adviceText = '⚡ Sube peso (superaste el rango)';
+                adviceClass = 'advice-up';
             } else if (reps < minReps) {
-                advice = { text: '⚠️ Muy pesado (baja un poco el peso)', class: 'advice-down' };
+                adviceText = '⚠️ Muy pesado (baja un poco el peso)';
+                adviceClass = 'advice-down';
             }
 
-            store[muscleId][activeDay].sets.push({
-                exName,
-                reps,
-                weight,
-                advice
+            store[muscleId][activeDay].push({
+                exName: exName,
+                reps: reps,
+                weight: weight,
+                adviceText: adviceText,
+                adviceClass: adviceClass
             });
 
             save();
             render();
         }
 
-        function removeSet(muscleId, setIndex) {
-            if (store[muscleId] && store[muscleId][activeDay]) {
-                store[muscleId][activeDay].sets.splice(setIndex, 1);
-                save();
-                render();
-            }
-        }
-
-        function save() {
-            localStorage.setItem('gym_tracker_pro_v6', JSON.stringify(store));
+        function removeSet(muscleId, index) {
+            ensureStore(muscleId);
+            store[muscleId][activeDay].splice(index, 1);
+            save();
+            render();
         }
 
         function render() {
@@ -476,44 +478,39 @@
             let grandTotalTarget = 0;
 
             initialConfig.forEach(item => {
-                initStore(item.id);
-                const itemStore = store[item.id];
-                
-                const lunesCount = (itemStore.lunes && itemStore.lunes.sets) ? itemStore.lunes.sets.length : 0;
-                const miercolesCount = (itemStore.miercoles && itemStore.miercoles.sets) ? itemStore.miercoles.sets.length : 0;
-                const viernesCount = (itemStore.viernes && itemStore.viernes.sets) ? itemStore.viernes.sets.length : 0;
+                ensureStore(item.id);
+                const itemData = store[item.id];
 
-                const totalDoneWeek = lunesCount + miercolesCount + viernesCount;
+                const totalDoneWeek = itemData.lunes.length + itemData.miercoles.length + itemData.viernes.length;
                 const remainingWeek = Math.max(0, item.targetSeries - totalDoneWeek);
                 const isCompleted = remainingWeek === 0;
 
                 grandTotalDone += totalDoneWeek;
                 grandTotalTarget += item.targetSeries;
 
-                const daySets = (itemStore[activeDay] && itemStore[activeDay].sets) ? itemStore[activeDay].sets : [];
+                const daySets = itemData[activeDay] || [];
                 const isOpen = !!openAccordions[item.id];
+                const allExercises = [...item.defaultExercises, ...itemData.customExercises];
 
-                const allExercises = [...item.defaultExercises, ...itemStore.customExercises];
-
-                let setsChipsHTML = '';
+                let setsHTML = '';
                 if (daySets.length > 0) {
-                    setsChipsHTML = daySets.map((s, idx) => `
+                    setsHTML = daySets.map((s, idx) => `
                         <div class="set-chip">
                             <div class="set-chip-info">
                                 <span><strong>${s.exName}:</strong> ${s.reps} reps @ ${s.weight} kg</span>
-                                <span class="advice-tag ${s.advice.class}">${s.advice.text}</span>
+                                <span class="advice-tag ${s.adviceClass}">${s.adviceText}</span>
                             </div>
                             <button class="btn-del-chip" onclick="removeSet('${item.id}', ${idx})">✕</button>
                         </div>
                     `).join('');
                 } else {
-                    setsChipsHTML = `<div style="font-size:0.72rem; color:var(--text-sub);">Sin series registradas hoy</div>`;
+                    setsHTML = `<div style="font-size:0.72rem; color:var(--text-sub);">Sin series registradas hoy</div>`;
                 }
 
                 const optionsHTML = allExercises.map(ex => `<option value="${ex}">${ex}</option>`).join('') + `<option value="CUSTOM">+ Otro ejercicio...</option>`;
 
                 const card = document.createElement('div');
-                card.className = `muscle-card ${isCompleted ? 'completed' : ''}`;
+                card.className = `muscle-card`;
                 card.innerHTML = `
                     <div class="card-header">
                         <div>
@@ -526,24 +523,24 @@
                     </div>
 
                     <button class="accordion-trigger" onclick="toggleAccordion('${item.id}')">
-                        <span>${daySets.length} series registradas hoy</span>
+                        <span>${daySets.length} series anotadas hoy</span>
                         <span>${isOpen ? '▲ Ocultar' : '▼ Anotar Serie'}</span>
                     </button>
 
                     <div class="accordion-content ${isOpen ? 'open' : ''}">
                         <div class="input-row">
-                            <select class="select-ex" id="select-ex-${item.id}" onchange="handleSelectChange('${item.id}')">
+                            <select class="select-ex" id="select-${item.id}" onchange="handleSelectChange('${item.id}')">
                                 ${optionsHTML}
                             </select>
-                            <input type="text" class="input-custom-ex" id="input-custom-ex-${item.id}" placeholder="Escribe el nuevo ejercicio..." style="display:none;">
+                            <input type="text" class="input-custom-ex" id="custom-${item.id}" placeholder="Escribe el nuevo ejercicio..." style="display:none;">
                             <div class="input-fields">
-                                <input type="number" id="input-reps-${item.id}" placeholder="Reps">
-                                <input type="number" id="input-weight-${item.id}" placeholder="Peso (kg)">
+                                <input type="number" id="reps-${item.id}" placeholder="Reps">
+                                <input type="number" id="weight-${item.id}" placeholder="Peso (kg)">
                             </div>
                             <button class="btn-add-set" onclick="addSet('${item.id}', ${item.minReps}, ${item.maxReps})">+ Registrar Serie</button>
                         </div>
                         <div class="sets-history">
-                            ${setsChipsHTML}
+                            ${setsHTML}
                         </div>
                     </div>
                 `;
@@ -552,4 +549,23 @@
 
             const pct = Math.min(100, Math.round((grandTotalDone / grandTotalTarget) * 100));
             document.getElementById('total-summary').innerText = `${grandTotalDone} / ${grandTotalTarget} Series (${pct}%)`;
-            document.getElementById('total-progress-
+            document.getElementById('total-progress-bar').style.width = `${pct}%`;
+        }
+
+        function resetWeek() {
+            if (confirm('¿Reiniciar todas las series guardadas esta semana?')) {
+                initialConfig.forEach(item => {
+                    ensureStore(item.id);
+                    store[item.id].lunes = [];
+                    store[item.id].miercoles = [];
+                    store[item.id].viernes = [];
+                });
+                save();
+                render();
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
