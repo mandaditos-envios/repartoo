@@ -316,9 +316,6 @@
             font-weight: 800;
             color: #a5b4fc;
             margin-bottom: 3px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
         }
 
         .btn-del-chip {
@@ -395,7 +392,6 @@
         let exerciseHistory = {};
         let openAccordions = {};
 
-        // Función para obtener la clave única de la semana actual (Año - Semana)
         function getWeekKey() {
             const now = new Date();
             const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
@@ -406,38 +402,41 @@
             return `${d.getUTCFullYear()}-W${weekNo}`;
         }
 
-        // Cargar almacenamiento
-        try {
-            const savedStore = localStorage.getItem('gym_tracker_v3_store');
-            const savedHistory = localStorage.getItem('gym_tracker_v3_history');
-            const savedWeek = localStorage.getItem('gym_tracker_v3_week');
-
-            if (savedStore) store = JSON.parse(savedStore);
-            if (savedHistory) exerciseHistory = JSON.parse(savedHistory);
-
-            const currentWeek = getWeekKey();
-            // Si la semana guardada es diferente a la actual, reiniciamos las series de la semana
-            if (savedWeek && savedWeek !== currentWeek) {
-                initialConfig.forEach(item => {
-                    if (store[item.id]) {
-                        store[item.id].lunes = [];
-                        store[item.id].miercoles = [];
-                        store[item.id].viernes = [];
-                    }
-                });
-            }
-            localStorage.setItem('gym_tracker_v3_week', currentWeek);
-        } catch (e) {
-            store = {};
-            exerciseHistory = {};
-        }
-
         function ensureStore(id) {
             if (!store[id]) store[id] = {};
-            if (!store[id].customExercises) store[id].customExercises = [];
-            if (!store[id].lunes) store[id].lunes = [];
-            if (!store[id].miercoles) store[id].miercoles = [];
-            if (!store[id].viernes) store[id].viernes = [];
+            if (!Array.isArray(store[id].customExercises)) store[id].customExercises = [];
+            if (!Array.isArray(store[id].lunes)) store[id].lunes = [];
+            if (!Array.isArray(store[id].miercoles)) store[id].miercoles = [];
+            if (!Array.isArray(store[id].viernes)) store[id].viernes = [];
+        }
+
+        function initApp() {
+            try {
+                const savedStore = localStorage.getItem('gym_tracker_v3_store');
+                const savedHistory = localStorage.getItem('gym_tracker_v3_history');
+                const savedWeek = localStorage.getItem('gym_tracker_v3_week');
+
+                if (savedStore) store = JSON.parse(savedStore);
+                if (savedHistory) exerciseHistory = JSON.parse(savedHistory);
+
+                const currentWeek = getWeekKey();
+                if (savedWeek && savedWeek !== currentWeek) {
+                    initialConfig.forEach(item => {
+                        if (store[item.id]) {
+                            store[item.id].lunes = [];
+                            store[item.id].miercoles = [];
+                            store[item.id].viernes = [];
+                        }
+                    });
+                }
+                localStorage.setItem('gym_tracker_v3_week', currentWeek);
+            } catch (e) {
+                store = {};
+                exerciseHistory = {};
+            }
+
+            initialConfig.forEach(item => ensureStore(item.id));
+            render();
         }
 
         function save() {
@@ -472,43 +471,30 @@
             const config = initialConfig.find(c => c.id === muscleId);
             const history = exerciseHistory[selectedEx];
 
-            // 1. Si no hay historial previo registrado
             if (!history || !history.sets || history.sets.length === 0) {
-                return `💡 <strong>Inicio:</strong> Selecciona tu peso inicial buscando hacer entre <strong>${config.minReps} y ${config.maxReps} reps</strong> con esfuerzo moderado.`;
+                return `💡 <strong>Inicio:</strong> Selecciona un peso buscando realizar entre <strong>${config.minReps} y ${config.maxReps} reps</strong>.`;
             }
 
-            const firstSet = history.sets[0];
             const lastSet = history.sets[history.sets.length - 1];
-            const recWeight = firstSet.weight;
 
-            // 2. Si en la primera serie superó las reps máximas -> Toca subir peso (Carga progresiva)
-            if (firstSet.reps > config.maxReps) {
-                const nextWeight = (firstSet.weight > 0) ? (firstSet.weight * 1.05).toFixed(1) : 0;
-                return `🚀 <strong>Sube de carga:</strong> La sesión pasada hiciste ${firstSet.reps} reps con ${firstSet.weight}kg. Hoy arranca tu 1ª serie con <strong>${nextWeight}kg</strong> para 6-8 reps.`;
+            if (lastSet.reps > config.maxReps) {
+                const nextWeight = (lastSet.weight > 0) ? (lastSet.weight * 1.05).toFixed(1) : 0;
+                return `🚀 <strong>Sube de carga:</strong> La última vez realizaste ${lastSet.reps} reps con ${lastSet.weight}kg. Hoy intenta <strong>${nextWeight}kg</strong> para ${config.minReps}-${config.maxReps} reps.`;
             } 
             
-            // 3. Si en la última serie cayó por debajo del rango por fatiga
             if (lastSet.reps < config.minReps) {
-                return `⚖️ <strong>Ajuste por fatiga:</strong> La sesión pasada caíste a ${lastSet.reps} reps con ${lastSet.weight}kg al final. Hoy empieza con <strong>${firstSet.weight}kg</strong> y descansa 45 seg extra antes de las últimas series.`;
+                return `⚖️ <strong>Ajuste:</strong> Caíste a ${lastSet.reps} reps con ${lastSet.weight}kg. Hoy mantén <strong>${lastSet.weight}kg</strong> y descansa 45s más.`;
             }
 
-            // 4. Si estuvo en el rango perfecto
-            return `🎯 <strong>Consolidación:</strong> La sesión pasada hiciste ${firstSet.reps} reps con ${firstSet.weight}kg. Hoy mantén <strong>${firstSet.weight}kg</strong> e intenta hacer 1 rep más en tus primeras series.`;
+            return `🎯 <strong>Consolidación:</strong> Hiciste ${lastSet.reps} reps con ${lastSet.weight}kg. Mantén <strong>${lastSet.weight}kg</strong> e intenta 1 rep extra.`;
         }
 
         function renderCoachAdvice(muscleId) {
             const select = document.getElementById(`select-${muscleId}`);
             const coachBox = document.getElementById(`coach-${muscleId}`);
-            const repsInput = document.getElementById(`reps-${muscleId}`);
-            const weightInput = document.getElementById(`weight-${muscleId}`);
 
             if (select && coachBox) {
                 const exName = select.value === 'CUSTOM' ? '' : select.value;
-                if (exName && exerciseHistory[exName] && exerciseHistory[exName].sets.length > 0) {
-                    const lastFirstSet = exerciseHistory[exName].sets[0];
-                    if (repsInput && !repsInput.value) repsInput.placeholder = `Reps (${lastFirstSet.reps})`;
-                    if (weightInput && !weightInput.value) weightInput.placeholder = `Peso (${lastFirstSet.weight}kg)`;
-                }
                 coachBox.innerHTML = `
                     <div class="smart-coach-title">🤖 PLAN DE HOY:</div>
                     <div>${getSmartCoachAdvice(muscleId, exName)}</div>
@@ -543,10 +529,10 @@
             let adviceClass = 'advice-ok';
 
             if (reps > maxReps) {
-                adviceText = '⚡ Sube peso (superaste el rango)';
+                adviceText = '⚡ Sube peso';
                 adviceClass = 'advice-up';
             } else if (reps < minReps) {
-                adviceText = '⚠️ Muy pesado (baja un poco el peso)';
+                adviceText = '⚠️ Muy pesado';
                 adviceClass = 'advice-down';
             }
 
@@ -560,5 +546,40 @@
 
             store[muscleId][activeDay].push(setObj);
 
-            // Actualizar Historial Permanente del Ejercicio
-            if (!exer
+            if (!exerciseHistory[exName]) exerciseHistory[exName] = { sets: [] };
+            exerciseHistory[exName].sets.push(setObj);
+
+            repsInput.value = '';
+            weightInput.value = '';
+
+            save();
+            render();
+        }
+
+        function removeSet(muscleId, index) {
+            ensureStore(muscleId);
+            store[muscleId][activeDay].splice(index, 1);
+            save();
+            render();
+        }
+
+        function render() {
+            const container = document.getElementById('cards-container');
+            container.innerHTML = '';
+
+            let grandTotalDone = 0;
+            let grandTotalTarget = 0;
+
+            initialConfig.forEach(item => {
+                ensureStore(item.id);
+                const itemData = store[item.id];
+
+                const totalDoneWeek = (itemData.lunes.length || 0) + (itemData.miercoles.length || 0) + (itemData.viernes.length || 0);
+                const remainingWeek = Math.max(0, item.targetSeries - totalDoneWeek);
+                const isCompleted = remainingWeek === 0;
+
+                grandTotalDone += totalDoneWeek;
+                grandTotalTarget += item.targetSeries;
+
+                const daySets = itemData[activeDay] || [];
+   
