@@ -96,133 +96,28 @@
     </div>
 
     <script>
-    let logs = [];
+        let logs = [];
 
-    document.addEventListener("DOMContentLoaded", function() {
-        
-        // Cargar clave guardada
-        const savedKey = localStorage.getItem('coach_gemini_key');
-        if (savedKey) {
-            document.getElementById('api-key').value = savedKey;
-        }
-
-        // Guardar API Key
-        document.getElementById('btn-save-key').addEventListener('click', function() {
-            const key = document.getElementById('api-key').value.trim();
-            if (key) {
-                localStorage.setItem('coach_gemini_key', key);
-                alert('¡API Key guardada con éxito!');
-            } else {
-                alert('Ingresa una API Key válida.');
-            }
-        });
-
-        // Registrar serie
-        document.getElementById('btn-add-log').addEventListener('click', function() {
-            const muscle = document.getElementById('muscle').value;
-            const exercise = document.getElementById('exercise').value.trim() || 'Ejercicio';
-            const reps = document.getElementById('reps').value;
-            const weight = document.getElementById('weight').value || 0;
-
-            if (!reps) {
-                alert('Ingresa las repeticiones.');
-                return;
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // Cargar clave guardada
+            const savedKey = localStorage.getItem('coach_gemini_key');
+            if (savedKey) {
+                document.getElementById('api-key').value = savedKey;
             }
 
-            logs.push({ muscle, exercise, reps, weight });
-            document.getElementById('reps').value = '';
-            document.getElementById('weight').value = '';
-            
-            renderLogs();
-        });
-
-        // Consultar IA con autodetección de modelo
-        document.getElementById('btn-consult-ai').addEventListener('click', async function() {
-            const apiKey = localStorage.getItem('coach_gemini_key') || document.getElementById('api-key').value.trim();
-            
-            if (!apiKey) {
-                alert('Guarda tu API Key primero.');
-                return;
-            }
-
-            const aiBtn = document.getElementById('btn-consult-ai');
-            const resBox = document.getElementById('ai-response');
-            
-            aiBtn.disabled = true;
-            aiBtn.innerText = 'Buscando modelo disponible...';
-            resBox.style.display = 'block';
-            resBox.innerText = 'Verificando modelos activos en tu cuenta...';
-
-            try {
-                // 1. Obtener la lista de modelos soportados por la API Key
-                const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-                const listData = await listRes.json();
-
-                if (!listData.models) {
-                    throw new Error(listData.error?.message || "No se pudo consultar la lista de modelos.");
-                }
-
-                // Filtrar modelos válidos para generar contenido
-                const validModel = listData.models.find(m => 
-                    m.supportedGenerationMethods?.includes("generateContent") &&
-                    (m.name.includes("flash") || m.name.includes("pro"))
-                );
-
-                if (!validModel) {
-                    throw new Error("No hay modelos de generación de texto disponibles para esta clave API.");
-                }
-
-                const modelName = validModel.name; // Ejemplo: models/gemini-2.5-flash
-                aiBtn.innerText = 'Analizando entrenamiento...';
-                resBox.innerText = `Consultando a ${modelName.replace('models/', '')}...`;
-
-                const prompt = "Actúa como un entrenador experto. Analiza las siguientes series y dame 2 consejos breves de sobrecarga progresiva:\n" + JSON.stringify(logs, null, 2);
-
-                // 2. Ejecutar la petición al modelo detectado
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: prompt }] }]
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
-                    resBox.innerText = data.candidates[0].content.parts[0].text;
-                } else if (data.error) {
-                    resBox.innerText = '❌ Error del modelo:\n' + data.error.message;
+            // Guardar API Key
+            document.getElementById('btn-save-key').addEventListener('click', function() {
+                const key = document.getElementById('api-key').value.trim();
+                if (key) {
+                    localStorage.setItem('coach_gemini_key', key);
+                    alert('¡API Key guardada con éxito!');
                 } else {
-                    resBox.innerText = '❌ Sin respuesta del servidor.';
+                    alert('Ingresa una API Key válida.');
                 }
+            });
 
-            } catch (err) {
-                resBox.innerText = '❌ Error:\n' + err.message;
-            } finally {
-                aiBtn.disabled = false;
-                aiBtn.innerText = '✨ Analizar mi Entrenamiento con IA';
-            }
-        });
-    });
-
-    function renderLogs() {
-        const container = document.getElementById('logs-container');
-        if (logs.length === 0) {
-            container.innerHTML = '<span style="font-size: 0.8rem; color: var(--sub);">No hay series registradas aún.</span>';
-            return;
-        }
-
-        container.innerHTML = logs.map(l => `
-            <div class="log-item">
-                <span><strong>${l.muscle}</strong> (${l.exercise})</span>
-                <span>${l.reps} reps @ ${l.weight} kg</span>
-            </div>
-        `).join('');
-    }
-</script>
-
-            // Escuchador botón Añadir Serie
+            // Registrar serie
             document.getElementById('btn-add-log').addEventListener('click', function() {
                 const muscle = document.getElementById('muscle').value;
                 const exercise = document.getElementById('exercise').value.trim() || 'Ejercicio';
@@ -230,7 +125,7 @@
                 const weight = document.getElementById('weight').value || 0;
 
                 if (!reps) {
-                    alert('Ingresa la cantidad de repeticiones.');
+                    alert('Ingresa las repeticiones.');
                     return;
                 }
 
@@ -241,12 +136,12 @@
                 renderLogs();
             });
 
-            // Escuchador botón Consultar IA
+            // Consultar IA con autodetección de modelo
             document.getElementById('btn-consult-ai').addEventListener('click', async function() {
                 const apiKey = localStorage.getItem('coach_gemini_key') || document.getElementById('api-key').value.trim();
                 
                 if (!apiKey) {
-                    alert('Ingresa y guarda tu API Key de Gemini primero.');
+                    alert('Guarda tu API Key primero.');
                     return;
                 }
 
@@ -254,14 +149,37 @@
                 const resBox = document.getElementById('ai-response');
                 
                 aiBtn.disabled = true;
-                aiBtn.innerText = 'Conectando con Gemini...';
+                aiBtn.innerText = 'Buscando modelo disponible...';
                 resBox.style.display = 'block';
-                resBox.innerText = 'Analizando tus series registradas...';
-
-                const prompt = "Actúa como un entrenador experto. Analiza este entrenamiento y dame 2 consejos breves de sobrecarga progresiva:\n" + JSON.stringify(logs, null, 2);
+                resBox.innerText = 'Verificando modelos activos en tu cuenta...';
 
                 try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                    // 1. Obtener la lista de modelos soportados por la API Key
+                    const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+                    const listData = await listRes.json();
+
+                    if (!listData.models) {
+                        throw new Error(listData.error?.message || "No se pudo consultar la lista de modelos.");
+                    }
+
+                    // Filtrar modelos válidos para generar contenido
+                    const validModel = listData.models.find(m => 
+                        m.supportedGenerationMethods?.includes("generateContent") &&
+                        (m.name.includes("flash") || m.name.includes("pro"))
+                    );
+
+                    if (!validModel) {
+                        throw new Error("No hay modelos de generación de texto disponibles para esta clave API.");
+                    }
+
+                    const modelName = validModel.name; 
+                    aiBtn.innerText = 'Analizando entrenamiento...';
+                    resBox.innerText = `Consultando a ${modelName.replace('models/', '')}...`;
+
+                    const prompt = "Actúa como un entrenador experto. Analiza las siguientes series y dame 2 consejos breves de sobrecarga progresiva:\n" + JSON.stringify(logs, null, 2);
+
+                    // 2. Ejecutar la petición al modelo detectado
+                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/${modelName}:generateContent?key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
@@ -274,12 +192,13 @@
                     if (data.candidates && data.candidates[0]?.content?.parts[0]?.text) {
                         resBox.innerText = data.candidates[0].content.parts[0].text;
                     } else if (data.error) {
-                        resBox.innerText = '❌ Error de la API:\n' + (data.error.message || JSON.stringify(data.error));
+                        resBox.innerText = '❌ Error del modelo:\n' + data.error.message;
                     } else {
-                        resBox.innerText = '❌ No se obtuvo respuesta del modelo.';
+                        resBox.innerText = '❌ Sin respuesta del servidor.';
                     }
+
                 } catch (err) {
-                    resBox.innerText = '❌ Error de conexión:\n' + err.message;
+                    resBox.innerText = '❌ Error:\n' + err.message;
                 } finally {
                     aiBtn.disabled = false;
                     aiBtn.innerText = '✨ Analizar mi Entrenamiento con IA';
@@ -294,7 +213,7 @@
                 return;
             }
 
-            container.innerHTML = logs.map((l, idx) => `
+            container.innerHTML = logs.map(l => `
                 <div class="log-item">
                     <span><strong>${l.muscle}</strong> (${l.exercise})</span>
                     <span>${l.reps} reps @ ${l.weight} kg</span>
